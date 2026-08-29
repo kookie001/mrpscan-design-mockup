@@ -512,7 +512,6 @@ document.getElementById('backFromForgotPw').addEventListener('click', () => back
 // ---- Dashboard <-> Scanner flow (Home -> Capture -> Processing -> Review -> Final) ----
 const screenSettings = document.getElementById('screenSettings');
 const screenDashSettings = document.getElementById('screenDashSettings');
-const screenMasters = document.getElementById('screenMasters');
 const screenMasterRates = document.getElementById('screenMasterRates');
 const screenBizProfile = document.getElementById('screenBizProfile');
 const screenWishlist = document.getElementById('screenWishlist');
@@ -664,7 +663,7 @@ setInterval(renderDashClock, 30000);
 const floatingNav = document.getElementById('floatingNav');
 const navHomeBtn = document.getElementById('navHomeBtn');
 const navScanBtn = document.getElementById('navScanBtn');
-const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenScanFinal, screenSettings, screenDashSettings, screenMasters, screenMasterRates, screenBizProfile, screenWishlist, screenEmpList, screenEmpAdd, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
+const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenScanFinal, screenSettings, screenDashSettings, screenMasterRates, screenBizProfile, screenWishlist, screenEmpList, screenEmpAdd, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
 let currentScreen = screenSplash;
 
 function updateNavForScreen(screen) {
@@ -713,7 +712,7 @@ document.getElementById('dashSetBackBtn').addEventListener('click', () => {
   goBackward(screenDashSettings, screenSettings);
 });
 
-// -- Bhaw rate: LIVE from the real gold-rate-tracker API -> Home dashboard tile --
+// -- Bhaw rate: LIVE from the real gold-rate-tracker API -> feeds into the Home Gold rate --
 // *** This is the exact contract to hand to the backend dev for the real APK: ***
 //   GET https://17gdivfex7.execute-api.ap-south-1.amazonaws.com/bhaw
 //   -> { source, name, cash_bhaw, rtgs_bhaw, updated_at }   (whichever source is currently active)
@@ -722,21 +721,22 @@ document.getElementById('dashSetBackBtn').addEventListener('click', () => {
 //   PUT  {ROOT}select   -> { source }                          (admin sets which source is active)
 // Dashboard Settings' JMD/Mega Bullion picker below calls those admin endpoints purely so this
 // mockup can demo switching sources — MRPscan itself only ever needs the one read-only GET /bhaw.
+// Bhaw has no dedicated tile on Home — it's added straight onto the Gold (24K) Cash/RTGS rates.
 const BHAW_ROOT_URL = 'https://17gdivfex7.execute-api.ap-south-1.amazonaws.com/';
 const BHAW_URL = BHAW_ROOT_URL + 'bhaw';
+const GOLD_BASE_CASH = 74320;
+const GOLD_BASE_RTGS = 74410;
 let bhawPollTimer = null;
 
-function formatBhaw(n) {
-  if (n === null || n === undefined || n === '' || Number.isNaN(Number(n))) return '—';
-  const num = Number(n);
-  return (num < 0 ? '−' : '+') + Math.abs(num).toLocaleString('en-IN');
+function formatRupees(n) {
+  return '₹ ' + Math.round(n).toLocaleString('en-IN');
 }
 
 function renderBhaw(data) {
-  document.getElementById('dashBhawSourceName').textContent = data.name;
-  document.getElementById('dashBhawCash').textContent = formatBhaw(data.cash_bhaw);
-  document.getElementById('dashBhawRtgs').textContent = formatBhaw(data.rtgs_bhaw);
-  document.getElementById('dashBhawCard').classList.add('show');
+  const cashBhaw = Number(data.cash_bhaw) || 0;
+  const rtgsBhaw = Number(data.rtgs_bhaw) || 0;
+  document.getElementById('dashGoldCashRate').textContent = formatRupees(GOLD_BASE_CASH + cashBhaw);
+  document.getElementById('dashGoldRtgsRate').textContent = formatRupees(GOLD_BASE_RTGS + rtgsBhaw);
 }
 
 async function fetchBhaw() {
@@ -792,16 +792,10 @@ bhawSourceJmd.addEventListener('click', () => selectBhawSource('jmd_patil'));
 bhawSourceMega.addEventListener('click', () => selectBhawSource('mega_bullion'));
 document.getElementById('setMenuDashboard').addEventListener('click', syncBhawSourceCheckboxes);
 document.getElementById('setMenuMasters').addEventListener('click', () => {
-  goForward(screenSettings, screenMasters);
-});
-document.getElementById('mstBackBtn').addEventListener('click', () => {
-  goBackward(screenMasters, screenSettings);
-});
-document.getElementById('mstRatesRow').addEventListener('click', () => {
-  goForward(screenMasters, screenMasterRates);
+  goForward(screenSettings, screenMasterRates);
 });
 document.getElementById('mstRatesBackBtn').addEventListener('click', () => {
-  goBackward(screenMasterRates, screenMasters);
+  goBackward(screenMasterRates, screenSettings);
 });
 
 // -- Employee Manager (list -> add -> permissions -> create-password, plus detail edit shortcuts) --
