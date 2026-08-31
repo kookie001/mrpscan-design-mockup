@@ -515,6 +515,7 @@ const screenDashSettings = document.getElementById('screenDashSettings');
 const screenMasterRates = document.getElementById('screenMasterRates');
 const screenBizProfile = document.getElementById('screenBizProfile');
 const screenWishlist = document.getElementById('screenWishlist');
+const screenSubscription = document.getElementById('screenSubscription');
 const screenEmpList = document.getElementById('screenEmpList');
 const screenEmpAdd = document.getElementById('screenEmpAdd');
 const screenEmpPermissions = document.getElementById('screenEmpPermissions');
@@ -523,7 +524,8 @@ const screenEmpDetail = document.getElementById('screenEmpDetail');
 const screenScanCapture = document.getElementById('screenScanCapture');
 const screenScanProcessing = document.getElementById('screenScanProcessing');
 const screenScanReview = document.getElementById('screenScanReview');
-const screenScanFinal = document.getElementById('screenScanFinal');
+const screenInvoiceGen = document.getElementById('screenInvoiceGen');
+const screenInvoicePreview = document.getElementById('screenInvoicePreview');
 
 function goForward(fromScreen, toScreen) {
   fromScreen.classList.remove('active');
@@ -610,7 +612,7 @@ document.getElementById('revRescanBtn').addEventListener('click', () => {
   resetCaptureScreen();
   goBackward(screenScanReview, screenScanCapture);
 });
-document.getElementById('revContinueBtn').addEventListener('click', () => goForward(screenScanReview, screenScanFinal));
+document.getElementById('revContinueBtn').addEventListener('click', () => goForward(screenScanReview, screenInvoiceGen));
 
 function wireWishlistToggle(id) {
   document.getElementById(id).addEventListener('click', function () {
@@ -619,7 +621,6 @@ function wireWishlistToggle(id) {
   });
 }
 wireWishlistToggle('revWishlistBtn');
-wireWishlistToggle('finWishlistBtn');
 
 // -- "+ Add Other Charges" tile: reveal an amount row on click --
 const chargesTile = document.getElementById('chargesTile');
@@ -634,15 +635,91 @@ addChargeBtn.addEventListener('click', () => {
   row.querySelector('input').focus();
 });
 
-// -- Final result screen --
-document.getElementById('finBackBtn').addEventListener('click', () => goBackward(screenScanFinal, screenScanReview));
-document.getElementById('finInvoiceBtn').addEventListener('click', function () {
-  this.textContent = 'Invoice Generated ✓';
-  setTimeout(() => {
-    this.textContent = 'Generate Invoice';
-    goBackward(screenScanFinal, screenHome);
-  }, 900);
+// -- Invoice Generation (customer details) -> Invoice Preview --
+document.getElementById('invGenBackBtn').addEventListener('click', () => {
+  goBackward(screenInvoiceGen, screenScanReview);
 });
+document.getElementById('invGenContinueBtn').addEventListener('click', () => {
+  const name = document.getElementById('invCustName').value.trim() || 'Garg Jewellers';
+  const address = document.getElementById('invCustAddress').value.trim() || '11- Upper Bazar, Police Station, Modinagar, Ghaziabad, Uttar Pradesh 201204';
+  const gst = document.getElementById('invCustGst').value.trim();
+  const pan = document.getElementById('invCustPan').value.trim();
+
+  document.getElementById('invBilledName').textContent = name;
+  document.getElementById('invBilledAddress').textContent = address;
+  const idLine = document.getElementById('invBilledGst');
+  if (gst) {
+    idLine.textContent = 'GSTIN: ' + gst;
+    idLine.style.display = '';
+  } else if (pan) {
+    idLine.textContent = 'PAN: ' + pan;
+    idLine.style.display = '';
+  } else {
+    idLine.style.display = 'none';
+  }
+  setInvZoom(1);
+  goForward(screenInvoiceGen, screenInvoicePreview);
+});
+
+// -- Invoice Preview: back, share, download --
+document.getElementById('invPreviewBackBtn').addEventListener('click', () => {
+  goBackward(screenInvoicePreview, screenInvoiceGen);
+});
+document.getElementById('invShareBtn').addEventListener('click', () => {
+  const name = document.getElementById('invBilledName').textContent;
+  const total = document.getElementById('invGrandTotal').textContent;
+  const text = encodeURIComponent(`Invoice for ${name}\nGrand Total: ${total}\n— Pratham International (MRPscan)`);
+  window.open('https://wa.me/?text=' + text, '_blank');
+});
+document.getElementById('invDownloadBtn').addEventListener('click', () => {
+  setInvZoom(1);
+  window.print();
+});
+
+// -- Invoice Preview: pinch / wheel / double-tap / button zoom (uses CSS `zoom` so the
+//    page-wrap's native scroll can pan around the zoomed sheet, no extra pan logic needed) --
+const invSheetEl = document.getElementById('invSheet');
+const invPageWrapEl = document.getElementById('invPageWrap');
+let invZoomLevel = 1;
+
+function setInvZoom(z) {
+  invZoomLevel = Math.min(3, Math.max(1, z));
+  invSheetEl.style.zoom = invZoomLevel;
+}
+
+document.getElementById('invZoomIn').addEventListener('click', () => setInvZoom(invZoomLevel + 0.25));
+document.getElementById('invZoomOut').addEventListener('click', () => setInvZoom(invZoomLevel - 0.25));
+
+invPageWrapEl.addEventListener('wheel', (e) => {
+  if (!e.ctrlKey) return; // trackpad pinch sends wheel events with ctrlKey
+  e.preventDefault();
+  setInvZoom(invZoomLevel - e.deltaY * 0.01);
+}, { passive: false });
+
+invPageWrapEl.addEventListener('dblclick', () => {
+  setInvZoom(invZoomLevel > 1 ? 1 : 2);
+});
+
+function touchDistance(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.hypot(dx, dy);
+}
+let pinchStartDist = null;
+let pinchStartZoom = 1;
+invPageWrapEl.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 2) {
+    pinchStartDist = touchDistance(e.touches);
+    pinchStartZoom = invZoomLevel;
+  }
+});
+invPageWrapEl.addEventListener('touchmove', (e) => {
+  if (e.touches.length === 2 && pinchStartDist) {
+    e.preventDefault();
+    setInvZoom(pinchStartZoom * (touchDistance(e.touches) / pinchStartDist));
+  }
+}, { passive: false });
+invPageWrapEl.addEventListener('touchend', () => { pinchStartDist = null; });
 
 // -- Live date / day / time on the home trial tile --
 const dashDayEl = document.getElementById('dashDay');
@@ -663,7 +740,7 @@ setInterval(renderDashClock, 30000);
 const floatingNav = document.getElementById('floatingNav');
 const navHomeBtn = document.getElementById('navHomeBtn');
 const navScanBtn = document.getElementById('navScanBtn');
-const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenScanFinal, screenSettings, screenDashSettings, screenMasterRates, screenBizProfile, screenWishlist, screenEmpList, screenEmpAdd, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
+const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenBizProfile, screenWishlist, screenSubscription, screenEmpList, screenEmpAdd, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
 let currentScreen = screenSplash;
 
 function updateNavForScreen(screen) {
@@ -900,6 +977,32 @@ document.getElementById('wishlistCloseBtn').addEventListener('click', () => {
   goBackward(screenWishlist, screenHome);
 });
 
+// -- Subscription (from Home's trial tile) --
+function openSubscription() {
+  goForward(currentScreen, screenSubscription);
+}
+document.getElementById('dashTrialTile').addEventListener('click', openSubscription);
+document.getElementById('dashPurchaseBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  openSubscription();
+});
+document.getElementById('subBackBtn').addEventListener('click', () => {
+  goBackward(screenSubscription, screenHome);
+});
+document.getElementById('subKeepUsingBtn').addEventListener('click', () => {
+  goBackward(screenSubscription, screenHome);
+});
+document.getElementById('subPurchaseBtn').addEventListener('click', function () {
+  const original = this.textContent;
+  this.textContent = 'Redirecting to Razorpay…';
+  this.disabled = true;
+  setTimeout(() => {
+    window.open('https://razorpay.com', '_blank');
+    this.textContent = original;
+    this.disabled = false;
+  }, 700);
+});
+
 const wishlistList = document.getElementById('wishlistList');
 const wishlistEmpty = document.getElementById('wishlistEmpty');
 
@@ -908,7 +1011,7 @@ function checkWishlistEmpty() {
 }
 
 wishlistList.querySelectorAll('.wl-card').forEach((card) => {
-  card.addEventListener('click', () => goForward(screenWishlist, screenScanFinal));
+  card.addEventListener('click', () => goForward(screenWishlist, screenScanReview));
   card.querySelector('.wl-delete-btn').addEventListener('click', (e) => {
     e.stopPropagation();
     if (confirm('Are you sure you want to remove this item from your wishlist?')) {

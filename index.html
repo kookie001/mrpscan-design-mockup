@@ -6,7 +6,7 @@
 <title>MRPscan — App Onboarding Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=37">
+<link rel="stylesheet" href="styles.css?v=44">
 </head>
 <body>
 
@@ -364,7 +364,7 @@
           </div>
 
           <div class="dash-top-row">
-            <div class="dash-trial-tile">
+            <div class="dash-trial-tile" id="dashTrialTile">
               <span class="dash-trial-msg">Free trial ends in 7 days</span>
               <button class="dash-trial-cta" id="dashPurchaseBtn">Purchase License →</button>
             </div>
@@ -808,6 +808,52 @@
         </div>
       </section>
 
+      <!-- SUBSCRIPTION (opened from Home's trial tile) -->
+      <section class="screen subscription" id="screenSubscription">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="subBackBtn" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="set-header-title">Subscription</span>
+          </div>
+
+          <div class="sub-hero">
+            <h2>Unlock Full Access</h2>
+            <p>Compare your current plan against lifetime access.</p>
+          </div>
+
+          <div class="sub-compare">
+            <div class="sub-panel sub-panel-trial">
+              <span class="sub-panel-eyebrow">Free Trial</span>
+              <ul class="sub-check-list">
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>10 day free trial</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Free 10 credits</span></li>
+              </ul>
+              <button class="sub-panel-btn sub-btn-secondary" id="subKeepUsingBtn">Keep Using</button>
+            </div>
+
+            <div class="sub-divider">
+              <span class="sub-divider-badge">OR</span>
+            </div>
+
+            <div class="sub-panel sub-panel-premium">
+              <span class="sub-panel-eyebrow">Subscription</span>
+              <ul class="sub-check-list">
+                <li class="sub-check-price"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>₹ 12,000 <small>(one time purchase)</small></span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Lifetime application validity</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Pay per scan usage</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>₹ 1,000 wallet credits included</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Credit recharge when low</span></li>
+              </ul>
+              <button class="sub-panel-btn sub-btn-primary" id="subPurchaseBtn">Purchase Now</button>
+            </div>
+          </div>
+
+          <div class="sub-note">One-time payment · No recurring charges · Instant activation</div>
+        </div>
+      </section>
+
       <!-- SETTINGS / MENU (opened via hamburger — full-page, matches real app's route-based menu) -->
       <section class="screen settings" id="screenSettings">
         <div class="set-scroll">
@@ -937,9 +983,20 @@
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
               </div>
-              <div class="mrp-amount-card">
-                <span class="mrp-amount-label">MRP Rate Amount</span>
+              <div class="mrp-amount-card mrp-amount-card-compact">
+                <span class="mrp-amount-label">MRP</span>
                 <div class="mrp-amount-value"><span class="mrp-rupee">₹</span><b id="revMrpAmount">77,085</b></div>
+              </div>
+
+              <div class="fin-item-row">
+                <div class="fin-item-tile">
+                  <span>Item Name</span>
+                  <b id="revItemName">22K Gold Necklace</b>
+                </div>
+                <div class="fin-item-tile">
+                  <span>Item Number</span>
+                  <b id="revItemNumber">TAG-10432</b>
+                </div>
               </div>
             </div>
 
@@ -1016,66 +1073,142 @@
                   <button class="rev-outer-btn rev-rescan-outer" id="revRescanBtn">ReScan</button>
                   <button class="rev-outer-btn rev-wishlist-outer" id="revWishlistBtn">♡ Add to Wishlist</button>
                 </div>
-                <button class="rev-outer-btn rev-invoice-outer" id="revContinueBtn">Preview Invoice</button>
+                <button class="rev-outer-btn rev-invoice-outer" id="revContinueBtn">Generate Invoice</button>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- SCANNER: FINAL RESULT -->
-      <section class="screen scan-final" id="screenScanFinal">
-        <div class="rev-card-wrap">
-          <div class="rev-floating-card">
-            <div class="rev-sticky-head">
-              <div class="rev-sticky-top">
-                <button class="rev-back-btn" id="finBackBtn" aria-label="Back">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <span class="rev-sticky-title">Scanner Result</span>
+      <!-- INVOICE GENERATION: customer details -->
+      <section class="screen invoice-gen" id="screenInvoiceGen">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="invGenBackBtn" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="set-header-title">Invoice Generation</span>
+          </div>
+
+          <div class="emp-form-card">
+            <div class="bp-card-head">Customer Details</div>
+            <div class="emp-form-body">
+              <label class="field"><span>Customer Name*</span><input placeholder="e.g. Garg Jewellers" id="invCustName"></label>
+              <label class="field"><span>Mobile Number*</span><input placeholder="+91 9999999999" inputmode="numeric" maxlength="10" id="invCustPhone"></label>
+              <label class="field"><span>Address</span><input placeholder="Shop no., Area, City, State, Pincode" id="invCustAddress"></label>
+              <label class="field"><span>GST No.</span><input placeholder="09AEWPG4525J1Z0" id="invCustGst"></label>
+              <label class="field"><span>PAN</span><input placeholder="AEWPG4525J" id="invCustPan"></label>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-lg" id="invGenContinueBtn">Preview Invoice</button>
+        </div>
+      </section>
+
+      <!-- INVOICE PREVIEW: tax-invoice-style layout -->
+      <section class="screen invoice-preview" id="screenInvoicePreview">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="invPreviewBackBtn" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="set-header-title">Invoice Preview</span>
+          </div>
+
+          <div class="inv-page-wrap" id="invPageWrap">
+          <div class="inv-sheet" id="invSheet">
+            <div class="inv-sheet-top">
+              <span id="invGstin">GSTIN: 07ADIPG0941R1Z8</span>
+              <span>Original Copy</span>
+            </div>
+            <div class="inv-sheet-brand">
+              <span class="inv-tax-label">Tax Invoice</span>
+              <h2>Pratham International</h2>
+              <span class="inv-address">House No. 5, Ground Floor, Block E4, Model Town, New Delhi, Delhi 110009</span>
+            </div>
+
+            <div class="inv-divider"></div>
+
+            <div class="inv-meta-row">
+              <div class="inv-meta-col">
+                <div class="inv-meta-item"><span>Invoice No.</span><b id="invNo">19/2026-27</b></div>
+                <div class="inv-meta-item"><span>Dated</span><b id="invDate">26-08-2026</b></div>
               </div>
-              <div class="mrp-amount-card">
-                <span class="mrp-amount-label">MRP Rate Amount</span>
-                <div class="mrp-amount-value"><span class="mrp-rupee">₹</span><b>77,085</b></div>
+              <div class="inv-meta-col">
+                <div class="inv-meta-item"><span>Place of Supply</span><b>Uttar Pradesh (09)</b></div>
+                <div class="inv-meta-item"><span>Reverse Charge</span><b>N</b></div>
               </div>
             </div>
 
-            <div class="rev-card-scroll">
-              <div class="metal-tile gold-tile">
-                <div class="metal-tile-title">Gold</div>
-                <div class="fin-row"><span>Gross / Net Wt</span><b>18.500g / 16.900g</b></div>
-                <div class="fin-row"><span>Karat / Purity</span><b>22K · 91.6%</b></div>
-                <div class="fin-row"><span>Gold Rate (RTGS)</span><b>₹3,790 /g</b></div>
-                <div class="fin-row fin-row-amount"><span>Gold Amount</span><b>₹58,685</b></div>
-              </div>
+            <div class="inv-divider"></div>
 
-              <div class="metal-tile diamond-tile">
-                <div class="metal-tile-title">Diamond</div>
-                <div class="fin-row"><span>Shape · Packet</span><b>Round · PK-1042</b></div>
-                <div class="fin-row"><span>Color · Clarity</span><b>IJ · VS-SI</b></div>
-                <div class="fin-row"><span>Weight · Rate</span><b>1.20ct · ₹9,500 /ct</b></div>
-                <div class="fin-row fin-row-amount"><span>Diamond Amount</span><b>₹11,400</b></div>
-              </div>
-
-              <div class="labour-tile">
-                <div class="metal-tile-title">Labour Charge</div>
-                <div class="fin-row"><span>Rate · Weight Used</span><b>₹415 · Gross Wt</b></div>
-              </div>
-
-              <div class="amount-tile">
-                <span>Final Labour Amount</span>
-                <div class="amount-tile-value"><span class="mrp-rupee">₹</span><b>7,000</b></div>
-              </div>
-
-              <div class="fin-note">MRP = Gold + Diamond + Labour + Other Charges — inclusive of 3% GST.</div>
+            <div class="inv-block">
+              <span class="inv-block-label">Billed To</span>
+              <b class="inv-billed-name" id="invBilledName">Garg Jewellers</b>
+              <span class="inv-billed-line" id="invBilledAddress">11- Upper Bazar, Police Station, Modinagar, Ghaziabad, Uttar Pradesh 201204</span>
+              <span class="inv-billed-line" id="invBilledGst">GSTIN/Pan: 09AEWPG4525J1Z0</span>
             </div>
 
-            <div class="rev-sticky-foot">
-              <div class="rev-outer-row">
-                <button class="rev-outer-btn rev-wishlist-outer" id="finWishlistBtn">♡ Add to Wishlist</button>
-                <button class="rev-outer-btn rev-invoice-outer" id="finInvoiceBtn">Generate Invoice</button>
-              </div>
+            <div class="inv-divider"></div>
+
+            <div class="inv-table-wrap">
+              <table class="inv-table">
+                <thead>
+                  <tr><th>S.N.</th><th>Description of Goods</th><th>HSN/SAC</th><th>Qty. Unit</th><th>Price</th><th>Amount (₹)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>1.</td><td>22K Gold Necklace — Gold</td><td>71131913</td><td>16.900 g</td><td>3,472.19</td><td>58,685</td></tr>
+                  <tr><td>2.</td><td>22K Gold Necklace — Diamond</td><td>71131913</td><td>1.20 ct</td><td>9,500.00</td><td>11,400</td></tr>
+                  <tr><td>3.</td><td>22K Gold Necklace — Labour Charge</td><td>71131913</td><td>—</td><td>—</td><td>7,000</td></tr>
+                </tbody>
+              </table>
             </div>
+
+            <div class="inv-totals">
+              <div class="inv-totals-row"><span>Subtotal</span><b>₹ 77,085</b></div>
+              <div class="inv-totals-row"><span>Add: IGST @ 3.00%</span><b>Incl.</b></div>
+              <div class="inv-totals-row"><span>Add: Rounded Off (+)</span><b>0.00</b></div>
+              <div class="inv-totals-row inv-grand-total"><span>Grand Total</span><b id="invGrandTotal">₹ 77,085</b></div>
+            </div>
+
+            <div class="inv-words">Rupees Seventy Seven Thousand Eighty Five Only</div>
+
+            <div class="inv-divider"></div>
+
+            <div class="inv-bank">
+              <span class="inv-block-label">Bank Details</span>
+              <span class="inv-billed-line">ICICI Bank, 168 Lok Vihar, Pitam Pura, New Delhi-110034</span>
+              <span class="inv-billed-line">A/C No. 169405001140 · IFSC: ICIC0001694</span>
+            </div>
+
+            <div class="inv-divider"></div>
+
+            <div class="inv-terms">
+              <span class="inv-block-label">Terms &amp; Conditions</span>
+              <span class="inv-billed-line">1. Goods once sold will not be taken back.</span>
+              <span class="inv-billed-line">2. Interest @ 18% p.a. will be charged if payment is delayed.</span>
+              <span class="inv-billed-line">3. Subject to 'Delhi' Jurisdiction only.</span>
+            </div>
+
+            <div class="inv-sign">
+              <span>for Pratham International</span>
+              <span>Authorised Signatory</span>
+            </div>
+          </div>
+          </div>
+
+          <div class="inv-zoom-bar">
+            <button class="inv-zoom-btn" id="invZoomOut" aria-label="Zoom out">−</button>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <button class="inv-zoom-btn" id="invZoomIn" aria-label="Zoom in">+</button>
+          </div>
+
+          <div class="rev-outer-row inv-share-row">
+            <button class="rev-outer-btn rev-wishlist-outer" id="invShareBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20.5 12a8.5 8.5 0 1 1-4.1-7.3M20.5 3.5 17 7l1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Share on WhatsApp
+            </button>
+            <button class="rev-outer-btn rev-invoice-outer" id="invDownloadBtn">Download</button>
           </div>
         </div>
       </section>
@@ -1103,6 +1236,6 @@
   <button class="replay-btn" id="replayBtn">↻ Replay splash animation</button>
 </div>
 
-<script src="script.js?v=35"></script>
+<script src="script.js?v=44"></script>
 </body>
 </html>
