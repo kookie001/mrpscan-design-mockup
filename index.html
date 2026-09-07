@@ -6,7 +6,7 @@
 <title>MRPscan — App Onboarding Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=44">
+<link rel="stylesheet" href="styles.css?v=46">
 </head>
 <body>
 
@@ -463,7 +463,45 @@
             <div class="mst-row"><span>Diamond</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             <div class="mst-row"><span>Colorstone</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             <div class="mst-row"><span>Labour Charges</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="mst-row" id="mstItemCodeRow"><span>Item Code</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
           </div>
+        </div>
+      </section>
+
+      <!-- MASTERS -> ITEM CODE (item name <-> item code mappings) -->
+      <section class="screen item-code" id="screenItemCode">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="itemCodeBackBtn" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="set-header-titles">
+              <span class="set-header-title">Item Code</span>
+              <span class="set-header-sub">Settings → Masters → Item Code</span>
+            </div>
+          </div>
+
+          <div class="itc-list" id="itcList">
+            <div class="itc-row">
+              <div class="itc-row-actions">
+                <button class="itc-icon-btn" aria-label="Edit">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="itc-icon-btn itc-icon-btn-danger" aria-label="Delete">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+              <div class="itc-row-body">
+                <span class="itc-num">1.</span>
+                <div class="itc-row-fields">
+                  <label class="itc-field"><span>Item Name</span><input type="text"></label>
+                  <label class="itc-field"><span>Item Code</span><input type="text"></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="itc-add-btn" id="itcAddBtn">+ Add</button>
         </div>
       </section>
 
@@ -580,22 +618,22 @@
             <div class="emp-card">
               <div class="emp-avatar">RV</div>
               <div class="emp-card-info"><span class="emp-card-name">Rahul Verma</span><span class="emp-card-desig">Senior Salesman</span></div>
-              <span class="emp-pill">rahul.v@gmail.com</span>
+              <svg class="emp-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div class="emp-card">
               <div class="emp-avatar">AS</div>
               <div class="emp-card-info"><span class="emp-card-name">Aakash Singh</span><span class="emp-card-desig">Junior Salesman</span></div>
-              <span class="emp-pill">aakash.s@gmail.com</span>
+              <svg class="emp-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div class="emp-card">
               <div class="emp-avatar">PS</div>
               <div class="emp-card-info"><span class="emp-card-name">Priya Sharma</span><span class="emp-card-desig">Inventory Manager</span></div>
-              <span class="emp-pill">priya.s@gmail.com</span>
+              <svg class="emp-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div class="emp-card">
               <div class="emp-avatar">KR</div>
               <div class="emp-card-info"><span class="emp-card-name">Keshav Raathi</span><span class="emp-card-desig">Inventory Manager</span></div>
-              <span class="emp-pill">+91 98765 40098</span>
+              <svg class="emp-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
           </div>
         </div>
@@ -854,6 +892,60 @@
         </div>
       </section>
 
+      <!-- PASSWORD MANAGER (from Settings menu) -->
+      <section class="screen password-manager" id="screenPasswordManager">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="pwMgrBackBtn" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="set-header-title">Password Manager</span>
+          </div>
+
+          <div class="emp-form-card">
+            <div class="bp-card-head">Change Password</div>
+            <div class="emp-form-body">
+              <label class="field">
+                <span>Current Password</span>
+                <div class="input-wrap">
+                  <input type="password" id="pwMgrCurrent" placeholder="••••••••">
+                  <button type="button" class="eye-btn" id="togglePwMgrCurrent" aria-label="Show password">
+                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+                    <svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div>
+              </label>
+              <a href="#" class="forgot" id="pwMgrForgotLink">Forgot Password?</a>
+
+              <label class="field">
+                <span>New Password</span>
+                <div class="input-wrap">
+                  <input type="password" id="pwMgrNew" placeholder="••••••••">
+                  <button type="button" class="eye-btn" id="togglePwMgrNew" aria-label="Show password">
+                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+                    <svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Confirm New Password</span>
+                <div class="input-wrap">
+                  <input type="password" id="pwMgrConfirm" placeholder="••••••••">
+                  <button type="button" class="eye-btn" id="togglePwMgrConfirm" aria-label="Show password">
+                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+                    <svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div>
+              </label>
+              <small class="field-error" id="pwMgrError">New passwords do not match.</small>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-lg" id="pwMgrUpdateBtn">Update Password</button>
+        </div>
+      </section>
+
       <!-- SETTINGS / MENU (opened via hamburger — full-page, matches real app's route-based menu) -->
       <section class="screen settings" id="screenSettings">
         <div class="set-scroll">
@@ -877,26 +969,31 @@
             <div class="set-menu-item" id="setMenuDashboard">
               <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="13" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="13" y="13" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="2"/></svg></span>
               <span class="set-menu-label">Dashboard Settings</span>
+              <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
             <div class="set-menu-item set-menu-icon-diamond" id="setMenuMasters">
               <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M3 17l6-6 4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 7h6v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               <span class="set-menu-label">Masters</span>
+              <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
             <div class="set-menu-item set-menu-icon-gold" id="setMenuEmployees">
               <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M2 21c0-4 3-6.5 7-6.5s7 2.5 7 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 8v6M16 11h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
               <span class="set-menu-label">Employee Manager</span>
+              <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
             <div class="set-menu-item" id="setMenuPassword">
               <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" stroke-width="2"/></svg></span>
               <span class="set-menu-label">Password Manager</span>
+              <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
             <div class="set-menu-item set-menu-icon-red" id="setMenuSubscription">
               <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span>
               <span class="set-menu-label">Credits &amp; Subscription</span>
+              <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
             <div class="set-menu-item set-menu-logout" id="setLogoutBtn">
@@ -1236,6 +1333,6 @@
   <button class="replay-btn" id="replayBtn">↻ Replay splash animation</button>
 </div>
 
-<script src="script.js?v=44"></script>
+<script src="script.js?v=46"></script>
 </body>
 </html>

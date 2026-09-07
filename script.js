@@ -414,6 +414,14 @@ function backToLoginFrom(screenEl) {
   }, 320);
 }
 
+function backToScreenFrom(screenEl, targetScreen) {
+  screenEl.classList.add('exit-right');
+  setTimeout(() => {
+    screenEl.classList.remove('active', 'enter-right', 'exit-right');
+    targetScreen.classList.add('active', 'enter-left');
+  }, 320);
+}
+
 document.getElementById('backFromForgotId').addEventListener('click', () => backToLoginFrom(screenForgotId));
 document.getElementById('forgotIdDoneBtn').addEventListener('click', () => backToLoginFrom(screenForgotId));
 
@@ -481,7 +489,7 @@ document.getElementById('resetPasswordBtn').addEventListener('click', () => {
   if (!pw2Valid) { pw2Field.scrollIntoView({ behavior: 'smooth', block: 'center' }); shakeField(pw2Field); return; }
 
   resetSuccessToast.classList.add('show');
-  setTimeout(() => backToLoginFrom(screenForgotPassword), 1600);
+  setTimeout(() => backToScreenFrom(screenForgotPassword, forgotPwReturnScreen), 1600);
 });
 
 function resetForgotPasswordScreen() {
@@ -499,23 +507,28 @@ function resetForgotPasswordScreen() {
   setInvalid(newPassword2.closest('.field'), false);
 }
 
+let forgotPwReturnScreen = screenLogin;
+
 document.getElementById('goForgotPw').addEventListener('click', (e) => {
   e.preventDefault();
+  forgotPwReturnScreen = screenLogin;
   resetForgotPasswordScreen();
   screenLogin.classList.remove('active');
   screenForgotPassword.classList.remove('exit-right');
   screenForgotPassword.classList.add('active', 'enter-right');
 });
 
-document.getElementById('backFromForgotPw').addEventListener('click', () => backToLoginFrom(screenForgotPassword));
+document.getElementById('backFromForgotPw').addEventListener('click', () => backToScreenFrom(screenForgotPassword, forgotPwReturnScreen));
 
 // ---- Dashboard <-> Scanner flow (Home -> Capture -> Processing -> Review -> Final) ----
 const screenSettings = document.getElementById('screenSettings');
 const screenDashSettings = document.getElementById('screenDashSettings');
 const screenMasterRates = document.getElementById('screenMasterRates');
+const screenItemCode = document.getElementById('screenItemCode');
 const screenBizProfile = document.getElementById('screenBizProfile');
 const screenWishlist = document.getElementById('screenWishlist');
 const screenSubscription = document.getElementById('screenSubscription');
+const screenPasswordManager = document.getElementById('screenPasswordManager');
 const screenEmpList = document.getElementById('screenEmpList');
 const screenEmpAdd = document.getElementById('screenEmpAdd');
 const screenEmpPermissions = document.getElementById('screenEmpPermissions');
@@ -740,7 +753,7 @@ setInterval(renderDashClock, 30000);
 const floatingNav = document.getElementById('floatingNav');
 const navHomeBtn = document.getElementById('navHomeBtn');
 const navScanBtn = document.getElementById('navScanBtn');
-const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenBizProfile, screenWishlist, screenSubscription, screenEmpList, screenEmpAdd, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
+const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenItemCode, screenBizProfile, screenWishlist, screenSubscription, screenPasswordManager, screenEmpList, screenEmpAdd, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
 let currentScreen = screenSplash;
 
 function updateNavForScreen(screen) {
@@ -784,6 +797,53 @@ document.getElementById('setLogoutBtn').addEventListener('click', () => {
 });
 document.getElementById('setMenuDashboard').addEventListener('click', () => {
   goForward(screenSettings, screenDashSettings);
+});
+document.getElementById('setMenuSubscription').addEventListener('click', () => {
+  goForward(screenSettings, screenSubscription);
+});
+document.getElementById('setMenuPassword').addEventListener('click', () => {
+  goForward(screenSettings, screenPasswordManager);
+});
+document.getElementById('pwMgrBackBtn').addEventListener('click', () => {
+  goBackward(screenPasswordManager, screenSettings);
+});
+document.getElementById('pwMgrForgotLink').addEventListener('click', (e) => {
+  e.preventDefault();
+  forgotPwReturnScreen = screenPasswordManager;
+  resetForgotPasswordScreen();
+  screenPasswordManager.classList.remove('active');
+  screenForgotPassword.classList.remove('exit-right');
+  screenForgotPassword.classList.add('active', 'enter-right');
+});
+wireEyeToggle('togglePwMgrCurrent', 'pwMgrCurrent');
+wireEyeToggle('togglePwMgrNew', 'pwMgrNew');
+wireEyeToggle('togglePwMgrConfirm', 'pwMgrConfirm');
+document.getElementById('pwMgrUpdateBtn').addEventListener('click', () => {
+  const newPw = document.getElementById('pwMgrNew');
+  const confirmPw = document.getElementById('pwMgrConfirm');
+  const newField = newPw.closest('.field');
+  const confirmField = confirmPw.closest('.field');
+  const errorEl = document.getElementById('pwMgrError');
+
+  const newValid = newPw.value.trim().length >= 6;
+  const confirmValid = newValid && confirmPw.value === newPw.value;
+
+  setInvalid(newField, !newValid);
+  setInvalid(confirmField, !confirmValid);
+  errorEl.classList.toggle('show', newValid && !confirmValid);
+
+  if (!newValid) { newField.scrollIntoView({ behavior: 'smooth', block: 'center' }); shakeField(newField); return; }
+  if (!confirmValid) { confirmField.scrollIntoView({ behavior: 'smooth', block: 'center' }); shakeField(confirmField); return; }
+
+  const btn = document.getElementById('pwMgrUpdateBtn');
+  btn.textContent = 'Password Updated ✓';
+  setTimeout(() => {
+    btn.textContent = 'Update Password';
+    document.getElementById('pwMgrCurrent').value = '';
+    newPw.value = '';
+    confirmPw.value = '';
+    goBackward(screenPasswordManager, screenSettings);
+  }, 1000);
 });
 document.getElementById('dashSetBackBtn').addEventListener('click', () => {
   goBackward(screenDashSettings, screenSettings);
@@ -873,6 +933,57 @@ document.getElementById('setMenuMasters').addEventListener('click', () => {
 });
 document.getElementById('mstRatesBackBtn').addEventListener('click', () => {
   goBackward(screenMasterRates, screenSettings);
+});
+
+// -- Masters -> Item Code --
+document.getElementById('mstItemCodeRow').addEventListener('click', () => {
+  goForward(screenMasterRates, screenItemCode);
+});
+document.getElementById('itemCodeBackBtn').addEventListener('click', () => {
+  goBackward(screenItemCode, screenMasterRates);
+});
+
+const ITC_EDIT_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ITC_DELETE_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const itcList = document.getElementById('itcList');
+
+function renumberItcRows() {
+  [...itcList.querySelectorAll('.itc-row')].forEach((row, i) => {
+    row.querySelector('.itc-num').textContent = (i + 1) + '.';
+  });
+}
+function wireItcRow(row) {
+  row.querySelector('.itc-icon-btn-danger').addEventListener('click', () => {
+    if (itcList.querySelectorAll('.itc-row').length <= 1) return;
+    row.remove();
+    renumberItcRows();
+  });
+  row.querySelector('.itc-icon-btn:not(.itc-icon-btn-danger)').addEventListener('click', () => {
+    row.querySelector('input').focus();
+  });
+}
+wireItcRow(itcList.querySelector('.itc-row'));
+
+document.getElementById('itcAddBtn').addEventListener('click', () => {
+  const row = document.createElement('div');
+  row.className = 'itc-row';
+  row.innerHTML = `
+    <div class="itc-row-actions">
+      <button class="itc-icon-btn" aria-label="Edit">${ITC_EDIT_ICON}</button>
+      <button class="itc-icon-btn itc-icon-btn-danger" aria-label="Delete">${ITC_DELETE_ICON}</button>
+    </div>
+    <div class="itc-row-body">
+      <span class="itc-num"></span>
+      <div class="itc-row-fields">
+        <label class="itc-field"><span>Item Name</span><input type="text"></label>
+        <label class="itc-field"><span>Item Code</span><input type="text"></label>
+      </div>
+    </div>
+  `;
+  itcList.appendChild(row);
+  wireItcRow(row);
+  renumberItcRows();
+  row.querySelector('input').focus();
 });
 
 // -- Employee Manager (list -> add -> permissions -> create-password, plus detail edit shortcuts) --
