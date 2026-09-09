@@ -6,7 +6,7 @@
 <title>MRPscan — App Onboarding Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=46">
+<link rel="stylesheet" href="styles.css?v=49">
 </head>
 <body>
 
@@ -357,6 +357,10 @@
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </button>
             <span class="dash-brand">Pratham International</span>
+            <button class="dash-icon-btn dash-bell-btn" id="dashNotifBtn" aria-label="Notifications">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <span class="dash-bell-dot show" id="dashBellDot"></span>
+            </button>
             <button class="dash-wishlist-btn" id="dashWishlistBtn">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="#D9291F"><path d="M12 21s-6.7-4.35-9.3-8.2C1 10 1.7 6.4 4.8 5.1 7 4.2 9.3 5 12 7.6 14.7 5 17 4.2 19.2 5.1c3.1 1.3 3.8 4.9 2.1 7.7C18.7 16.65 12 21 12 21Z"/></svg>
               Wishlist
@@ -387,6 +391,52 @@
             <div class="dash-rate-body">
               <div class="dash-rate-badge"><b id="dashGoldCashRate">₹ 74,320</b><small>Cash Rate</small></div>
               <div class="dash-rate-badge"><b id="dashGoldRtgsRate">₹ 74,410</b><small>RTGS Rate</small></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- NOTIFICATIONS (bell icon on Home) -->
+      <section class="screen notifications" id="screenNotifications">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="notifBackBtn" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="set-header-title">Notifications</span>
+          </div>
+
+          <div class="notif-list">
+            <div class="notif-card notif-unread">
+              <div class="notif-icon notif-icon-credit">🎉</div>
+              <div class="notif-body">
+                <span class="notif-text">Congratulations! <b>500 credits</b> have been credited to your account — <b>Aakash Singh</b> made a purchase using your referral link. You have <b>550 credits</b> left.</span>
+                <span class="notif-time">2 hours ago</span>
+              </div>
+            </div>
+
+            <div class="notif-card notif-unread">
+              <div class="notif-icon notif-icon-invite">🎁</div>
+              <div class="notif-body">
+                <span class="notif-text">You earned <b>50 credits</b> — <b>Priya Sharma</b> installed MRPscan using your invite link. You have <b>60 credits</b> left.</span>
+                <span class="notif-time">1 day ago</span>
+              </div>
+            </div>
+
+            <div class="notif-card">
+              <div class="notif-icon notif-icon-warning">⚠️</div>
+              <div class="notif-body">
+                <span class="notif-text">Your credit balance is running low — only <b>10 credits</b> left. Recharge now to keep scanning without interruption.</span>
+                <span class="notif-time">3 days ago</span>
+              </div>
+            </div>
+
+            <div class="notif-card">
+              <div class="notif-icon notif-icon-trial">⏰</div>
+              <div class="notif-body">
+                <span class="notif-text">Your free trial ends in <b>2 days</b>. Upgrade to a Subscription for lifetime access.</span>
+                <span class="notif-time">5 days ago</span>
+              </div>
             </div>
           </div>
         </div>
@@ -483,20 +533,15 @@
 
           <div class="itc-list" id="itcList">
             <div class="itc-row">
-              <div class="itc-row-actions">
-                <button class="itc-icon-btn" aria-label="Edit">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <button class="itc-icon-btn itc-icon-btn-danger" aria-label="Delete">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-              </div>
               <div class="itc-row-body">
                 <span class="itc-num">1.</span>
                 <div class="itc-row-fields">
                   <label class="itc-field"><span>Item Name</span><input type="text"></label>
                   <label class="itc-field"><span>Item Code</span><input type="text"></label>
                 </div>
+                <button class="itc-icon-btn itc-icon-btn-danger" aria-label="Delete">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
               </div>
             </div>
           </div>
@@ -846,6 +891,81 @@
         </div>
       </section>
 
+      <!-- EARN & INVITE (from Settings menu) -->
+      <section class="screen earn-invite" id="screenEarnInvite">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="earnInviteBackBtn" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="set-header-title">Earn &amp; Invite</span>
+          </div>
+
+          <div class="earn-stats-row">
+            <div class="earn-stat"><b id="earnInviteCredits">0</b><span>Invite credits</span></div>
+            <div class="earn-stat"><b id="earnPurchaseCredits">0</b><span>Purchase credits</span></div>
+            <div class="earn-stat"><b id="earnTotalCredits">0</b><span>Total credits</span></div>
+          </div>
+
+          <div class="earn-card">
+            <span class="earn-card-title">Invite your friend &amp; earn 50 Credits</span>
+            <button class="earn-send-btn" id="earnInviteSendBtn">Send Link</button>
+          </div>
+
+          <div class="earn-card">
+            <span class="earn-card-title">Refer for purchase, send code and earn 500 Credits</span>
+            <button class="earn-send-btn" id="earnPurchaseSendBtn">Send Link</button>
+          </div>
+        </div>
+
+        <div class="share-sheet-backdrop" id="shareSheetBackdrop">
+          <div class="share-sheet">
+            <div class="share-sheet-handle"></div>
+            <span class="share-sheet-title">Share via</span>
+            <div class="share-sheet-grid">
+              <button class="share-opt" data-app="whatsapp">
+                <span class="share-opt-icon share-opt-whatsapp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.02 3.6c-4.9 0-8.9 4-8.9 8.9 0 1.57.42 3.1 1.2 4.44L3 21l4.18-1.3a8.9 8.9 0 0 0 4.83 1.4h.01c4.9 0 8.9-4 8.9-8.9a8.84 8.84 0 0 0-2.32-6.28ZM12.02 19.4a7.4 7.4 0 0 1-3.77-1.03l-.27-.16-2.8.87.86-2.72-.18-.28a7.4 7.4 0 0 1-1.14-3.98c0-4.1 3.34-7.44 7.44-7.44 1.99 0 3.85.78 5.26 2.18a7.4 7.4 0 0 1 2.18 5.26c0 4.1-3.34 7.44-7.44 7.44Z" fill="#fff"/><path d="M15.9 13.85c-.22-.11-1.3-.64-1.5-.72-.2-.07-.35-.11-.5.11-.14.22-.57.72-.7.87-.13.14-.26.16-.48.05-.22-.11-.94-.35-1.79-1.1-.66-.59-1.1-1.32-1.24-1.54-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.4.11-.13.14-.22.22-.37.07-.15.04-.28-.02-.4-.07-.11-.5-1.2-.68-1.65-.18-.43-.36-.37-.5-.38h-.42c-.15 0-.39.05-.6.28-.2.22-.78.76-.78 1.86s.8 2.16.91 2.31c.11.15 1.57 2.4 3.81 3.36.53.23.95.37 1.27.47.53.17 1.02.14 1.4.09.43-.06 1.3-.53 1.48-1.04.18-.51.18-.95.13-1.04-.05-.1-.2-.15-.42-.26Z" fill="#fff"/></svg></span>
+                <span>WhatsApp</span>
+              </button>
+              <button class="share-opt" data-app="instagram">
+                <span class="share-opt-icon share-opt-instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="4" stroke="#fff" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="#fff"/></svg></span>
+                <span>Instagram</span>
+              </button>
+              <button class="share-opt" data-app="sms">
+                <span class="share-opt-icon share-opt-sms"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v10H8l-4 4V5Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+                <span>Message</span>
+              </button>
+              <button class="share-opt" data-app="copy">
+                <span class="share-opt-icon share-opt-copy"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 9h9v9H9V9Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M6 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v2" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+                <span id="shareOptCopyLabel">Copy Link</span>
+              </button>
+            </div>
+            <button type="button" class="share-sheet-cancel" id="shareSheetCancel">Cancel</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT US (from Settings menu) -->
+      <section class="screen contact-us" id="screenContactUs">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="contactUsBackBtn" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="set-header-title">Contact Us</span>
+          </div>
+
+          <div class="bp-card">
+            <div class="bp-card-head">Get in Touch</div>
+            <div class="bp-row"><span>Support Phone</span><b>+91 98765 43210</b></div>
+            <div class="bp-row"><span>Email</span><b>support@mrpscan.com</b></div>
+            <div class="bp-row bp-row-last"><span>Support Hours</span><b>Mon–Sat, 10 AM–7 PM</b></div>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-lg" id="contactWhatsappBtn">Chat on WhatsApp</button>
+        </div>
+      </section>
+
       <!-- SUBSCRIPTION (opened from Home's trial tile) -->
       <section class="screen subscription" id="screenSubscription">
         <div class="set-scroll">
@@ -867,6 +987,8 @@
               <ul class="sub-check-list">
                 <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>10 day free trial</span></li>
                 <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Free 10 credits</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Pay per scan</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Credit recharge when low</span></li>
               </ul>
               <button class="sub-panel-btn sub-btn-secondary" id="subKeepUsingBtn">Keep Using</button>
             </div>
@@ -878,11 +1000,9 @@
             <div class="sub-panel sub-panel-premium">
               <span class="sub-panel-eyebrow">Subscription</span>
               <ul class="sub-check-list">
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in free trial</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Free 1000 Credits</span></li>
                 <li class="sub-check-price"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>₹ 12,000 <small>(one time purchase)</small></span></li>
-                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Lifetime application validity</span></li>
-                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Pay per scan usage</span></li>
-                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>₹ 1,000 wallet credits included</span></li>
-                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Credit recharge when low</span></li>
               </ul>
               <button class="sub-panel-btn sub-btn-primary" id="subPurchaseBtn">Purchase Now</button>
             </div>
@@ -993,6 +1113,18 @@
             <div class="set-menu-item set-menu-icon-red" id="setMenuSubscription">
               <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span>
               <span class="set-menu-label">Credits &amp; Subscription</span>
+              <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <div class="set-menu-item set-menu-icon-gold" id="setMenuEarnInvite">
+              <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2"/><path d="M12 8v13M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 8c-1.5 0-4-1-4-3.2C8 3.2 9.2 2 10.5 2 12 2 12 5 12 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 8c1.5 0 4-1 4-3.2C16 3.2 14.8 2 13.5 2 12 2 12 5 12 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span>
+              <span class="set-menu-label">Earn &amp; Invite</span>
+              <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <div class="set-menu-item set-menu-icon-diamond" id="setMenuContactUs">
+              <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M4 13v-2a8 8 0 0 1 16 0v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="2.5" y="13" width="5" height="6" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="16.5" y="13" width="5" height="6" rx="1.5" stroke="currentColor" stroke-width="2"/><path d="M19.5 19v1a3 3 0 0 1-3 3h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+              <span class="set-menu-label">Contact Us</span>
               <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
@@ -1198,7 +1330,10 @@
             </div>
           </div>
 
-          <button type="button" class="btn btn-primary btn-lg" id="invGenContinueBtn">Preview Invoice</button>
+          <div class="rev-outer-row">
+            <button type="button" class="rev-outer-btn rev-invoice-outer" id="invGenContinueBtn">Preview Invoice</button>
+            <button type="button" class="rev-outer-btn rev-invoice-outer" id="invGenEInvoiceBtn">E-Invoice</button>
+          </div>
         </div>
       </section>
 
@@ -1244,6 +1379,47 @@
               <b class="inv-billed-name" id="invBilledName">Garg Jewellers</b>
               <span class="inv-billed-line" id="invBilledAddress">11- Upper Bazar, Police Station, Modinagar, Ghaziabad, Uttar Pradesh 201204</span>
               <span class="inv-billed-line" id="invBilledGst">GSTIN/Pan: 09AEWPG4525J1Z0</span>
+            </div>
+
+            <div class="inv-divider inv-irn-divider" id="invIrnDivider"></div>
+
+            <div class="inv-irn-block" id="invIrnBlock">
+              <div class="inv-irn-row"><span>IRN</span><b id="invIrnNumber">886f202608fa25af15f7e58d7076ed109b735ed3cda47b5a2f5c2e5228b64b88</b></div>
+              <div class="inv-irn-meta">
+                <span>Ack. No. <b>172621027287351</b></span>
+                <span>Ack. Date <b>27-08-2026</b></span>
+              </div>
+              <div class="inv-qr">
+                <svg class="inv-qr-graphic" width="70" height="70" viewBox="0 0 21 21" shape-rendering="crispEdges">
+                  <rect width="21" height="21" fill="#fff"/>
+                  <rect x="0" y="0" width="7" height="7" fill="#000"/>
+                  <rect x="1" y="1" width="5" height="5" fill="#fff"/>
+                  <rect x="2" y="2" width="3" height="3" fill="#000"/>
+                  <rect x="14" y="0" width="7" height="7" fill="#000"/>
+                  <rect x="15" y="1" width="5" height="5" fill="#fff"/>
+                  <rect x="16" y="2" width="3" height="3" fill="#000"/>
+                  <rect x="0" y="14" width="7" height="7" fill="#000"/>
+                  <rect x="1" y="15" width="5" height="5" fill="#fff"/>
+                  <rect x="2" y="16" width="3" height="3" fill="#000"/>
+                  <rect x="9" y="0" width="1" height="1" fill="#000"/>
+                  <rect x="9" y="2" width="1" height="1" fill="#000"/>
+                  <rect x="11" y="1" width="1" height="1" fill="#000"/>
+                  <rect x="9" y="9" width="3" height="3" fill="#000"/>
+                  <rect x="13" y="9" width="1" height="1" fill="#000"/>
+                  <rect x="15" y="9" width="2" height="1" fill="#000"/>
+                  <rect x="9" y="11" width="1" height="2" fill="#000"/>
+                  <rect x="11" y="12" width="2" height="1" fill="#000"/>
+                  <rect x="14" y="11" width="1" height="3" fill="#000"/>
+                  <rect x="17" y="11" width="2" height="2" fill="#000"/>
+                  <rect x="0" y="9" width="1" height="3" fill="#000"/>
+                  <rect x="3" y="9" width="2" height="1" fill="#000"/>
+                  <rect x="5" y="11" width="1" height="2" fill="#000"/>
+                  <rect x="9" y="17" width="2" height="1" fill="#000"/>
+                  <rect x="12" y="18" width="3" height="2" fill="#000"/>
+                  <rect x="17" y="17" width="3" height="3" fill="#000"/>
+                </svg>
+                <span>E-Invoice QR Code</span>
+              </div>
             </div>
 
             <div class="inv-divider"></div>
@@ -1333,6 +1509,6 @@
   <button class="replay-btn" id="replayBtn">↻ Replay splash animation</button>
 </div>
 
-<script src="script.js?v=46"></script>
+<script src="script.js?v=49"></script>
 </body>
 </html>

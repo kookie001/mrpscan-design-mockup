@@ -527,8 +527,11 @@ const screenMasterRates = document.getElementById('screenMasterRates');
 const screenItemCode = document.getElementById('screenItemCode');
 const screenBizProfile = document.getElementById('screenBizProfile');
 const screenWishlist = document.getElementById('screenWishlist');
+const screenNotifications = document.getElementById('screenNotifications');
 const screenSubscription = document.getElementById('screenSubscription');
 const screenPasswordManager = document.getElementById('screenPasswordManager');
+const screenEarnInvite = document.getElementById('screenEarnInvite');
+const screenContactUs = document.getElementById('screenContactUs');
 const screenEmpList = document.getElementById('screenEmpList');
 const screenEmpAdd = document.getElementById('screenEmpAdd');
 const screenEmpPermissions = document.getElementById('screenEmpPermissions');
@@ -652,7 +655,7 @@ addChargeBtn.addEventListener('click', () => {
 document.getElementById('invGenBackBtn').addEventListener('click', () => {
   goBackward(screenInvoiceGen, screenScanReview);
 });
-document.getElementById('invGenContinueBtn').addEventListener('click', () => {
+function openInvoicePreview(isEInvoice) {
   const name = document.getElementById('invCustName').value.trim() || 'Garg Jewellers';
   const address = document.getElementById('invCustAddress').value.trim() || '11- Upper Bazar, Police Station, Modinagar, Ghaziabad, Uttar Pradesh 201204';
   const gst = document.getElementById('invCustGst').value.trim();
@@ -670,9 +673,17 @@ document.getElementById('invGenContinueBtn').addEventListener('click', () => {
   } else {
     idLine.style.display = 'none';
   }
+
+  document.getElementById('invIrnDivider').classList.toggle('show', isEInvoice);
+  document.getElementById('invIrnBlock').classList.toggle('show', isEInvoice);
+  document.querySelector('#screenInvoicePreview .set-header-title').textContent = isEInvoice ? 'E-Invoice' : 'Invoice Preview';
+
   setInvZoom(1);
   goForward(screenInvoiceGen, screenInvoicePreview);
-});
+}
+
+document.getElementById('invGenContinueBtn').addEventListener('click', () => openInvoicePreview(false));
+document.getElementById('invGenEInvoiceBtn').addEventListener('click', () => openInvoicePreview(true));
 
 // -- Invoice Preview: back, share, download --
 document.getElementById('invPreviewBackBtn').addEventListener('click', () => {
@@ -753,7 +764,7 @@ setInterval(renderDashClock, 30000);
 const floatingNav = document.getElementById('floatingNav');
 const navHomeBtn = document.getElementById('navHomeBtn');
 const navScanBtn = document.getElementById('navScanBtn');
-const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenItemCode, screenBizProfile, screenWishlist, screenSubscription, screenPasswordManager, screenEmpList, screenEmpAdd, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
+const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenItemCode, screenBizProfile, screenWishlist, screenNotifications, screenSubscription, screenPasswordManager, screenEarnInvite, screenContactUs, screenEmpList, screenEmpAdd, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
 let currentScreen = screenSplash;
 
 function updateNavForScreen(screen) {
@@ -803,6 +814,72 @@ document.getElementById('setMenuSubscription').addEventListener('click', () => {
 });
 document.getElementById('setMenuPassword').addEventListener('click', () => {
   goForward(screenSettings, screenPasswordManager);
+});
+
+// -- Earn & Invite --
+document.getElementById('setMenuEarnInvite').addEventListener('click', () => {
+  goForward(screenSettings, screenEarnInvite);
+});
+document.getElementById('earnInviteBackBtn').addEventListener('click', () => {
+  goBackward(screenEarnInvite, screenSettings);
+});
+
+const shareSheetBackdrop = document.getElementById('shareSheetBackdrop');
+const shareOptCopyLabel = document.getElementById('shareOptCopyLabel');
+let shareSheetUrl = '';
+
+function openShareSheet(url) {
+  shareSheetUrl = url;
+  shareSheetBackdrop.classList.add('show');
+}
+function closeShareSheet() {
+  shareSheetBackdrop.classList.remove('show');
+}
+document.getElementById('earnInviteSendBtn').addEventListener('click', function () {
+  openShareSheet('https://play.google.com/store/apps/details?id=com.mrpscan.app&referrer=utm_source%3Dinvite_demo123');
+});
+document.getElementById('earnPurchaseSendBtn').addEventListener('click', function () {
+  openShareSheet('https://play.google.com/store/apps/details?id=com.mrpscan.app&referrer=utm_source%3Dpurchase_demo123');
+});
+shareSheetBackdrop.addEventListener('click', (e) => {
+  if (e.target === shareSheetBackdrop) closeShareSheet();
+});
+document.getElementById('shareSheetCancel').addEventListener('click', closeShareSheet);
+document.querySelectorAll('.share-opt').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const app = btn.dataset.app;
+    const message = 'Install MRPscan using my referral link and we both earn credits! ' + shareSheetUrl;
+    if (app === 'whatsapp') {
+      window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank');
+      closeShareSheet();
+    } else if (app === 'sms') {
+      window.location.href = 'sms:?body=' + encodeURIComponent(message);
+      closeShareSheet();
+    } else if (app === 'instagram' || app === 'copy') {
+      try {
+        await navigator.clipboard.writeText(shareSheetUrl);
+      } catch (e) {
+        console.error('Clipboard write failed', e);
+      }
+      if (app === 'copy') {
+        const original = shareOptCopyLabel.textContent;
+        shareOptCopyLabel.textContent = 'Copied!';
+        setTimeout(() => { shareOptCopyLabel.textContent = original; }, 1200);
+      }
+      setTimeout(closeShareSheet, 500);
+    }
+  });
+});
+
+// -- Contact Us --
+document.getElementById('setMenuContactUs').addEventListener('click', () => {
+  goForward(screenSettings, screenContactUs);
+});
+document.getElementById('contactUsBackBtn').addEventListener('click', () => {
+  goBackward(screenContactUs, screenSettings);
+});
+document.getElementById('contactWhatsappBtn').addEventListener('click', () => {
+  window.open('https://wa.me/919876543210?text=' + encodeURIComponent('Hi, I need help with MRPscan.'), '_blank');
 });
 document.getElementById('pwMgrBackBtn').addEventListener('click', () => {
   goBackward(screenPasswordManager, screenSettings);
@@ -943,7 +1020,6 @@ document.getElementById('itemCodeBackBtn').addEventListener('click', () => {
   goBackward(screenItemCode, screenMasterRates);
 });
 
-const ITC_EDIT_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const ITC_DELETE_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const itcList = document.getElementById('itcList');
 
@@ -958,9 +1034,6 @@ function wireItcRow(row) {
     row.remove();
     renumberItcRows();
   });
-  row.querySelector('.itc-icon-btn:not(.itc-icon-btn-danger)').addEventListener('click', () => {
-    row.querySelector('input').focus();
-  });
 }
 wireItcRow(itcList.querySelector('.itc-row'));
 
@@ -968,16 +1041,13 @@ document.getElementById('itcAddBtn').addEventListener('click', () => {
   const row = document.createElement('div');
   row.className = 'itc-row';
   row.innerHTML = `
-    <div class="itc-row-actions">
-      <button class="itc-icon-btn" aria-label="Edit">${ITC_EDIT_ICON}</button>
-      <button class="itc-icon-btn itc-icon-btn-danger" aria-label="Delete">${ITC_DELETE_ICON}</button>
-    </div>
     <div class="itc-row-body">
       <span class="itc-num"></span>
       <div class="itc-row-fields">
         <label class="itc-field"><span>Item Name</span><input type="text"></label>
         <label class="itc-field"><span>Item Code</span><input type="text"></label>
       </div>
+      <button class="itc-icon-btn itc-icon-btn-danger" aria-label="Delete">${ITC_DELETE_ICON}</button>
     </div>
   `;
   itcList.appendChild(row);
@@ -1083,6 +1153,16 @@ document.getElementById('bizProfileBackBtn').addEventListener('click', () => {
 // -- Wishlist (from Home's Wishlist button) --
 document.getElementById('dashWishlistBtn').addEventListener('click', () => {
   goForward(currentScreen, screenWishlist);
+});
+
+// -- Notifications --
+document.getElementById('dashNotifBtn').addEventListener('click', () => {
+  goForward(currentScreen, screenNotifications);
+  document.getElementById('dashBellDot').classList.remove('show');
+  document.querySelectorAll('.notif-card.notif-unread').forEach((c) => c.classList.remove('notif-unread'));
+});
+document.getElementById('notifBackBtn').addEventListener('click', () => {
+  goBackward(screenNotifications, screenHome);
 });
 document.getElementById('wishlistCloseBtn').addEventListener('click', () => {
   goBackward(screenWishlist, screenHome);
