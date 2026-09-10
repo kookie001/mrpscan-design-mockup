@@ -534,6 +534,7 @@ const screenEarnInvite = document.getElementById('screenEarnInvite');
 const screenContactUs = document.getElementById('screenContactUs');
 const screenEmpList = document.getElementById('screenEmpList');
 const screenEmpAdd = document.getElementById('screenEmpAdd');
+const screenEmpCredentials = document.getElementById('screenEmpCredentials');
 const screenEmpPermissions = document.getElementById('screenEmpPermissions');
 const screenEmpPassword = document.getElementById('screenEmpPassword');
 const screenEmpDetail = document.getElementById('screenEmpDetail');
@@ -558,38 +559,38 @@ function goBackward(fromScreen, toScreen) {
 
 // -- Capture screen state --
 const capInstruction = document.getElementById('capInstruction');
-const capPreviewOverlay = document.getElementById('capPreviewOverlay');
-const capAddMoreBtn = document.getElementById('capAddMoreBtn');
-let captureStep = 'first'; // 'first' | 'second'
-let hasFrontCapture = false;
+const capControlsStep1 = document.getElementById('capControlsStep1');
+const capControlsStep2 = document.getElementById('capControlsStep2');
+const capSideIconBtn = document.getElementById('capSideIconBtn');
+const capSideIconGallery = document.getElementById('capSideIconGallery');
+const capSideIconBin = document.getElementById('capSideIconBin');
+let hasFirstCapture = false;
 
+function setCaptureStep(step) {
+  hasFirstCapture = step === 'second';
+  capControlsStep1.hidden = hasFirstCapture;
+  capControlsStep2.hidden = !hasFirstCapture;
+  capSideIconGallery.style.display = hasFirstCapture ? 'none' : '';
+  capSideIconBin.style.display = hasFirstCapture ? '' : 'none';
+  capSideIconBtn.setAttribute('aria-label', hasFirstCapture ? 'Delete captured image' : 'Upload from gallery');
+  capInstruction.textContent = hasFirstCapture ? 'Align back side of tag inside frame' : 'Align jewellery tag inside frame';
+}
 function resetCaptureScreen() {
-  captureStep = 'first';
-  hasFrontCapture = false;
-  capInstruction.textContent = 'Align jewellery tag inside frame';
-  capPreviewOverlay.classList.remove('show');
+  setCaptureStep('first');
 }
 
 document.getElementById('capBackBtn').addEventListener('click', () => goBackward(screenScanCapture, screenHome));
 
 document.getElementById('capShutterBtn').addEventListener('click', () => {
-  capPreviewOverlay.classList.add('show');
+  setCaptureStep('second');
 });
-document.getElementById('capUploadBtn').addEventListener('click', () => {
-  capPreviewOverlay.classList.add('show');
+capSideIconBtn.addEventListener('click', () => {
+  setCaptureStep(hasFirstCapture ? 'first' : 'second');
 });
-
-document.getElementById('capDeleteBtn').addEventListener('click', () => {
-  capPreviewOverlay.classList.remove('show');
-});
-document.getElementById('capAddMoreBtn').addEventListener('click', () => {
-  hasFrontCapture = true;
-  captureStep = 'second';
-  capInstruction.textContent = 'Align back side of tag inside frame';
-  capPreviewOverlay.classList.remove('show');
+document.getElementById('capSecondSideBtn').addEventListener('click', () => {
+  capInstruction.textContent = 'Back side captured — tap Calculate to continue';
 });
 document.getElementById('capCalcBtn').addEventListener('click', () => {
-  capPreviewOverlay.classList.remove('show');
   startProcessing();
 });
 
@@ -764,7 +765,7 @@ setInterval(renderDashClock, 30000);
 const floatingNav = document.getElementById('floatingNav');
 const navHomeBtn = document.getElementById('navHomeBtn');
 const navScanBtn = document.getElementById('navScanBtn');
-const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenItemCode, screenBizProfile, screenWishlist, screenNotifications, screenSubscription, screenPasswordManager, screenEarnInvite, screenContactUs, screenEmpList, screenEmpAdd, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
+const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenItemCode, screenBizProfile, screenWishlist, screenNotifications, screenSubscription, screenPasswordManager, screenEarnInvite, screenContactUs, screenEmpList, screenEmpAdd, screenEmpCredentials, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
 let currentScreen = screenSplash;
 
 function updateNavForScreen(screen) {
@@ -824,22 +825,23 @@ document.getElementById('earnInviteBackBtn').addEventListener('click', () => {
   goBackward(screenEarnInvite, screenSettings);
 });
 
+// -- Share Sheet (global overlay, reused by Earn & Invite and Employee Credentials) --
 const shareSheetBackdrop = document.getElementById('shareSheetBackdrop');
 const shareOptCopyLabel = document.getElementById('shareOptCopyLabel');
-let shareSheetUrl = '';
+let shareSheetMessage = '';
 
-function openShareSheet(url) {
-  shareSheetUrl = url;
+function openShareSheet(message) {
+  shareSheetMessage = message;
   shareSheetBackdrop.classList.add('show');
 }
 function closeShareSheet() {
   shareSheetBackdrop.classList.remove('show');
 }
 document.getElementById('earnInviteSendBtn').addEventListener('click', function () {
-  openShareSheet('https://play.google.com/store/apps/details?id=com.mrpscan.app&referrer=utm_source%3Dinvite_demo123');
+  openShareSheet('Install MRPscan using my referral link and we both earn credits! https://play.google.com/store/apps/details?id=com.mrpscan.app&referrer=utm_source%3Dinvite_demo123');
 });
 document.getElementById('earnPurchaseSendBtn').addEventListener('click', function () {
-  openShareSheet('https://play.google.com/store/apps/details?id=com.mrpscan.app&referrer=utm_source%3Dpurchase_demo123');
+  openShareSheet('Install MRPscan using my referral link and we both earn credits! https://play.google.com/store/apps/details?id=com.mrpscan.app&referrer=utm_source%3Dpurchase_demo123');
 });
 shareSheetBackdrop.addEventListener('click', (e) => {
   if (e.target === shareSheetBackdrop) closeShareSheet();
@@ -848,16 +850,15 @@ document.getElementById('shareSheetCancel').addEventListener('click', closeShare
 document.querySelectorAll('.share-opt').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const app = btn.dataset.app;
-    const message = 'Install MRPscan using my referral link and we both earn credits! ' + shareSheetUrl;
     if (app === 'whatsapp') {
-      window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank');
+      window.open('https://wa.me/?text=' + encodeURIComponent(shareSheetMessage), '_blank');
       closeShareSheet();
     } else if (app === 'sms') {
-      window.location.href = 'sms:?body=' + encodeURIComponent(message);
+      window.location.href = 'sms:?body=' + encodeURIComponent(shareSheetMessage);
       closeShareSheet();
     } else if (app === 'instagram' || app === 'copy') {
       try {
-        await navigator.clipboard.writeText(shareSheetUrl);
+        await navigator.clipboard.writeText(shareSheetMessage);
       } catch (e) {
         console.error('Clipboard write failed', e);
       }
@@ -1056,8 +1057,10 @@ document.getElementById('itcAddBtn').addEventListener('click', () => {
   row.querySelector('input').focus();
 });
 
-// -- Employee Manager (list -> add -> permissions -> create-password, plus detail edit shortcuts) --
+// -- Employee Manager (list -> add -> auto-generated credentials, plus detail edit shortcuts) --
 let empMode = 'add'; // 'add' | 'edit' — edit mode always returns straight to the Detail screen
+let permReturnScreen = screenEmpList; // Permissions screen returns wherever it was opened from
+let pendingEmp = null;
 
 document.getElementById('setMenuEmployees').addEventListener('click', () => {
   goForward(screenSettings, screenEmpList);
@@ -1065,13 +1068,27 @@ document.getElementById('setMenuEmployees').addEventListener('click', () => {
 document.getElementById('empListBackBtn').addEventListener('click', () => {
   goBackward(screenEmpList, screenSettings);
 });
-document.querySelectorAll('.emp-card').forEach((card) => {
+
+function empInitials(name) {
+  return name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || '?';
+}
+function wireEmpCard(card) {
   card.addEventListener('click', () => goForward(screenEmpList, screenEmpDetail));
-});
+  card.querySelector('.emp-card-perm-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    permReturnScreen = screenEmpList;
+    goForward(screenEmpList, screenEmpPermissions);
+  });
+}
+document.querySelectorAll('.emp-card').forEach(wireEmpCard);
 
 document.getElementById('empAddFab').addEventListener('click', () => {
   empMode = 'add';
   document.getElementById('empAddTitle').textContent = 'Add New Employee';
+  document.getElementById('empName').value = '';
+  document.getElementById('empPhone').value = '';
+  document.getElementById('empEmail').value = '';
+  document.getElementById('empDesignation').value = '';
   goForward(screenEmpList, screenEmpAdd);
 });
 document.getElementById('empAddBackBtn').addEventListener('click', () => {
@@ -1080,29 +1097,66 @@ document.getElementById('empAddBackBtn').addEventListener('click', () => {
 document.getElementById('empAddContinueBtn').addEventListener('click', () => {
   if (empMode === 'edit') {
     goBackward(screenEmpAdd, screenEmpDetail);
-  } else {
-    goForward(screenEmpAdd, screenEmpPermissions);
+    return;
   }
+  const name = document.getElementById('empName').value.trim() || 'New Employee';
+  const designation = document.getElementById('empDesignation').value.trim() || 'Employee';
+  const firstName = (name.split(' ')[0] || 'user').toLowerCase().replace(/[^a-z]/g, '') || 'user';
+  const username = firstName + Math.floor(100 + Math.random() * 900);
+  const password = 'Mrp@' + Math.floor(1000 + Math.random() * 9000);
+  pendingEmp = { name, designation };
+  document.getElementById('empCredUsername').textContent = username;
+  document.getElementById('empCredPassword').textContent = password;
+  goForward(screenEmpAdd, screenEmpCredentials);
+});
+
+document.getElementById('empCredBackBtn').addEventListener('click', () => {
+  goBackward(screenEmpCredentials, screenEmpAdd);
+});
+document.getElementById('empCredShareBtn').addEventListener('click', () => {
+  const u = document.getElementById('empCredUsername').textContent;
+  const p = document.getElementById('empCredPassword').textContent;
+  openShareSheet('Your MRPscan login — Username: ' + u + ', Password: ' + p);
+});
+document.getElementById('empCredContinueBtn').addEventListener('click', () => {
+  if (pendingEmp) {
+    const card = document.createElement('div');
+    card.className = 'emp-card';
+    card.innerHTML = `
+      <div class="emp-avatar">${empInitials(pendingEmp.name)}</div>
+      <div class="emp-card-info"><span class="emp-card-name">${pendingEmp.name}</span><span class="emp-card-desig">${pendingEmp.designation}</span></div>
+      <button type="button" class="emp-card-perm-btn">Set Permission</button>
+    `;
+    document.getElementById('empCards').appendChild(card);
+    wireEmpCard(card);
+    pendingEmp = null;
+  }
+  goBackward(screenEmpCredentials, screenEmpList);
 });
 
 document.getElementById('empPermBackBtn').addEventListener('click', () => {
-  goBackward(screenEmpPermissions, empMode === 'edit' ? screenEmpDetail : screenEmpAdd);
+  goBackward(screenEmpPermissions, permReturnScreen);
 });
 document.getElementById('empPermContinueBtn').addEventListener('click', () => {
-  if (empMode === 'edit') {
-    goBackward(screenEmpPermissions, screenEmpDetail);
-  } else {
-    document.getElementById('empPasswordTitle').textContent = 'Create Password';
-    document.getElementById('empPasswordSubmitBtn').textContent = 'Add Employee';
-    goForward(screenEmpPermissions, screenEmpPassword);
-  }
+  goBackward(screenEmpPermissions, permReturnScreen);
 });
 
+// -- Permissions dropdowns (multi-select checkbox groups + single-select radio group) --
+function wirePermDropdown(key) {
+  const head = document.querySelector(`[data-dropdown="${key}"]`);
+  const body = document.getElementById(key + 'Body');
+  head.addEventListener('click', () => {
+    const isOpen = body.classList.toggle('show');
+    head.classList.toggle('open', isOpen);
+  });
+}
+['permGoldMatrix', 'permRateEdit', 'permRateOpt'].forEach(wirePermDropdown);
+
 document.getElementById('empPasswordBackBtn').addEventListener('click', () => {
-  goBackward(screenEmpPassword, empMode === 'edit' ? screenEmpDetail : screenEmpPermissions);
+  goBackward(screenEmpPassword, screenEmpDetail);
 });
 document.getElementById('empPasswordSubmitBtn').addEventListener('click', () => {
-  goBackward(screenEmpPassword, empMode === 'edit' ? screenEmpDetail : screenEmpList);
+  goBackward(screenEmpPassword, screenEmpDetail);
 });
 wireEyeToggle('toggleEmpPassword1', 'empPassword1');
 wireEyeToggle('toggleEmpPassword2', 'empPassword2');
@@ -1116,13 +1170,10 @@ document.getElementById('empEditBtn').addEventListener('click', () => {
   goForward(screenEmpDetail, screenEmpAdd);
 });
 document.getElementById('empPasswordEditBtn').addEventListener('click', () => {
-  empMode = 'edit';
-  document.getElementById('empPasswordTitle').textContent = 'Update Password';
-  document.getElementById('empPasswordSubmitBtn').textContent = 'Update Password';
   goForward(screenEmpDetail, screenEmpPassword);
 });
 document.getElementById('empPermEditBtn').addEventListener('click', () => {
-  empMode = 'edit';
+  permReturnScreen = screenEmpDetail;
   goForward(screenEmpDetail, screenEmpPermissions);
 });
 document.getElementById('empDeleteBtn').addEventListener('click', () => {

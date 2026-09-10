@@ -6,7 +6,7 @@
 <title>MRPscan — App Onboarding Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=49">
+<link rel="stylesheet" href="styles.css?v=54">
 </head>
 <body>
 
@@ -659,26 +659,26 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M8 12h8M11 18h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </div>
 
-          <div class="emp-cards">
+          <div class="emp-cards" id="empCards">
             <div class="emp-card">
               <div class="emp-avatar">RV</div>
               <div class="emp-card-info"><span class="emp-card-name">Rahul Verma</span><span class="emp-card-desig">Senior Salesman</span></div>
-              <svg class="emp-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <button type="button" class="emp-card-perm-btn">Set Permission</button>
             </div>
             <div class="emp-card">
               <div class="emp-avatar">AS</div>
               <div class="emp-card-info"><span class="emp-card-name">Aakash Singh</span><span class="emp-card-desig">Junior Salesman</span></div>
-              <svg class="emp-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <button type="button" class="emp-card-perm-btn">Set Permission</button>
             </div>
             <div class="emp-card">
               <div class="emp-avatar">PS</div>
               <div class="emp-card-info"><span class="emp-card-name">Priya Sharma</span><span class="emp-card-desig">Inventory Manager</span></div>
-              <svg class="emp-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <button type="button" class="emp-card-perm-btn">Set Permission</button>
             </div>
             <div class="emp-card">
               <div class="emp-avatar">KR</div>
               <div class="emp-card-info"><span class="emp-card-name">Keshav Raathi</span><span class="emp-card-desig">Inventory Manager</span></div>
-              <svg class="emp-card-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <button type="button" class="emp-card-perm-btn">Set Permission</button>
             </div>
           </div>
         </div>
@@ -705,14 +705,38 @@
               <label class="field"><span>Full Name*</span><input placeholder="Employee Name" id="empName"></label>
               <label class="field"><span>Phone Number*</span><input placeholder="+91 9999999999" inputmode="numeric" maxlength="10" id="empPhone"></label>
               <label class="field"><span>Email</span><input type="email" placeholder="employee@pratham.gmail.com" id="empEmail"></label>
-              <label class="field"><span>Gender</span>
-                <select id="empGender"><option>Male</option><option>Female</option><option>Other</option></select>
-              </label>
-              <label class="field"><span>Designation*</span><input placeholder="Sales Manager" id="empDesignation"></label>
+              <label class="field"><span>Position / Designation*</span><input placeholder="Sales Manager" id="empDesignation"></label>
             </div>
           </div>
 
           <button type="button" class="btn btn-primary btn-lg" id="empAddContinueBtn">Continue</button>
+        </div>
+      </section>
+
+      <!-- EMPLOYEE MANAGER: CREDENTIALS (auto-generated after Add) -->
+      <section class="screen emp-credentials" id="screenEmpCredentials">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="empCredBackBtn" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="set-header-title">Employee Credentials</span>
+          </div>
+
+          <p class="emp-cred-note">A unique login has been created for this employee — share it with them to get started.</p>
+
+          <div class="bp-card">
+            <div class="bp-card-head">Login Details</div>
+            <div class="bp-row"><span>Username</span><b id="empCredUsername">—</b></div>
+            <div class="bp-row bp-row-last"><span>Password</span><b id="empCredPassword">—</b></div>
+          </div>
+
+          <button type="button" class="emp-cred-share-btn" id="empCredShareBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20.5 12a8.5 8.5 0 1 1-4.1-7.3M20.5 3.5 17 7l1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Share
+          </button>
+
+          <button type="button" class="btn btn-primary btn-lg" id="empCredContinueBtn">Continue</button>
         </div>
       </section>
 
@@ -727,46 +751,42 @@
           </div>
 
           <div class="ds-card emp-perm-block">
-            <div class="ds-section-head">Dashboard Matrices — price visibility on home screen</div>
-            <div class="ds-section">
-              <div class="ds-section-head">24K Gold</div>
-              <label class="ds-row"><span>MCX Rate</span><input type="checkbox" class="ds-check" checked></label>
-              <label class="ds-row"><span>RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
-              <label class="ds-row ds-row-last"><span>Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
-            </div>
-            <div class="ds-section">
-              <div class="ds-section-head">22K Gold</div>
-              <label class="ds-row"><span>RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
-              <label class="ds-row ds-row-last"><span>Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
-            </div>
-            <div class="ds-section">
-              <div class="ds-section-head">20K Gold</div>
-              <label class="ds-row"><span>RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
-              <label class="ds-row ds-row-last"><span>Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
-            </div>
-            <div class="ds-section">
-              <div class="ds-section-head">18K Gold</div>
-              <label class="ds-row"><span>RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
-              <label class="ds-row ds-row-last"><span>Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
-            </div>
-            <div class="ds-section">
-              <div class="ds-section-head">14K Gold</div>
-              <label class="ds-row"><span>RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
-              <label class="ds-row ds-row-last"><span>Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
-            </div>
-            <div class="ds-section ds-section-last">
-              <div class="ds-section-head">9K Gold</div>
-              <label class="ds-row"><span>RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
-              <label class="ds-row ds-row-last"><span>Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
+            <button type="button" class="perm-dropdown-head" data-dropdown="permGoldMatrix">
+              <span class="perm-dropdown-title">Dashboard Matrices — price visibility on home screen</span>
+              <span class="perm-dropdown-meta">
+                <svg class="perm-dropdown-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </button>
+            <div class="perm-dropdown-body" id="permGoldMatrixBody">
+              <label class="ds-row"><span>24K Gold MCX Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>24K Gold RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>24K Gold Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>22K Gold RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>22K Gold Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>20K Gold RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>20K Gold Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>18K Gold RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>18K Gold Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>14K Gold RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>14K Gold Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row"><span>9K Gold RTGS Rate</span><input type="checkbox" class="ds-check" checked></label>
+              <label class="ds-row ds-row-last"><span>9K Gold Cash Rate</span><input type="checkbox" class="ds-check" checked></label>
             </div>
           </div>
 
           <div class="ds-card emp-perm-block">
-            <div class="ds-section-head">Give Rate Edit Access — allow employee to edit market rates</div>
-            <label class="ds-row"><span>Gold Rate</span><input type="checkbox" class="ds-check"></label>
-            <label class="ds-row"><span>Diamond Rate</span><input type="checkbox" class="ds-check"></label>
-            <label class="ds-row"><span>Colorstone Rate</span><input type="checkbox" class="ds-check"></label>
-            <label class="ds-row ds-row-last"><span>Labour Charges</span><input type="checkbox" class="ds-check"></label>
+            <button type="button" class="perm-dropdown-head" data-dropdown="permRateEdit">
+              <span class="perm-dropdown-title">Give Rate Edit Access — allow employee to edit market rates</span>
+              <span class="perm-dropdown-meta">
+                <svg class="perm-dropdown-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </button>
+            <div class="perm-dropdown-body" id="permRateEditBody">
+              <label class="ds-row"><span>Gold Rate</span><input type="checkbox" class="ds-check"></label>
+              <label class="ds-row"><span>Diamond Rate</span><input type="checkbox" class="ds-check"></label>
+              <label class="ds-row"><span>Colorstone Rate</span><input type="checkbox" class="ds-check"></label>
+              <label class="ds-row ds-row-last"><span>Labour Charges</span><input type="checkbox" class="ds-check"></label>
+            </div>
           </div>
 
           <div class="ds-card emp-perm-block">
@@ -775,31 +795,38 @@
           </div>
 
           <div class="ds-card emp-perm-block">
-            <div class="ds-section-head">Gold Rate Options While Calculating</div>
-            <label class="ds-row"><span>RTGS Rate Only</span><input type="radio" name="empRateOpt" class="ds-radio"></label>
-            <label class="ds-row"><span>Cash Rate Only</span><input type="radio" name="empRateOpt" class="ds-radio"></label>
-            <label class="ds-row ds-row-last"><span>Both RTGS &amp; Cash Rate</span><input type="radio" name="empRateOpt" class="ds-radio" checked></label>
+            <button type="button" class="perm-dropdown-head" data-dropdown="permRateOpt">
+              <span class="perm-dropdown-title">Gold Rate Options While Calculating</span>
+              <span class="perm-dropdown-meta">
+                <svg class="perm-dropdown-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </button>
+            <div class="perm-dropdown-body" id="permRateOptBody">
+              <label class="ds-row"><span>RTGS Rate Only</span><input type="radio" name="empRateOpt" class="ds-radio"></label>
+              <label class="ds-row"><span>Cash Rate Only</span><input type="radio" name="empRateOpt" class="ds-radio"></label>
+              <label class="ds-row ds-row-last"><span>Both RTGS &amp; Cash Rate</span><input type="radio" name="empRateOpt" class="ds-radio" checked></label>
+            </div>
           </div>
 
           <button type="button" class="btn btn-primary btn-lg" id="empPermContinueBtn">Continue</button>
         </div>
       </section>
 
-      <!-- EMPLOYEE MANAGER: CREATE PASSWORD -->
+      <!-- EMPLOYEE MANAGER: UPDATE PASSWORD (from Detail screen only) -->
       <section class="screen emp-password" id="screenEmpPassword">
         <div class="set-scroll">
           <div class="set-header">
             <button class="rev-back-btn" id="empPasswordBackBtn" aria-label="Back">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
-            <span class="set-header-title" id="empPasswordTitle">Create Password</span>
+            <span class="set-header-title">Update Password</span>
           </div>
 
           <div class="emp-form-card">
-            <div class="bp-card-head">Create Password for Employee</div>
+            <div class="bp-card-head">Update Password for Employee</div>
             <div class="emp-form-body">
               <label class="field">
-                <span>Create Password</span>
+                <span>New Password</span>
                 <div class="input-wrap">
                   <input type="password" id="empPassword1" placeholder="PASSWORD">
                   <button type="button" class="eye-btn" id="toggleEmpPassword1" aria-label="Show password">
@@ -821,7 +848,7 @@
             </div>
           </div>
 
-          <button type="button" class="btn btn-primary btn-lg" id="empPasswordSubmitBtn">Add Employee</button>
+          <button type="button" class="btn btn-primary btn-lg" id="empPasswordSubmitBtn">Update Password</button>
         </div>
       </section>
 
@@ -917,32 +944,6 @@
             <button class="earn-send-btn" id="earnPurchaseSendBtn">Send Link</button>
           </div>
         </div>
-
-        <div class="share-sheet-backdrop" id="shareSheetBackdrop">
-          <div class="share-sheet">
-            <div class="share-sheet-handle"></div>
-            <span class="share-sheet-title">Share via</span>
-            <div class="share-sheet-grid">
-              <button class="share-opt" data-app="whatsapp">
-                <span class="share-opt-icon share-opt-whatsapp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.02 3.6c-4.9 0-8.9 4-8.9 8.9 0 1.57.42 3.1 1.2 4.44L3 21l4.18-1.3a8.9 8.9 0 0 0 4.83 1.4h.01c4.9 0 8.9-4 8.9-8.9a8.84 8.84 0 0 0-2.32-6.28ZM12.02 19.4a7.4 7.4 0 0 1-3.77-1.03l-.27-.16-2.8.87.86-2.72-.18-.28a7.4 7.4 0 0 1-1.14-3.98c0-4.1 3.34-7.44 7.44-7.44 1.99 0 3.85.78 5.26 2.18a7.4 7.4 0 0 1 2.18 5.26c0 4.1-3.34 7.44-7.44 7.44Z" fill="#fff"/><path d="M15.9 13.85c-.22-.11-1.3-.64-1.5-.72-.2-.07-.35-.11-.5.11-.14.22-.57.72-.7.87-.13.14-.26.16-.48.05-.22-.11-.94-.35-1.79-1.1-.66-.59-1.1-1.32-1.24-1.54-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.4.11-.13.14-.22.22-.37.07-.15.04-.28-.02-.4-.07-.11-.5-1.2-.68-1.65-.18-.43-.36-.37-.5-.38h-.42c-.15 0-.39.05-.6.28-.2.22-.78.76-.78 1.86s.8 2.16.91 2.31c.11.15 1.57 2.4 3.81 3.36.53.23.95.37 1.27.47.53.17 1.02.14 1.4.09.43-.06 1.3-.53 1.48-1.04.18-.51.18-.95.13-1.04-.05-.1-.2-.15-.42-.26Z" fill="#fff"/></svg></span>
-                <span>WhatsApp</span>
-              </button>
-              <button class="share-opt" data-app="instagram">
-                <span class="share-opt-icon share-opt-instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="4" stroke="#fff" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="#fff"/></svg></span>
-                <span>Instagram</span>
-              </button>
-              <button class="share-opt" data-app="sms">
-                <span class="share-opt-icon share-opt-sms"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v10H8l-4 4V5Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
-                <span>Message</span>
-              </button>
-              <button class="share-opt" data-app="copy">
-                <span class="share-opt-icon share-opt-copy"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 9h9v9H9V9Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M6 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v2" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
-                <span id="shareOptCopyLabel">Copy Link</span>
-              </button>
-            </div>
-            <button type="button" class="share-sheet-cancel" id="shareSheetCancel">Cancel</button>
-          </div>
-        </div>
       </section>
 
       <!-- CONTACT US (from Settings menu) -->
@@ -987,7 +988,10 @@
               <ul class="sub-check-list">
                 <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>10 day free trial</span></li>
                 <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Free 10 credits</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>1 GST (Unlimited Users)</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Admin Control live rates</span></li>
                 <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Pay per scan</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>24x7 Customer Agent</span></li>
                 <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Credit recharge when low</span></li>
               </ul>
               <button class="sub-panel-btn sub-btn-secondary" id="subKeepUsingBtn">Keep Using</button>
@@ -1000,9 +1004,10 @@
             <div class="sub-panel sub-panel-premium">
               <span class="sub-panel-eyebrow">Subscription</span>
               <ul class="sub-check-list">
-                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in free trial</span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Life time access</span></li>
                 <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Free 1000 Credits</span></li>
-                <li class="sub-check-price"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>₹ 12,000 <small>(one time purchase)</small></span></li>
+                <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>+ Everything in Free trial</span></li>
+                <li class="sub-check-price"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>₹ 12,000 + GST <small>(one time purchase)</small></span></li>
               </ul>
               <button class="sub-panel-btn sub-btn-primary" id="subPurchaseBtn">Purchase Now</button>
             </div>
@@ -1158,31 +1163,24 @@
             <span class="cap-corner cap-br"></span>
             <span class="cap-corner cap-bl"></span>
             <div class="cap-scanline" id="capScanline"></div>
+
+            <button class="cap-side-icon-btn" id="capSideIconBtn" aria-label="Upload from gallery">
+              <svg id="capSideIconGallery" width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#15120d" stroke-width="2"/><circle cx="8.5" cy="9.5" r="1.5" fill="#15120d"/><path d="M21 15l-5-5-9 9" stroke="#15120d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg id="capSideIconBin" width="18" height="18" viewBox="0 0 24 24" fill="none" style="display:none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="#d9291f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
           </div>
 
-          <div class="cap-controls">
-            <button class="cap-action-btn cap-action-primary" id="capShutterBtn" aria-label="Capture">
+          <div class="cap-controls" id="capControlsStep1">
+            <button class="cap-action-btn cap-action-primary cap-action-full" id="capShutterBtn" aria-label="Capture">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7h2.5l1.2-2h8.6l1.2 2H20a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" stroke="#fff" stroke-width="2"/></svg>
               <b>Click</b>
             </button>
-            <button class="cap-action-btn cap-action-secondary" id="capUploadBtn" aria-label="Upload from gallery">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#15120d" stroke-width="2"/><circle cx="8.5" cy="9.5" r="1.5" fill="#15120d"/><path d="M21 15l-5-5-9 9" stroke="#15120d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <b>Upload Image</b>
-            </button>
           </div>
-        </div>
 
-        <div class="cap-preview-overlay" id="capPreviewOverlay">
-          <div class="cap-preview-card">
-            <span class="cap-preview-title">Captured Image</span>
-            <div class="cap-preview-thumb">🏷️</div>
-            <div class="cap-preview-actions">
-              <div class="cap-preview-row">
-                <button class="cap-preview-btn cap-preview-delete" id="capDeleteBtn">Delete</button>
-                <button class="cap-preview-btn cap-preview-addmore show" id="capAddMoreBtn">Add +</button>
-              </div>
-              <button class="cap-preview-btn cap-preview-calc" id="capCalcBtn">Calculate</button>
-            </div>
+          <div class="cap-controls cap-controls-stacked" id="capControlsStep2" hidden>
+            <button class="cap-action-btn cap-action-secondary cap-action-full" id="capSecondSideBtn"><b>Click for 2nd side</b></button>
+            <span class="cap-or-divider">or</span>
+            <button class="cap-action-btn cap-action-primary cap-action-full" id="capCalcBtn"><b>Calculate</b></button>
           </div>
         </div>
       </section>
@@ -1261,13 +1259,9 @@
               <div class="metal-tile diamond-tile">
                 <div class="metal-tile-title">Diamond</div>
                 <div class="metal-grid">
-                  <label class="metal-field"><span>Shape</span><input value="Round"></label>
-                  <label class="metal-field"><span>Packet Code</span><input value="PK-1042"></label>
-                  <label class="metal-field"><span>Color</span><input value="IJ"></label>
-                  <label class="metal-field"><span>Clarity</span><input value="VS-SI"></label>
                   <label class="metal-field"><span>Weight</span><input value="1.20 ct"></label>
                   <label class="metal-field"><span>Diamond Rate</span><input value="₹ 9,500 /ct"></label>
-                  <label class="metal-field"><span>Discount</span><input value="0%"></label>
+                  <label class="metal-field"><span>Packet Code</span><input value="PK-1042"></label>
                   <label class="metal-field amount-field"><span>Diamond Amount</span><input value="₹ 11,400"></label>
                 </div>
               </div>
@@ -1486,6 +1480,33 @@
         </div>
       </section>
 
+      <!-- SHARE SHEET (global overlay — used from Earn & Invite and Employee Credentials) -->
+      <div class="share-sheet-backdrop" id="shareSheetBackdrop">
+        <div class="share-sheet">
+          <div class="share-sheet-handle"></div>
+          <span class="share-sheet-title">Share via</span>
+          <div class="share-sheet-grid">
+            <button class="share-opt" data-app="whatsapp">
+              <span class="share-opt-icon share-opt-whatsapp"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.02 3.6c-4.9 0-8.9 4-8.9 8.9 0 1.57.42 3.1 1.2 4.44L3 21l4.18-1.3a8.9 8.9 0 0 0 4.83 1.4h.01c4.9 0 8.9-4 8.9-8.9a8.84 8.84 0 0 0-2.32-6.28ZM12.02 19.4a7.4 7.4 0 0 1-3.77-1.03l-.27-.16-2.8.87.86-2.72-.18-.28a7.4 7.4 0 0 1-1.14-3.98c0-4.1 3.34-7.44 7.44-7.44 1.99 0 3.85.78 5.26 2.18a7.4 7.4 0 0 1 2.18 5.26c0 4.1-3.34 7.44-7.44 7.44Z" fill="#fff"/><path d="M15.9 13.85c-.22-.11-1.3-.64-1.5-.72-.2-.07-.35-.11-.5.11-.14.22-.57.72-.7.87-.13.14-.26.16-.48.05-.22-.11-.94-.35-1.79-1.1-.66-.59-1.1-1.32-1.24-1.54-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.4.11-.13.14-.22.22-.37.07-.15.04-.28-.02-.4-.07-.11-.5-1.2-.68-1.65-.18-.43-.36-.37-.5-.38h-.42c-.15 0-.39.05-.6.28-.2.22-.78.76-.78 1.86s.8 2.16.91 2.31c.11.15 1.57 2.4 3.81 3.36.53.23.95.37 1.27.47.53.17 1.02.14 1.4.09.43-.06 1.3-.53 1.48-1.04.18-.51.18-.95.13-1.04-.05-.1-.2-.15-.42-.26Z" fill="#fff"/></svg></span>
+              <span>WhatsApp</span>
+            </button>
+            <button class="share-opt" data-app="instagram">
+              <span class="share-opt-icon share-opt-instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="4" stroke="#fff" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="#fff"/></svg></span>
+              <span>Instagram</span>
+            </button>
+            <button class="share-opt" data-app="sms">
+              <span class="share-opt-icon share-opt-sms"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v10H8l-4 4V5Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+              <span>Message</span>
+            </button>
+            <button class="share-opt" data-app="copy">
+              <span class="share-opt-icon share-opt-copy"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 9h9v9H9V9Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M6 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v2" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+              <span id="shareOptCopyLabel">Copy Link</span>
+            </button>
+          </div>
+          <button type="button" class="share-sheet-cancel" id="shareSheetCancel">Cancel</button>
+        </div>
+      </div>
+
       <!-- FLOATING BOTTOM NAV (global — shown on Home / Review / Final) -->
       <div class="floating-nav" id="floatingNav">
         <button class="dash-tab active" id="navHomeBtn">
@@ -1509,6 +1530,6 @@
   <button class="replay-btn" id="replayBtn">↻ Replay splash animation</button>
 </div>
 
-<script src="script.js?v=49"></script>
+<script src="script.js?v=52"></script>
 </body>
 </html>
