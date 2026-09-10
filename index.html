@@ -6,7 +6,7 @@
 <title>MRPscan — App Onboarding Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=54">
+<link rel="stylesheet" href="styles.css?v=59">
 </head>
 <body>
 
@@ -967,6 +967,40 @@
         </div>
       </section>
 
+      <!-- FAQs (from Settings menu) -->
+      <section class="screen faqs" id="screenFaqs">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="faqsBackBtn" aria-label="Back">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <span class="set-header-title">FAQs</span>
+          </div>
+
+          <div class="faq-search-row">
+            <div class="faq-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <input type="text" placeholder="Search FAQs" id="faqSearchInput">
+              <button type="button" class="faq-search-clear" id="faqSearchClear" aria-label="Clear search" hidden>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <div class="faq-lang-wrap">
+              <button type="button" class="faq-lang-btn" id="faqLangBtn" aria-label="Change language">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.7 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.7-3.8-9S9.5 5.5 12 3Z" stroke="currentColor" stroke-width="2"/></svg>
+              </button>
+              <div class="faq-lang-menu" id="faqLangMenu" hidden>
+                <button type="button" class="faq-lang-opt active" data-lang="en">English</button>
+                <button type="button" class="faq-lang-opt" data-lang="hi">हिंदी</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-list" id="faqList"></div>
+          <p class="faq-empty" id="faqEmpty" hidden>No matching questions found.</p>
+        </div>
+      </section>
+
       <!-- SUBSCRIPTION (opened from Home's trial tile) -->
       <section class="screen subscription" id="screenSubscription">
         <div class="set-scroll">
@@ -1130,6 +1164,12 @@
             <div class="set-menu-item set-menu-icon-diamond" id="setMenuContactUs">
               <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M4 13v-2a8 8 0 0 1 16 0v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="2.5" y="13" width="5" height="6" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="16.5" y="13" width="5" height="6" rx="1.5" stroke="currentColor" stroke-width="2"/><path d="M19.5 19v1a3 3 0 0 1-3 3h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
               <span class="set-menu-label">Contact Us</span>
+              <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <div class="set-menu-item set-menu-icon-gold" id="setMenuFaqs">
+              <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M9.2 9.3a2.8 2.8 0 0 1 5.4.9c0 1.8-2.4 2.1-2.6 3.6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg></span>
+              <span class="set-menu-label">FAQs</span>
               <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
@@ -1530,6 +1570,6 @@
   <button class="replay-btn" id="replayBtn">↻ Replay splash animation</button>
 </div>
 
-<script src="script.js?v=52"></script>
+<script src="script.js?v=62"></script>
 </body>
 </html>
