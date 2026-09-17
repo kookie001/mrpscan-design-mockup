@@ -1,7 +1,7 @@
 const screenSplash = document.getElementById('screenSplash');
+const screenGetStarted = document.getElementById('screenGetStarted');
 const screenLogin = document.getElementById('screenLogin');
 const screenSignup = document.getElementById('screenSignup');
-const screenGST = document.getElementById('screenGST');
 const screenHome = document.getElementById('screenHome');
 const dust = document.getElementById('dust');
 const reticleLite = document.getElementById('reticleLite');
@@ -30,7 +30,8 @@ function playSplash() {
 
   screenSplash.classList.remove('exit');
   screenSplash.classList.add('active');
-  screenLogin.classList.remove('active', 'enter', 'enter-left');
+  screenGetStarted.classList.remove('active', 'enter', 'enter-left');
+  screenLogin.classList.remove('active', 'enter', 'enter-left', 'enter-right');
   screenSignup.classList.remove('active', 'enter-right');
 
   reticleLite.classList.remove('settle');
@@ -43,11 +44,22 @@ function playSplash() {
   at(2300, () => screenSplash.classList.add('exit'));
   at(2700, () => {
     screenSplash.classList.remove('active');
-    screenLogin.classList.add('active', 'enter');
+    screenGetStarted.classList.add('active', 'enter');
   });
 }
 
 document.getElementById('replayBtn').addEventListener('click', playSplash);
+
+document.getElementById('gsSignupBtn').addEventListener('click', () => {
+  screenGetStarted.classList.remove('active');
+  screenSignup.classList.remove('exit-right');
+  screenSignup.classList.add('active', 'enter-right');
+});
+document.getElementById('gsLoginBtn').addEventListener('click', () => {
+  screenGetStarted.classList.remove('active');
+  screenLogin.classList.remove('exit-right');
+  screenLogin.classList.add('active', 'enter-right');
+});
 
 document.getElementById('goSignup').addEventListener('click', (e) => {
   e.preventDefault();
@@ -73,45 +85,6 @@ document.getElementById('goLogin').addEventListener('click', (e) => {
   }, 320);
 });
 
-// ---- test login credentials -> home ----
-const TEST_USER_ID = 'demo';
-const TEST_PASSWORD = 'demo123';
-const loginUserId = document.getElementById('loginUserId');
-const loginErrorMsg = document.getElementById('loginErrorMsg');
-const loginUserIdField = loginUserId.closest('.field');
-const loginPasswordField = document.getElementById('loginPassword').closest('.field');
-
-[loginUserId, document.getElementById('loginPassword')].forEach((input) => {
-  input.addEventListener('input', () => {
-    loginUserIdField.classList.remove('invalid');
-    loginPasswordField.classList.remove('invalid');
-    loginErrorMsg.classList.remove('show');
-  });
-});
-
-document.getElementById('loginForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const loginPasswordInput = document.getElementById('loginPassword');
-  const ok = loginUserId.value.trim() === TEST_USER_ID && loginPasswordInput.value === TEST_PASSWORD;
-  if (!ok) {
-    loginUserIdField.classList.add('invalid');
-    loginPasswordField.classList.add('invalid');
-    loginErrorMsg.classList.add('show');
-    const wrap = loginPasswordField.querySelector('.input-wrap');
-    wrap.classList.remove('shake');
-    void wrap.offsetWidth;
-    wrap.classList.add('shake');
-    return;
-  }
-  loginUserIdField.classList.remove('invalid');
-  loginPasswordField.classList.remove('invalid');
-  loginErrorMsg.classList.remove('show');
-  screenLogin.classList.remove('active');
-  screenHome.classList.remove('exit-right');
-  screenHome.classList.add('active', 'enter-right');
-  updateNavForScreen(screenHome);
-});
-
 function wireEyeToggle(buttonId, inputId) {
   const btn = document.getElementById(buttonId);
   const input = document.getElementById(inputId);
@@ -121,15 +94,77 @@ function wireEyeToggle(buttonId, inputId) {
     btn.setAttribute('aria-label', showing ? 'Hide password' : 'Show password');
   });
 }
-wireEyeToggle('togglePassword', 'loginPassword');
-wireEyeToggle('toggleSignupPassword', 'signupPassword');
+
+// ---- Generic MPIN digit-box helpers (4-digit auto-advance + group show/hide toggle) ----
+function wireMpinDigits(containerId, onComplete) {
+  const digits = [...document.querySelectorAll(`#${containerId} .mpin-digit`)];
+  digits.forEach((digit, i) => {
+    digit.addEventListener('input', () => {
+      digit.value = digit.value.replace(/[^0-9]/g, '').slice(0, 1);
+      digit.classList.toggle('filled', digit.value !== '');
+      if (digit.value && digits[i + 1]) digits[i + 1].focus();
+      if (onComplete && digits.every((d) => d.value)) onComplete();
+    });
+    digit.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !digit.value && digits[i - 1]) digits[i - 1].focus();
+    });
+  });
+  return digits;
+}
+function getMpinValue(containerId) {
+  return [...document.querySelectorAll(`#${containerId} .mpin-digit`)].map((d) => d.value).join('');
+}
+function clearMpinDigits(containerId) {
+  document.querySelectorAll(`#${containerId} .mpin-digit`).forEach((d) => { d.value = ''; d.classList.remove('filled'); });
+}
+function wireMpinEyeToggle(buttonId, containerId) {
+  const btn = document.getElementById(buttonId);
+  const digits = document.querySelectorAll(`#${containerId} .mpin-digit`);
+  btn.addEventListener('click', () => {
+    const showing = btn.classList.toggle('showing');
+    digits.forEach((d) => { d.type = showing ? 'text' : 'password'; });
+    btn.setAttribute('aria-label', showing ? 'Hide MPIN' : 'Show MPIN');
+  });
+}
+
+// ---- MPIN login -> home ----
+const TEST_MPIN = '1234';
+const loginErrorMsg = document.getElementById('loginErrorMsg');
+const loginMpinField = document.getElementById('loginMpinDigits').closest('.field');
+
+wireMpinDigits('loginMpinDigits');
+wireMpinEyeToggle('toggleLoginMpin', 'loginMpinDigits');
+
+document.querySelectorAll('#loginMpinDigits .mpin-digit').forEach((input) => {
+  input.addEventListener('input', () => {
+    loginMpinField.classList.remove('invalid');
+    loginErrorMsg.classList.remove('show');
+  });
+});
+
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const ok = getMpinValue('loginMpinDigits') === TEST_MPIN;
+  if (!ok) {
+    loginMpinField.classList.add('invalid');
+    loginErrorMsg.classList.add('show');
+    const wrap = loginMpinField.querySelector('.mpin-row');
+    wrap.classList.remove('shake');
+    void wrap.offsetWidth;
+    wrap.classList.add('shake');
+    return;
+  }
+  loginMpinField.classList.remove('invalid');
+  loginErrorMsg.classList.remove('show');
+  screenLogin.classList.remove('active');
+  screenHome.classList.remove('exit-right');
+  screenHome.classList.add('active', 'enter-right');
+  updateNavForScreen(screenHome);
+});
 
 // ---- signup form refs + per-field validation ----
 const signupName = document.getElementById('signupName');
-const signupCompany = document.getElementById('signupCompany');
 const phoneInput = document.getElementById('signupPhone');
-const signupUserId = document.getElementById('signupUserId');
-const signupPassword = document.getElementById('signupPassword');
 const signupSubmitBtn = document.getElementById('signupSubmitBtn');
 
 function setInvalid(fieldEl, invalid) {
@@ -145,10 +180,7 @@ function shakeField(fieldEl) {
 
 const fieldChecks = {
   name: () => signupName.value.trim().length > 0,
-  company: () => signupCompany.value.trim().length > 0,
   phone: () => phoneInput.value.trim().length > 0,
-  userId: () => signupUserId.value.trim().length > 0,
-  password: () => signupPassword.value.trim().length >= 6,
 };
 
 function wireLiveValidation(input, kind) {
@@ -157,15 +189,12 @@ function wireLiveValidation(input, kind) {
   input.addEventListener('input', () => setInvalid(fieldEl, false));
 }
 wireLiveValidation(signupName, 'name');
-wireLiveValidation(signupCompany, 'company');
 wireLiveValidation(phoneInput, 'phone');
-wireLiveValidation(signupUserId, 'userId');
-wireLiveValidation(signupPassword, 'password');
 
 function validateSignupFields() {
   let firstInvalid = null;
   Object.entries(fieldChecks).forEach(([kind, check]) => {
-    const input = { name: signupName, company: signupCompany, phone: phoneInput, userId: signupUserId, password: signupPassword }[kind];
+    const input = { name: signupName, phone: phoneInput }[kind];
     const fieldEl = input.closest('.field');
     const ok = check();
     setInvalid(fieldEl, !ok);
@@ -273,6 +302,7 @@ function createOtpController({ collapseId, digitsContainerId, timerTextId, timer
 
 const otpCollapse = document.getElementById('otpCollapse');
 const otpBox = document.getElementById('otpBox');
+const gstSectionCollapse = document.getElementById('gstSectionCollapse');
 const signupOtp = createOtpController({
   collapseId: 'otpCollapse',
   digitsContainerId: 'otpDigits',
@@ -280,13 +310,16 @@ const signupOtp = createOtpController({
   timerValId: 'otpTimerVal',
   resendLinkId: 'resendOtpLink',
   onComplete: () => {
-    screenSignup.classList.remove('active');
-    screenGST.classList.remove('exit-right');
-    screenGST.classList.add('active', 'enter-right');
+    signupSubmitBtn.textContent = 'Verified';
+    gstSectionCollapse.classList.add('open');
+    setTimeout(() => {
+      gstSectionCollapse.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => document.getElementById('gstInput').focus(), 400);
+    }, 300);
   },
 });
 
-// ---- Submit: validate -> auto-send OTP -> OTP auto-verifies -> GST screen ----
+// ---- Submit: validate -> auto-send OTP -> OTP auto-verifies -> reveal GST section ----
 document.getElementById('signupForm').addEventListener('submit', (e) => {
   e.preventDefault();
   if (!validateSignupFields()) return;
@@ -300,20 +333,13 @@ document.getElementById('signupForm').addEventListener('submit', (e) => {
   }, 380);
 });
 
-function resetSignupForm() {
-  signupOtp.reset();
-  signupSubmitBtn.disabled = false;
-  signupSubmitBtn.textContent = 'Submit';
-}
-
-document.getElementById('backToSignup').addEventListener('click', () => {
-  resetSignupForm();
-  screenGST.classList.add('exit-right');
+function backToScreenFrom(screenEl, targetScreen) {
+  screenEl.classList.add('exit-right');
   setTimeout(() => {
-    screenGST.classList.remove('active', 'enter-right', 'exit-right');
-    screenSignup.classList.add('active', 'enter-left');
+    screenEl.classList.remove('active', 'enter-right', 'exit-right');
+    targetScreen.classList.add('active', 'enter-left');
   }, 320);
-});
+}
 
 const gstInput = document.getElementById('gstInput');
 const verifyGstBtn = document.getElementById('verifyGstBtn');
@@ -321,7 +347,7 @@ const gstCollapse = document.getElementById('gstCollapse');
 const gstResultCard = document.getElementById('gstResultCard');
 const gstBizName = document.getElementById('gstBizName');
 const gstAddress = document.getElementById('gstAddress');
-const successToast = document.getElementById('successToast');
+const mpinSectionCollapse = document.getElementById('mpinSectionCollapse');
 
 verifyGstBtn.addEventListener('click', () => {
   if (!gstInput.value.trim()) { gstInput.focus(); return; }
@@ -338,92 +364,59 @@ verifyGstBtn.addEventListener('click', () => {
 
     setTimeout(() => gstResultCard.scrollIntoView({ behavior: 'smooth', block: 'center' }), 420);
     setTimeout(() => {
-      successToast.classList.add('show');
-      successToast.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 700);
-    setTimeout(() => {
-      screenGST.classList.remove('active');
-      screenHome.classList.remove('exit-right');
-      screenHome.classList.add('active', 'enter-right');
-      updateNavForScreen(screenHome);
-    }, 2700);
+      mpinSectionCollapse.classList.add('open');
+      mpinSectionCollapse.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => document.querySelector('#createMpinDigits .mpin-digit').focus(), 400);
+    }, 1200);
   }, 900);
 });
 
-// ---- Forgot User ID ----
-const screenForgotId = document.getElementById('screenForgotId');
-const forgotIdPhone = document.getElementById('forgotIdPhone');
-const forgotIdPhoneField = forgotIdPhone.closest('.field');
-const sendCodeForgotId = document.getElementById('sendCodeForgotId');
-const forgotIdResultCollapse = document.getElementById('forgotIdResultCollapse');
+// ---- Create MPIN (end of signup flow) -> popup -> home ----
+wireMpinDigits('createMpinDigits');
+wireMpinDigits('confirmMpinDigits');
+wireMpinEyeToggle('toggleCreateMpin', 'createMpinDigits');
+wireMpinEyeToggle('toggleConfirmMpin', 'confirmMpinDigits');
 
-const forgotIdOtp = createOtpController({
-  collapseId: 'otpCollapseForgotId',
-  digitsContainerId: 'otpDigitsForgotId',
-  timerTextId: 'otpTimerTextForgotId',
-  timerValId: 'otpTimerValForgotId',
-  resendLinkId: 'resendOtpForgotId',
-  onComplete: () => {
-    forgotIdResultCollapse.classList.add('open');
-    setTimeout(() => forgotIdResultCollapse.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
-  },
+const createMpinField = document.getElementById('createMpinDigits').closest('.field');
+const confirmMpinField = document.getElementById('confirmMpinDigits').closest('.field');
+const accountCreatedToast = document.getElementById('accountCreatedToast');
+const accountCreatedMpin = document.getElementById('accountCreatedMpin');
+const accountPopupBackdrop = document.getElementById('accountPopupBackdrop');
+
+[...document.querySelectorAll('#createMpinDigits .mpin-digit, #confirmMpinDigits .mpin-digit')].forEach((input) => {
+  input.addEventListener('input', () => {
+    setInvalid(createMpinField, false);
+    setInvalid(confirmMpinField, false);
+  });
 });
 
-sendCodeForgotId.addEventListener('click', () => {
-  if (!forgotIdPhone.value.trim()) {
-    setInvalid(forgotIdPhoneField, true);
-    shakeField(forgotIdPhoneField);
-    forgotIdPhone.focus();
-    return;
-  }
-  setInvalid(forgotIdPhoneField, false);
-  forgotIdPhone.readOnly = true;
-  sendCodeForgotId.disabled = true;
-  sendCodeForgotId.textContent = 'Sent';
-  forgotIdOtp.send();
+document.getElementById('createMpinSubmitBtn').addEventListener('click', () => {
+  const mpin1 = getMpinValue('createMpinDigits');
+  const mpin2 = getMpinValue('confirmMpinDigits');
+  const mpin1Valid = mpin1.length === 4;
+  const mpin2Valid = mpin1Valid && mpin2 === mpin1;
+
+  setInvalid(createMpinField, !mpin1Valid);
+  setInvalid(confirmMpinField, !mpin2Valid);
+
+  if (!mpin1Valid) { createMpinField.scrollIntoView({ behavior: 'smooth', block: 'center' }); shakeField(createMpinField); return; }
+  if (!mpin2Valid) { confirmMpinField.scrollIntoView({ behavior: 'smooth', block: 'center' }); shakeField(confirmMpinField); return; }
+
+  accountCreatedMpin.textContent = mpin1;
+  accountCreatedToast.classList.add('show');
+  accountPopupBackdrop.classList.add('show');
+
   setTimeout(() => {
-    forgotIdOtp.digits[0].focus();
-    document.getElementById('otpBoxForgotId').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 380);
+    accountCreatedToast.classList.remove('show');
+    accountPopupBackdrop.classList.remove('show');
+    screenSignup.classList.remove('active');
+    screenHome.classList.remove('exit-right');
+    screenHome.classList.add('active', 'enter-right');
+    updateNavForScreen(screenHome);
+    clearMpinDigits('createMpinDigits');
+    clearMpinDigits('confirmMpinDigits');
+  }, 1500);
 });
-forgotIdPhone.addEventListener('input', () => setInvalid(forgotIdPhoneField, false));
-
-function resetForgotIdScreen() {
-  forgotIdOtp.reset();
-  forgotIdResultCollapse.classList.remove('open');
-  forgotIdPhone.value = '';
-  forgotIdPhone.readOnly = false;
-  sendCodeForgotId.disabled = false;
-  sendCodeForgotId.textContent = 'Send code';
-  setInvalid(forgotIdPhoneField, false);
-}
-
-document.getElementById('goForgotId').addEventListener('click', (e) => {
-  e.preventDefault();
-  resetForgotIdScreen();
-  screenLogin.classList.remove('active');
-  screenForgotId.classList.remove('exit-right');
-  screenForgotId.classList.add('active', 'enter-right');
-});
-
-function backToLoginFrom(screenEl) {
-  screenEl.classList.add('exit-right');
-  setTimeout(() => {
-    screenEl.classList.remove('active', 'enter-right', 'exit-right');
-    screenLogin.classList.add('active', 'enter-left');
-  }, 320);
-}
-
-function backToScreenFrom(screenEl, targetScreen) {
-  screenEl.classList.add('exit-right');
-  setTimeout(() => {
-    screenEl.classList.remove('active', 'enter-right', 'exit-right');
-    targetScreen.classList.add('active', 'enter-left');
-  }, 320);
-}
-
-document.getElementById('backFromForgotId').addEventListener('click', () => backToLoginFrom(screenForgotId));
-document.getElementById('forgotIdDoneBtn').addEventListener('click', () => backToLoginFrom(screenForgotId));
 
 // ---- Forgot Password ----
 const screenForgotPassword = document.getElementById('screenForgotPassword');
@@ -509,16 +502,68 @@ function resetForgotPasswordScreen() {
 
 let forgotPwReturnScreen = screenLogin;
 
-document.getElementById('goForgotPw').addEventListener('click', (e) => {
-  e.preventDefault();
-  forgotPwReturnScreen = screenLogin;
-  resetForgotPasswordScreen();
-  screenLogin.classList.remove('active');
-  screenForgotPassword.classList.remove('exit-right');
-  screenForgotPassword.classList.add('active', 'enter-right');
+document.getElementById('backFromForgotPw').addEventListener('click', () => backToScreenFrom(screenForgotPassword, forgotPwReturnScreen));
+
+// ---- Forgot MPIN (reached from Login only) — recovers and displays the existing MPIN ----
+const screenForgotMpin = document.getElementById('screenForgotMpin');
+const forgotMpinPhone = document.getElementById('forgotMpinPhone');
+const forgotMpinPhoneField = forgotMpinPhone.closest('.field');
+const sendCodeForgotMpin = document.getElementById('sendCodeForgotMpin');
+const mpinRevealCollapse = document.getElementById('mpinRevealCollapse');
+const recoveredMpin = document.getElementById('recoveredMpin');
+
+const forgotMpinOtp = createOtpController({
+  collapseId: 'otpCollapseForgotMpin',
+  digitsContainerId: 'otpDigitsForgotMpin',
+  timerTextId: 'otpTimerTextForgotMpin',
+  timerValId: 'otpTimerValForgotMpin',
+  resendLinkId: 'resendOtpForgotMpin',
+  onComplete: () => {
+    recoveredMpin.textContent = TEST_MPIN;
+    mpinRevealCollapse.classList.add('open');
+    setTimeout(() => mpinRevealCollapse.scrollIntoView({ behavior: 'smooth', block: 'center' }), 200);
+  },
 });
 
-document.getElementById('backFromForgotPw').addEventListener('click', () => backToScreenFrom(screenForgotPassword, forgotPwReturnScreen));
+sendCodeForgotMpin.addEventListener('click', () => {
+  if (!forgotMpinPhone.value.trim()) {
+    setInvalid(forgotMpinPhoneField, true);
+    shakeField(forgotMpinPhoneField);
+    forgotMpinPhone.focus();
+    return;
+  }
+  setInvalid(forgotMpinPhoneField, false);
+  forgotMpinPhone.readOnly = true;
+  sendCodeForgotMpin.disabled = true;
+  sendCodeForgotMpin.textContent = 'Sent';
+  forgotMpinOtp.send();
+  setTimeout(() => {
+    forgotMpinOtp.digits[0].focus();
+    document.getElementById('otpBoxForgotMpin').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 380);
+});
+forgotMpinPhone.addEventListener('input', () => setInvalid(forgotMpinPhoneField, false));
+
+function resetForgotMpinScreen() {
+  forgotMpinOtp.reset();
+  mpinRevealCollapse.classList.remove('open');
+  forgotMpinPhone.value = '';
+  forgotMpinPhone.readOnly = false;
+  sendCodeForgotMpin.disabled = false;
+  sendCodeForgotMpin.textContent = 'Send code';
+  setInvalid(forgotMpinPhoneField, false);
+}
+
+document.getElementById('goForgotMpin').addEventListener('click', (e) => {
+  e.preventDefault();
+  resetForgotMpinScreen();
+  screenLogin.classList.remove('active');
+  screenForgotMpin.classList.remove('exit-right');
+  screenForgotMpin.classList.add('active', 'enter-right');
+});
+
+document.getElementById('backFromForgotMpin').addEventListener('click', () => backToScreenFrom(screenForgotMpin, screenLogin));
+document.getElementById('forgotMpinDoneBtn').addEventListener('click', () => backToScreenFrom(screenForgotMpin, screenLogin));
 
 // ---- Dashboard <-> Scanner flow (Home -> Capture -> Processing -> Review -> Final) ----
 const screenSettings = document.getElementById('screenSettings');
@@ -1212,7 +1257,7 @@ document.getElementById('itemCodeBackBtn').addEventListener('click', () => {
   goBackward(screenItemCode, screenMasterRates);
 });
 
-const ITC_DELETE_ICON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ITC_DELETE_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const itcList = document.getElementById('itcList');
 
 function renumberItcRows() {
@@ -1220,11 +1265,22 @@ function renumberItcRows() {
     row.querySelector('.itc-num').textContent = (i + 1) + '.';
   });
 }
+const ITC_EDIT_ICON = '<svg class="itc-icon-edit" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ITC_SAVE_ICON = '<svg class="itc-icon-save" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
 function wireItcRow(row) {
   row.querySelector('.itc-icon-btn-danger').addEventListener('click', () => {
     if (itcList.querySelectorAll('.itc-row').length <= 1) return;
     row.remove();
     renumberItcRows();
+  });
+  const editBtn = row.querySelector('.itc-edit-toggle-btn');
+  editBtn.addEventListener('click', () => {
+    const inputs = [...row.querySelectorAll('input')];
+    const nowEditing = editBtn.classList.toggle('editing');
+    inputs.forEach((input) => { input.readOnly = !nowEditing; });
+    editBtn.setAttribute('aria-label', nowEditing ? 'Save' : 'Edit');
+    if (nowEditing) inputs[0].focus();
   });
 }
 wireItcRow(itcList.querySelector('.itc-row'));
@@ -1236,16 +1292,23 @@ document.getElementById('itcAddBtn').addEventListener('click', () => {
     <div class="itc-row-body">
       <span class="itc-num"></span>
       <div class="itc-row-fields">
-        <label class="itc-field"><span>Item Name</span><input type="text"></label>
-        <label class="itc-field"><span>Item Code</span><input type="text"></label>
+        <label class="itc-field"><span>Item Name</span><input type="text" readonly></label>
+        <label class="itc-field"><span>Item Code</span><input type="text" readonly></label>
       </div>
       <button class="itc-icon-btn itc-icon-btn-danger" aria-label="Delete">${ITC_DELETE_ICON}</button>
+    </div>
+    <div class="itc-row-body itc-row-body-second">
+      <span class="itc-num" aria-hidden="true"></span>
+      <div class="itc-row-fields">
+        <label class="itc-field"><span>Wastage</span><input type="text" readonly></label>
+        <label class="itc-field"><span>Labour</span><input type="text" readonly></label>
+      </div>
+      <button class="itc-icon-btn itc-edit-toggle-btn" aria-label="Edit">${ITC_EDIT_ICON}${ITC_SAVE_ICON}</button>
     </div>
   `;
   itcList.appendChild(row);
   wireItcRow(row);
   renumberItcRows();
-  row.querySelector('input').focus();
 });
 
 // -- Employee Manager (list -> add -> auto-generated credentials, plus detail edit shortcuts) --
@@ -1422,9 +1485,6 @@ document.getElementById('dashPurchaseBtn').addEventListener('click', (e) => {
 document.getElementById('subBackBtn').addEventListener('click', () => {
   goBackward(screenSubscription, screenHome);
 });
-document.getElementById('subKeepUsingBtn').addEventListener('click', () => {
-  goBackward(screenSubscription, screenHome);
-});
 document.getElementById('subPurchaseBtn').addEventListener('click', function () {
   const original = this.textContent;
   this.textContent = 'Redirecting to Razorpay…';
@@ -1433,6 +1493,45 @@ document.getElementById('subPurchaseBtn').addEventListener('click', function () 
     window.open('https://razorpay.com', '_blank');
     this.textContent = original;
     this.disabled = false;
+  }, 700);
+});
+
+// -- Recharge Credits (Subscription screen) --
+const rechargeHead = document.getElementById('rechargeHead');
+const rechargeCollapse = document.getElementById('rechargeCollapse');
+const rechargeAmountInput = document.getElementById('rechargeAmountInput');
+const rechargePurchaseBtn = document.getElementById('rechargePurchaseBtn');
+
+rechargeHead.addEventListener('click', () => {
+  const opening = !rechargeHead.classList.contains('open');
+  rechargeHead.classList.toggle('open', opening);
+  rechargeCollapse.classList.toggle('open', opening);
+});
+
+function updateRechargePurchaseState() {
+  const value = parseInt(rechargeAmountInput.value, 10) || 0;
+  rechargePurchaseBtn.disabled = value < 50;
+}
+rechargeAmountInput.addEventListener('input', updateRechargePurchaseState);
+
+document.querySelectorAll('.recharge-quick-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const add = parseInt(btn.dataset.amount, 10);
+    const current = parseInt(rechargeAmountInput.value, 10) || 0;
+    rechargeAmountInput.value = current + add;
+    updateRechargePurchaseState();
+  });
+});
+
+rechargePurchaseBtn.addEventListener('click', function () {
+  if (this.disabled) return;
+  const original = this.textContent;
+  this.textContent = 'Redirecting to Razorpay…';
+  this.disabled = true;
+  setTimeout(() => {
+    window.open('https://razorpay.com', '_blank');
+    this.textContent = original;
+    updateRechargePurchaseState();
   }, 700);
 });
 
