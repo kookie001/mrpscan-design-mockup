@@ -1,5 +1,4 @@
 const screenSplash = document.getElementById('screenSplash');
-const screenGetStarted = document.getElementById('screenGetStarted');
 const screenLogin = document.getElementById('screenLogin');
 const screenSignup = document.getElementById('screenSignup');
 const screenHome = document.getElementById('screenHome');
@@ -30,9 +29,8 @@ function playSplash() {
 
   screenSplash.classList.remove('exit');
   screenSplash.classList.add('active');
-  screenGetStarted.classList.remove('active', 'enter', 'enter-left');
   screenLogin.classList.remove('active', 'enter', 'enter-left', 'enter-right');
-  screenSignup.classList.remove('active', 'enter-right');
+  screenSignup.classList.remove('active', 'enter', 'enter-right');
 
   reticleLite.classList.remove('settle');
   void reticleLite.offsetWidth; // restart CSS animations
@@ -44,46 +42,11 @@ function playSplash() {
   at(2300, () => screenSplash.classList.add('exit'));
   at(2700, () => {
     screenSplash.classList.remove('active');
-    screenGetStarted.classList.add('active', 'enter');
+    screenSignup.classList.add('active', 'enter');
   });
 }
 
 document.getElementById('replayBtn').addEventListener('click', playSplash);
-
-document.getElementById('gsSignupBtn').addEventListener('click', () => {
-  screenGetStarted.classList.remove('active');
-  screenSignup.classList.remove('exit-right');
-  screenSignup.classList.add('active', 'enter-right');
-});
-document.getElementById('gsLoginBtn').addEventListener('click', () => {
-  screenGetStarted.classList.remove('active');
-  screenLogin.classList.remove('exit-right');
-  screenLogin.classList.add('active', 'enter-right');
-});
-
-document.getElementById('goSignup').addEventListener('click', (e) => {
-  e.preventDefault();
-  screenSignup.classList.remove('exit-right');
-  screenSignup.classList.add('active', 'enter-right');
-  screenLogin.classList.remove('active');
-});
-
-document.getElementById('backToLogin').addEventListener('click', () => {
-  screenSignup.classList.add('exit-right');
-  setTimeout(() => {
-    screenSignup.classList.remove('active', 'enter-right', 'exit-right');
-    screenLogin.classList.add('active', 'enter-left');
-  }, 320);
-});
-
-document.getElementById('goLogin').addEventListener('click', (e) => {
-  e.preventDefault();
-  screenSignup.classList.add('exit-right');
-  setTimeout(() => {
-    screenSignup.classList.remove('active', 'enter-right', 'exit-right');
-    screenLogin.classList.add('active', 'enter-left');
-  }, 320);
-});
 
 function wireEyeToggle(buttonId, inputId) {
   const btn = document.getElementById(buttonId);
@@ -570,7 +533,10 @@ const screenSettings = document.getElementById('screenSettings');
 const screenDashSettings = document.getElementById('screenDashSettings');
 const screenMasterRates = document.getElementById('screenMasterRates');
 const screenItemCode = document.getElementById('screenItemCode');
+const screenSalesInvoice = document.getElementById('screenSalesInvoice');
 const screenBizProfile = document.getElementById('screenBizProfile');
+const screenProfileVerify = document.getElementById('screenProfileVerify');
+const screenEditProfile = document.getElementById('screenEditProfile');
 const screenWishlist = document.getElementById('screenWishlist');
 const screenNotifications = document.getElementById('screenNotifications');
 const screenSubscription = document.getElementById('screenSubscription');
@@ -675,7 +641,42 @@ document.getElementById('revRescanBtn').addEventListener('click', () => {
   resetCaptureScreen();
   goBackward(screenScanReview, screenScanCapture);
 });
-document.getElementById('revContinueBtn').addEventListener('click', () => goForward(screenScanReview, screenInvoiceGen));
+function shakeMetalField(fieldEl) {
+  const target = fieldEl.querySelector('.input-icon') || fieldEl.querySelector('input');
+  target.classList.remove('shake');
+  void target.offsetWidth;
+  target.classList.add('shake');
+}
+
+const revMetalInputs = [...document.querySelectorAll('#screenScanReview .metal-tile .metal-field input')];
+revMetalInputs.forEach((input) => {
+  input.addEventListener('input', () => {
+    input.closest('.metal-field').classList.remove('invalid');
+  });
+});
+
+function validateReviewFields() {
+  let firstInvalid = null;
+  revMetalInputs.forEach((input) => {
+    const fieldEl = input.closest('.metal-field');
+    const ok = input.value.trim().length > 0;
+    fieldEl.classList.toggle('invalid', !ok);
+    if (!ok) {
+      shakeMetalField(fieldEl);
+      if (!firstInvalid) firstInvalid = fieldEl;
+    }
+  });
+  if (firstInvalid) {
+    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return false;
+  }
+  return true;
+}
+
+document.getElementById('revContinueBtn').addEventListener('click', () => {
+  if (!validateReviewFields()) return;
+  goForward(screenScanReview, screenInvoiceGen);
+});
 
 function wireWishlistToggle(id) {
   document.getElementById(id).addEventListener('click', function () {
@@ -811,7 +812,7 @@ setInterval(renderDashClock, 30000);
 const floatingNav = document.getElementById('floatingNav');
 const navHomeBtn = document.getElementById('navHomeBtn');
 const navScanBtn = document.getElementById('navScanBtn');
-const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenItemCode, screenBizProfile, screenWishlist, screenNotifications, screenSubscription, screenPasswordManager, screenEarnInvite, screenContactUs, screenFaqs, screenEmpList, screenEmpAdd, screenEmpCredentials, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
+const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenItemCode, screenSalesInvoice, screenBizProfile, screenEditProfile, screenWishlist, screenNotifications, screenSubscription, screenPasswordManager, screenEarnInvite, screenContactUs, screenFaqs, screenEmpList, screenEmpAdd, screenEmpCredentials, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
 let currentScreen = screenSplash;
 
 function updateNavForScreen(screen) {
@@ -1311,6 +1312,48 @@ document.getElementById('itcAddBtn').addEventListener('click', () => {
   renumberItcRows();
 });
 
+// -- Masters -> Sales Invoice --
+document.getElementById('mstSalesInvoiceRow').addEventListener('click', () => {
+  goForward(screenMasterRates, screenSalesInvoice);
+});
+document.getElementById('salesInvoiceBackBtn').addEventListener('click', () => {
+  goBackward(screenSalesInvoice, screenMasterRates);
+});
+
+const sinvCards = [...document.querySelectorAll('.sinv-card')];
+let appliedSalesInvoiceFormat = '1';
+
+function renderSalesInvoiceState() {
+  sinvCards.forEach((card) => {
+    const isApplied = card.dataset.format === appliedSalesInvoiceFormat;
+    card.classList.toggle('applied', isApplied);
+    const applyBtn = card.querySelector('.sinv-apply-btn');
+    applyBtn.textContent = isApplied ? 'Applied' : 'Apply';
+    applyBtn.disabled = isApplied;
+  });
+}
+
+sinvCards.forEach((card) => {
+  const head = card.querySelector('.sinv-head');
+  const collapse = card.querySelector('.reveal-collapse');
+  const applyBtn = card.querySelector('.sinv-apply-btn');
+
+  head.addEventListener('click', () => {
+    const opening = !collapse.classList.contains('open');
+    sinvCards.forEach((c) => c.querySelector('.reveal-collapse').classList.remove('open'));
+    if (opening) collapse.classList.add('open');
+  });
+
+  applyBtn.addEventListener('click', () => {
+    if (applyBtn.disabled) return;
+    appliedSalesInvoiceFormat = card.dataset.format;
+    renderSalesInvoiceState();
+    collapse.classList.remove('open');
+  });
+});
+
+renderSalesInvoiceState();
+
 // -- Employee Manager (list -> add -> auto-generated credentials, plus detail edit shortcuts) --
 let empMode = 'add'; // 'add' | 'edit' — edit mode always returns straight to the Detail screen
 let permReturnScreen = screenEmpList; // Permissions screen returns wherever it was opened from
@@ -1453,6 +1496,157 @@ document.getElementById('setProfileBanner').addEventListener('click', () => {
 });
 document.getElementById('bizProfileBackBtn').addEventListener('click', () => {
   goBackward(screenBizProfile, screenSettings);
+});
+
+// -- Profile edit: MPIN step-up auth, then Phone/GST edit with GST re-verify and/or phone OTP --
+document.getElementById('profileEditBtn').addEventListener('click', () => {
+  clearMpinDigits('profileVerifyMpinDigits');
+  document.getElementById('profileVerifyMpinDigits').closest('.field').classList.remove('invalid');
+  document.getElementById('profileVerifyErrorMsg').classList.remove('show');
+  goForward(screenBizProfile, screenProfileVerify);
+});
+document.getElementById('profileVerifyBackBtn').addEventListener('click', () => {
+  goBackward(screenProfileVerify, screenBizProfile);
+});
+
+wireMpinDigits('profileVerifyMpinDigits');
+wireMpinEyeToggle('toggleProfileVerifyMpin', 'profileVerifyMpinDigits');
+const profileVerifyErrorMsg = document.getElementById('profileVerifyErrorMsg');
+const profileVerifyField = document.getElementById('profileVerifyMpinDigits').closest('.field');
+
+document.querySelectorAll('#profileVerifyMpinDigits .mpin-digit').forEach((input) => {
+  input.addEventListener('input', () => {
+    profileVerifyField.classList.remove('invalid');
+    profileVerifyErrorMsg.classList.remove('show');
+  });
+});
+
+document.getElementById('profileVerifyForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const ok = getMpinValue('profileVerifyMpinDigits') === TEST_MPIN;
+  if (!ok) {
+    profileVerifyField.classList.add('invalid');
+    profileVerifyErrorMsg.classList.add('show');
+    const wrap = profileVerifyField.querySelector('.mpin-row');
+    wrap.classList.remove('shake');
+    void wrap.offsetWidth;
+    wrap.classList.add('shake');
+    return;
+  }
+  profileVerifyField.classList.remove('invalid');
+  profileVerifyErrorMsg.classList.remove('show');
+  openEditProfileScreen();
+});
+
+const editProfilePhone = document.getElementById('editProfilePhone');
+const editProfileGst = document.getElementById('editProfileGst');
+const editProfileSaveBtn = document.getElementById('editProfileSaveBtn');
+const editProfileGstCollapse = document.getElementById('editProfileGstCollapse');
+const editProfileGstBizName = document.getElementById('editProfileGstBizName');
+const editProfileGstAddress = document.getElementById('editProfileGstAddress');
+const editProfileOtpCollapse = document.getElementById('editProfileOtpCollapse');
+
+let originalProfilePhone = '';
+let originalProfileGst = '';
+let editProfileGstChanged = false;
+
+function openEditProfileScreen() {
+  originalProfilePhone = document.getElementById('bizProfilePhoneNo').textContent.trim();
+  originalProfileGst = document.getElementById('bizProfileGstNo').textContent.trim();
+  editProfilePhone.value = originalProfilePhone;
+  editProfileGst.value = originalProfileGst;
+  editProfileGstCollapse.classList.remove('open');
+  editProfileOtpCollapse.classList.remove('open');
+  editProfileGst.closest('.field').classList.remove('invalid');
+  editProfilePhone.closest('.field').classList.remove('invalid');
+  editProfileSaveBtn.disabled = true;
+  editProfileSaveBtn.textContent = 'Save Changes';
+  goForward(screenProfileVerify, screenEditProfile);
+}
+
+function updateEditProfileSaveState() {
+  const changed = editProfilePhone.value.trim() !== originalProfilePhone || editProfileGst.value.trim() !== originalProfileGst;
+  editProfileSaveBtn.disabled = !changed;
+}
+editProfilePhone.addEventListener('input', updateEditProfileSaveState);
+editProfileGst.addEventListener('input', updateEditProfileSaveState);
+
+document.getElementById('editProfileBackBtn').addEventListener('click', () => {
+  goBackward(screenEditProfile, screenBizProfile);
+});
+
+const editProfileOtp = createOtpController({
+  collapseId: 'editProfileOtpCollapse',
+  digitsContainerId: 'editProfileOtpDigits',
+  timerTextId: 'editProfileOtpTimerText',
+  timerValId: 'editProfileOtpTimerVal',
+  resendLinkId: 'editProfileResendOtp',
+  onComplete: finishProfileUpdate,
+});
+
+function finishProfileUpdate() {
+  const newPhone = editProfilePhone.value.trim();
+  const newGst = editProfileGst.value.trim();
+
+  document.getElementById('bizProfilePhoneNo').textContent = newPhone;
+  document.getElementById('bizProfileGstNo').textContent = newGst;
+  document.getElementById('bizProfileBannerGst').textContent = 'GSTIN ' + newGst;
+  if (editProfileGstChanged) {
+    document.getElementById('bizProfileBizName').textContent = editProfileGstBizName.textContent;
+    document.getElementById('bizProfileBannerName').textContent = editProfileGstBizName.textContent;
+    document.getElementById('bizProfileAddress').textContent = editProfileGstAddress.textContent;
+  }
+
+  editProfileSaveBtn.disabled = false;
+  editProfileSaveBtn.textContent = 'Save Changes';
+  editProfileGstCollapse.classList.remove('open');
+  editProfileOtpCollapse.classList.remove('open');
+
+  document.getElementById('profileUpdatedToast').classList.add('show');
+  document.getElementById('accountPopupBackdrop').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('profileUpdatedToast').classList.remove('show');
+    document.getElementById('accountPopupBackdrop').classList.remove('show');
+    goBackward(screenEditProfile, screenBizProfile);
+  }, 1500);
+}
+
+editProfileSaveBtn.addEventListener('click', () => {
+  const phoneChanged = editProfilePhone.value.trim() !== originalProfilePhone;
+  const gstChanged = editProfileGst.value.trim() !== originalProfileGst;
+  if (!phoneChanged && !gstChanged) return;
+  editProfileGstChanged = gstChanged;
+
+  editProfileSaveBtn.disabled = true;
+  editProfileSaveBtn.textContent = 'Saving…';
+  editProfileGstCollapse.classList.remove('open');
+  editProfileOtpCollapse.classList.remove('open');
+
+  function proceedToPhoneStep() {
+    if (phoneChanged) {
+      editProfileOtp.send();
+      setTimeout(() => {
+        editProfileOtp.digits[0].focus();
+        editProfileOtpCollapse.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 380);
+    } else {
+      finishProfileUpdate();
+    }
+  }
+
+  if (gstChanged) {
+    editProfileGstBizName.textContent = '—';
+    editProfileGstAddress.textContent = '—';
+    editProfileGstCollapse.classList.add('open');
+    setTimeout(() => editProfileGstCollapse.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+    setTimeout(() => {
+      editProfileGstBizName.textContent = 'Gupta Jewellers Pvt. Ltd.';
+      editProfileGstAddress.textContent = 'MG Road, Jaipur, Rajasthan';
+      setTimeout(proceedToPhoneStep, 900);
+    }, 1000);
+  } else {
+    proceedToPhoneStep();
+  }
 });
 
 // -- Wishlist (from Home's Wishlist button) --
