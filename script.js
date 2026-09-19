@@ -573,6 +573,7 @@ function goBackward(fromScreen, toScreen) {
 const capInstruction = document.getElementById('capInstruction');
 const capControlsStep1 = document.getElementById('capControlsStep1');
 const capControlsStep2 = document.getElementById('capControlsStep2');
+const capFirstPreview = document.getElementById('capFirstPreview');
 const capSideIconBtn = document.getElementById('capSideIconBtn');
 const capSideIconGallery = document.getElementById('capSideIconGallery');
 const capSideIconBin = document.getElementById('capSideIconBin');
@@ -585,6 +586,7 @@ function setCaptureStep(step) {
   capSideIconGallery.style.display = hasFirstCapture ? 'none' : '';
   capSideIconBin.style.display = hasFirstCapture ? '' : 'none';
   capSideIconBtn.setAttribute('aria-label', hasFirstCapture ? 'Delete captured image' : 'Upload from gallery');
+  capFirstPreview.classList.toggle('show', hasFirstCapture);
   capInstruction.textContent = hasFirstCapture ? 'Align back side of tag inside frame' : 'Align jewellery tag inside frame';
 }
 function resetCaptureScreen() {
@@ -1164,85 +1166,108 @@ document.getElementById('dashSetBackBtn').addEventListener('click', () => {
   goBackward(screenDashSettings, screenSettings);
 });
 
-// -- Bhaw rate: LIVE from the real gold-rate-tracker API -> feeds into the Home Gold rate --
-// *** This is the exact contract to hand to the backend dev for the real APK: ***
-//   GET https://17gdivfex7.execute-api.ap-south-1.amazonaws.com/bhaw
-//   -> { source, name, cash_bhaw, rtgs_bhaw, updated_at }   (whichever source is currently active)
-// The admin dashboard (https://d2r9p5yl881cyw.cloudfront.net) additionally exposes, on the API root:
-//   GET  {ROOT}         -> [{ source, name, selected, ... }]   (full list, for the admin picker)
-//   PUT  {ROOT}select   -> { source }                          (admin sets which source is active)
-// Dashboard Settings' JMD/Mega Bullion picker below calls those admin endpoints purely so this
-// mockup can demo switching sources — MRPscan itself only ever needs the one read-only GET /bhaw.
-// Bhaw has no dedicated tile on Home — it's added straight onto the Gold (24K) Cash/RTGS rates.
-const BHAW_ROOT_URL = 'https://17gdivfex7.execute-api.ap-south-1.amazonaws.com/';
-const BHAW_URL = BHAW_ROOT_URL + 'bhaw';
-const GOLD_BASE_CASH = 74320;
-const GOLD_BASE_RTGS = 74410;
-let bhawPollTimer = null;
+// -- Live rate cards: JMD Patil / Mega Bullion / Shri Sai / Shri Ganesh, from the gold-rate-tracker API --
+// Same feed as the admin dashboard (https://d2r9p5yl881cyw.cloudfront.net):
+//   GET https://17gdivfex7.execute-api.ap-south-1.amazonaws.com/
+//   -> [{ source, name, timestamp, rows:[{label,buy,sell}], diff1 (cash badla), diff2 (rtgs badla) }, ...]
+// Dashboard Settings lists all cards with a checkbox each; the ticked ones are shown on Home.
+// Refreshed every 30s, exactly like the dashboard.
+const RATES_API_URL = 'https://17gdivfex7.execute-api.ap-south-1.amazonaws.com/';
+const dsRateCards = document.getElementById('dsRateCards');
+const homeMcxValue = document.getElementById('homeMcxValue');
+const homeRateSources = document.getElementById('homeRateSources');
+const HOME_MCX_FALLBACK = homeMcxValue.textContent;
+let rateSources = null; // null = still loading, [] = failed
+const selectedRateSources = new Set(['jmd_patil']);
 
-function formatRupees(n) {
-  return '₹ ' + Math.round(n).toLocaleString('en-IN');
+function escHtml(v) {
+  return String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function fmtRate(v) {
+  if (v === null || v === undefined || v === '-' || v === '') return '<span class="rc-na">—</span>';
+  const n = Number(v);
+  return Number.isNaN(n) ? escHtml(v) : n.toLocaleString('en-IN');
+}
+function fmtSigned(v) {
+  if (v === null || v === undefined || v === '-' || v === '') return '<span class="rc-na">—</span>';
+  const n = Number(v);
+  if (Number.isNaN(n)) return escHtml(v);
+  return (n > 0 ? '+' : '') + n.toLocaleString('en-IN');
+}
+function fmtUpdated(ts) {
+  const d = new Date(String(ts).replace(/([+-]\d\d)(\d\d)$/, '$1:$2'));
+  return Number.isNaN(d.getTime()) ? '' : 'Updated ' + d.toLocaleTimeString('en-IN');
 }
 
-function renderBhaw(data) {
-  const cashBhaw = Number(data.cash_bhaw) || 0;
-  const rtgsBhaw = Number(data.rtgs_bhaw) || 0;
-  document.getElementById('dashGoldCashRate').textContent = formatRupees(GOLD_BASE_CASH + cashBhaw);
-  document.getElementById('dashGoldRtgsRate').textContent = formatRupees(GOLD_BASE_RTGS + rtgsBhaw);
+function rateCardHtml(src, selectable) {
+  const rows = src.rows.map((r) => `<tr><td class="rc-label">${escHtml(r.label)}</td><td class="rc-sell">${fmtRate(r.sell)}</td></tr>`).join('');
+  const check = selectable
+    ? `<input type="checkbox" class="ds-check" data-source="${escHtml(src.source)}" ${selectedRateSources.has(src.source) ? 'checked' : ''} aria-label="Show ${escHtml(src.name)} on Home">`
+    : '';
+  const tag = selectable ? 'label' : 'div';
+  return `<${tag} class="rc-card">
+    <div class="rc-head">
+      <div><h4 class="rc-name">${escHtml(src.name)}</h4><span class="rc-sub">${fmtUpdated(src.timestamp)}</span></div>
+      ${check}
+    </div>
+    <table class="rc-table">
+      <thead><tr><th>Product</th><th>Sell</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="rc-badla">
+      <div class="rc-badla-title">Badla Bhaw</div>
+      <div class="rc-badla-items">
+        <div><small>Cash</small><b>${fmtSigned(src.diff1)}</b></div>
+        <div><small>RTGS</small><b>${fmtSigned(src.diff2)}</b></div>
+      </div>
+    </div>
+  </${tag}>`;
 }
 
-async function fetchBhaw() {
-  const res = await fetch(BHAW_URL);
-  if (!res.ok) throw new Error('Bhaw API returned ' + res.status);
-  return res.json();
+function mcxSell(src) {
+  const row = src.rows.find((r) => /MCX/i.test(r.label));
+  const n = row ? Number(row.sell) : NaN;
+  return Number.isNaN(n) ? null : n;
 }
 
-function startBhawPolling() {
-  if (bhawPollTimer) return;
-  bhawPollTimer = setInterval(async () => {
-    try {
-      renderBhaw(await fetchBhaw());
-    } catch (e) {
-      console.error('Bhaw live refresh failed', e);
-    }
-  }, 30000);
+function renderRateCards() {
+  const sources = rateSources || [];
+  dsRateCards.innerHTML = sources.map((s) => rateCardHtml(s, true)).join('');
+  const chosen = sources.filter((s) => selectedRateSources.has(s.source));
+  const mcx = (chosen.length ? chosen : sources).map(mcxSell).find((n) => n !== null);
+  homeMcxValue.textContent = mcx ? '₹ ' + mcx.toLocaleString('en-IN') : HOME_MCX_FALLBACK;
+  homeRateSources.innerHTML = chosen.map((s) => `<div class="dash-src">
+    <div class="dash-src-badla">
+      <div class="dash-badge"><b>${fmtSigned(s.diff1)}</b><small>Cash</small></div>
+      <div class="dash-badge"><b>${fmtSigned(s.diff2)}</b><small>RTGS</small></div>
+    </div>
+    <span class="dash-src-by">rate by ${escHtml(s.name)}</span>
+  </div>`).join('');
 }
 
-// Reflect the admin dashboard's real current selection on the two radios whenever Dashboard Settings opens.
-async function syncBhawSourceCheckboxes() {
+async function loadRates() {
   try {
-    const res = await fetch(BHAW_ROOT_URL);
-    const sources = await res.json();
-    sources.forEach((s) => {
-      const input = { jmd_patil: bhawSourceJmd, mega_bullion: bhawSourceMega }[s.source];
-      if (input) input.checked = !!s.selected;
-    });
+    const res = await fetch(RATES_API_URL);
+    if (!res.ok) throw new Error('Rates API returned ' + res.status);
+    rateSources = await res.json();
   } catch (e) {
-    console.error('Could not load live Bhaw sources', e);
+    console.error('Live rates refresh failed', e);
+    if (rateSources === null) rateSources = [];
   }
+  renderRateCards();
 }
 
-// Only reveal the Home Bhaw tile once the user actually taps a source here —
-// 'click' (not 'change') so re-clicking the already-selected option still reveals it.
-async function selectBhawSource(sourceKey) {
-  try {
-    await fetch(BHAW_ROOT_URL + 'select', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ source: sourceKey }),
-    });
-    renderBhaw(await fetchBhaw());
-    startBhawPolling();
-  } catch (e) {
-    console.error('Bhaw source selection failed', e);
-  }
-}
+dsRateCards.addEventListener('change', (e) => {
+  const box = e.target.closest('.ds-check');
+  if (!box) return;
+  if (box.checked) selectedRateSources.add(box.dataset.source);
+  else selectedRateSources.delete(box.dataset.source);
+  renderRateCards();
+});
 
-const bhawSourceJmd = document.getElementById('bhawSourceJmd');
-const bhawSourceMega = document.getElementById('bhawSourceMega');
-bhawSourceJmd.addEventListener('click', () => selectBhawSource('jmd_patil'));
-bhawSourceMega.addEventListener('click', () => selectBhawSource('mega_bullion'));
-document.getElementById('setMenuDashboard').addEventListener('click', syncBhawSourceCheckboxes);
+renderRateCards();
+loadRates();
+setInterval(loadRates, 30000);
 document.getElementById('setMenuMasters').addEventListener('click', () => {
   goForward(screenSettings, screenMasterRates);
 });
@@ -1540,68 +1565,60 @@ document.getElementById('profileVerifyForm').addEventListener('submit', (e) => {
 
 const editProfilePhone = document.getElementById('editProfilePhone');
 const editProfileGst = document.getElementById('editProfileGst');
-const editProfileSaveBtn = document.getElementById('editProfileSaveBtn');
+const editPhoneSubmitBtn = document.getElementById('editPhoneSubmitBtn');
+const editGstSubmitBtn = document.getElementById('editGstSubmitBtn');
 const editProfileGstCollapse = document.getElementById('editProfileGstCollapse');
 const editProfileGstBizName = document.getElementById('editProfileGstBizName');
 const editProfileGstAddress = document.getElementById('editProfileGstAddress');
 const editProfileOtpCollapse = document.getElementById('editProfileOtpCollapse');
+const epTiles = [...document.querySelectorAll('.ep-tile')];
 
-let originalProfilePhone = '';
-let originalProfileGst = '';
-let editProfileGstChanged = false;
+function collapseOf(tile) { return tile.querySelector(':scope > .reveal-collapse'); }
+
+function resetEditProfileTiles() {
+  epTiles.forEach((tile) => {
+    tile.classList.remove('open');
+    collapseOf(tile).classList.remove('open');
+    tile.querySelector('.ep-head').setAttribute('aria-expanded', 'false');
+  });
+  [editProfilePhone, editProfileGst].forEach((input) => {
+    input.value = '';
+    input.closest('.field').classList.remove('invalid');
+  });
+  editProfileOtp.reset();
+  editProfileGstCollapse.classList.remove('open');
+  editPhoneSubmitBtn.disabled = false;
+  editPhoneSubmitBtn.textContent = 'Submit';
+  editGstSubmitBtn.disabled = false;
+  editGstSubmitBtn.textContent = 'Submit';
+}
+
+epTiles.forEach((tile) => {
+  tile.querySelector('.ep-head').addEventListener('click', () => {
+    const opening = !tile.classList.contains('open');
+    epTiles.forEach((t) => {
+      const open = t === tile && opening;
+      t.classList.toggle('open', open);
+      collapseOf(t).classList.toggle('open', open);
+      t.querySelector('.ep-head').setAttribute('aria-expanded', String(open));
+    });
+  });
+});
 
 function openEditProfileScreen() {
-  originalProfilePhone = document.getElementById('bizProfilePhoneNo').textContent.trim();
-  originalProfileGst = document.getElementById('bizProfileGstNo').textContent.trim();
-  editProfilePhone.value = originalProfilePhone;
-  editProfileGst.value = originalProfileGst;
-  editProfileGstCollapse.classList.remove('open');
-  editProfileOtpCollapse.classList.remove('open');
-  editProfileGst.closest('.field').classList.remove('invalid');
-  editProfilePhone.closest('.field').classList.remove('invalid');
-  editProfileSaveBtn.disabled = true;
-  editProfileSaveBtn.textContent = 'Save Changes';
+  resetEditProfileTiles();
   goForward(screenProfileVerify, screenEditProfile);
 }
-
-function updateEditProfileSaveState() {
-  const changed = editProfilePhone.value.trim() !== originalProfilePhone || editProfileGst.value.trim() !== originalProfileGst;
-  editProfileSaveBtn.disabled = !changed;
-}
-editProfilePhone.addEventListener('input', updateEditProfileSaveState);
-editProfileGst.addEventListener('input', updateEditProfileSaveState);
 
 document.getElementById('editProfileBackBtn').addEventListener('click', () => {
   goBackward(screenEditProfile, screenBizProfile);
 });
 
-const editProfileOtp = createOtpController({
-  collapseId: 'editProfileOtpCollapse',
-  digitsContainerId: 'editProfileOtpDigits',
-  timerTextId: 'editProfileOtpTimerText',
-  timerValId: 'editProfileOtpTimerVal',
-  resendLinkId: 'editProfileResendOtp',
-  onComplete: finishProfileUpdate,
+[editProfilePhone, editProfileGst].forEach((input) => {
+  input.addEventListener('input', () => input.closest('.field').classList.remove('invalid'));
 });
 
-function finishProfileUpdate() {
-  const newPhone = editProfilePhone.value.trim();
-  const newGst = editProfileGst.value.trim();
-
-  document.getElementById('bizProfilePhoneNo').textContent = newPhone;
-  document.getElementById('bizProfileGstNo').textContent = newGst;
-  document.getElementById('bizProfileBannerGst').textContent = 'GSTIN ' + newGst;
-  if (editProfileGstChanged) {
-    document.getElementById('bizProfileBizName').textContent = editProfileGstBizName.textContent;
-    document.getElementById('bizProfileBannerName').textContent = editProfileGstBizName.textContent;
-    document.getElementById('bizProfileAddress').textContent = editProfileGstAddress.textContent;
-  }
-
-  editProfileSaveBtn.disabled = false;
-  editProfileSaveBtn.textContent = 'Save Changes';
-  editProfileGstCollapse.classList.remove('open');
-  editProfileOtpCollapse.classList.remove('open');
-
+function showProfileUpdatedThenLeave() {
   document.getElementById('profileUpdatedToast').classList.add('show');
   document.getElementById('accountPopupBackdrop').classList.add('show');
   setTimeout(() => {
@@ -1611,42 +1628,63 @@ function finishProfileUpdate() {
   }, 1500);
 }
 
-editProfileSaveBtn.addEventListener('click', () => {
-  const phoneChanged = editProfilePhone.value.trim() !== originalProfilePhone;
-  const gstChanged = editProfileGst.value.trim() !== originalProfileGst;
-  if (!phoneChanged && !gstChanged) return;
-  editProfileGstChanged = gstChanged;
+// Phone: Submit -> OTP layer opens between the field and Submit -> verified -> number updated
+const editProfileOtp = createOtpController({
+  collapseId: 'editProfileOtpCollapse',
+  digitsContainerId: 'editProfileOtpDigits',
+  timerTextId: 'editProfileOtpTimerText',
+  timerValId: 'editProfileOtpTimerVal',
+  resendLinkId: 'editProfileResendOtp',
+  onComplete: () => {
+    document.getElementById('bizProfilePhoneNo').textContent = editProfilePhone.value.trim();
+    editPhoneSubmitBtn.textContent = 'Verified';
+    showProfileUpdatedThenLeave();
+  },
+});
 
-  editProfileSaveBtn.disabled = true;
-  editProfileSaveBtn.textContent = 'Saving…';
-  editProfileGstCollapse.classList.remove('open');
-  editProfileOtpCollapse.classList.remove('open');
+editPhoneSubmitBtn.addEventListener('click', () => {
+  const digits = editProfilePhone.value.replace(/\D/g, '');
+  const current = document.getElementById('bizProfilePhoneNo').textContent.replace(/\D/g, '');
+  const ok = digits.length >= 10 && digits !== current;
+  setInvalid(editProfilePhone.closest('.field'), !ok);
+  if (!ok) { shakeField(editProfilePhone.closest('.field')); return; }
 
-  function proceedToPhoneStep() {
-    if (phoneChanged) {
-      editProfileOtp.send();
-      setTimeout(() => {
-        editProfileOtp.digits[0].focus();
-        editProfileOtpCollapse.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 380);
-    } else {
-      finishProfileUpdate();
-    }
-  }
+  editPhoneSubmitBtn.disabled = true;
+  editPhoneSubmitBtn.textContent = 'Sending OTP…';
+  editProfileOtp.send();
+  setTimeout(() => {
+    editProfileOtp.digits[0].focus();
+    editProfileOtpCollapse.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 380);
+});
 
-  if (gstChanged) {
-    editProfileGstBizName.textContent = '—';
-    editProfileGstAddress.textContent = '—';
-    editProfileGstCollapse.classList.add('open');
-    setTimeout(() => editProfileGstCollapse.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+// GST: Submit -> GST verification layer opens between the field and Submit -> details updated
+editGstSubmitBtn.addEventListener('click', () => {
+  const value = editProfileGst.value.trim().toUpperCase();
+  const ok = value.length === 15 && value !== document.getElementById('bizProfileGstNo').textContent.trim();
+  setInvalid(editProfileGst.closest('.field'), !ok);
+  if (!ok) { shakeField(editProfileGst.closest('.field')); return; }
+
+  editProfileGst.value = value;
+  editGstSubmitBtn.disabled = true;
+  editGstSubmitBtn.textContent = 'Verifying…';
+  editProfileGstBizName.textContent = '—';
+  editProfileGstAddress.textContent = '—';
+  editProfileGstCollapse.classList.add('open');
+  setTimeout(() => editProfileGstCollapse.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+  setTimeout(() => {
+    editProfileGstBizName.textContent = 'Gupta Jewellers Pvt. Ltd.';
+    editProfileGstAddress.textContent = 'MG Road, Jaipur, Rajasthan';
+    editGstSubmitBtn.textContent = 'Verified';
     setTimeout(() => {
-      editProfileGstBizName.textContent = 'Gupta Jewellers Pvt. Ltd.';
-      editProfileGstAddress.textContent = 'MG Road, Jaipur, Rajasthan';
-      setTimeout(proceedToPhoneStep, 900);
-    }, 1000);
-  } else {
-    proceedToPhoneStep();
-  }
+      document.getElementById('bizProfileGstNo').textContent = value;
+      document.getElementById('bizProfileBannerGst').textContent = 'GSTIN ' + value;
+      document.getElementById('bizProfileBizName').textContent = editProfileGstBizName.textContent;
+      document.getElementById('bizProfileBannerName').textContent = editProfileGstBizName.textContent;
+      document.getElementById('bizProfileAddress').textContent = editProfileGstAddress.textContent;
+      showProfileUpdatedThenLeave();
+    }, 1100);
+  }, 1000);
 });
 
 // -- Wishlist (from Home's Wishlist button) --
