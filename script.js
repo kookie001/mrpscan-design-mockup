@@ -1230,6 +1230,14 @@ function mcxSell(src) {
   return Number.isNaN(n) ? null : n;
 }
 
+// Cash / RTGS rate = the source's MCX sell + its badla; "—" when either is missing
+function fmtRateFromBadla(src, badla) {
+  const mcx = mcxSell(src);
+  const b = badla === null || badla === undefined || badla === '' || badla === '-' ? NaN : Number(badla);
+  if (mcx === null || Number.isNaN(b)) return '<span class="rc-na">—</span>';
+  return '₹ ' + (mcx + b).toLocaleString('en-IN');
+}
+
 function renderRateCards() {
   const sources = rateSources || [];
   dsRateCards.innerHTML = sources.map((s) => rateCardHtml(s, true)).join('');
@@ -1238,8 +1246,8 @@ function renderRateCards() {
   homeMcxValue.textContent = mcx ? '₹ ' + mcx.toLocaleString('en-IN') : HOME_MCX_FALLBACK;
   homeRateSources.innerHTML = chosen.map((s) => `<div class="dash-src">
     <div class="dash-src-badla">
-      <div class="dash-badge"><b>${fmtSigned(s.diff1)}</b><small>Cash</small></div>
-      <div class="dash-badge"><b>${fmtSigned(s.diff2)}</b><small>RTGS</small></div>
+      <div class="dash-badge"><b>${fmtRateFromBadla(s, s.diff1)}</b><small>Cash</small></div>
+      <div class="dash-badge"><b>${fmtRateFromBadla(s, s.diff2)}</b><small>RTGS</small></div>
     </div>
     <span class="dash-src-by">rate by ${escHtml(s.name)}</span>
   </div>`).join('');

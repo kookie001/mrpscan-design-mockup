@@ -842,7 +842,7 @@ body {
   position: relative;
   display: flex; flex-direction: column;
   border-radius: 14px;
-  padding: 16px 18px;
+  padding: 10px 12px 9px;
   margin-bottom: 12px;
   overflow: hidden;
   background: linear-gradient(155deg, var(--metallic-1) 0%, var(--metallic-2) 55%, var(--metallic-3) 100%);
@@ -857,25 +857,25 @@ body {
 }
 .dash-mcx-card > * { position: relative; z-index: 1; }
 .dash-mcx-row { display: flex; align-items: center; justify-content: space-between; }
-.dash-mcx-label { font-size: 0.92rem; font-weight: 600; color: #6b6150; }
-.dash-mcx-value { font-size: 1.35rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
+.dash-mcx-label { font-size: 0.86rem; font-weight: 600; color: #6b6150; }
+.dash-mcx-value { font-size: 1.2rem; font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
 .dash-mcx-sources:empty { display: none; }
-.dash-mcx-sources { margin-top: 14px; border-top: 1px solid rgba(21,18,13,0.12); }
-.dash-src { padding-top: 14px; }
-.dash-src + .dash-src { margin-top: 14px; border-top: 1px dashed rgba(21,18,13,0.14); }
-.dash-src-badla { display: flex; gap: 10px; font-variant-numeric: tabular-nums; }
+.dash-mcx-sources { margin-top: 8px; border-top: 1px solid rgba(21,18,13,0.12); }
+.dash-src { padding-top: 8px; }
+.dash-src + .dash-src { margin-top: 8px; border-top: 1px dashed rgba(21,18,13,0.14); }
+.dash-src-badla { display: flex; gap: 8px; font-variant-numeric: tabular-nums; }
 .dash-badge {
-  flex: 1;
-  display: flex; flex-direction: column; align-items: center; gap: 1px;
-  padding: 12px 8px 11px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.55);
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  padding: 6px 4px 5px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.5);
   border: 1px solid rgba(255,255,255,0.7);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
 }
-.dash-badge b { font-size: 1.2rem; font-weight: 800; color: var(--text); line-height: 1.2; }
-.dash-badge small { font-size: 0.78rem; font-weight: 700; color: #6b6150; margin-top: 2px; }
-.dash-src-by { display: block; margin-top: 10px; text-align: center; font-size: 0.82rem; font-weight: 700; color: #6b6150; }
+.dash-badge b { font-size: 1.08rem; font-weight: 800; color: var(--text); line-height: 1.25; white-space: nowrap; }
+.dash-badge small { font-size: 0.7rem; font-weight: 700; color: #6b6150; line-height: 1.2; }
+.dash-src-by { display: block; margin-top: 5px; text-align: center; font-size: 0.72rem; font-weight: 700; color: #6b6150; line-height: 1.2; }
 
 
 /* ---- live rate cards (Home + Dashboard Settings), fed by the gold-rate-tracker API ---- */
