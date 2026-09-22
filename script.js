@@ -533,6 +533,9 @@ const screenSettings = document.getElementById('screenSettings');
 const screenDashSettings = document.getElementById('screenDashSettings');
 const screenMasterRates = document.getElementById('screenMasterRates');
 const screenItemCode = document.getElementById('screenItemCode');
+const screenGoldRates = document.getElementById('screenGoldRates');
+const screenGoldRateSettings = document.getElementById('screenGoldRateSettings');
+const screenGoldKaratSettings = document.getElementById('screenGoldKaratSettings');
 const screenSalesInvoice = document.getElementById('screenSalesInvoice');
 const screenBizProfile = document.getElementById('screenBizProfile');
 const screenProfileVerify = document.getElementById('screenProfileVerify');
@@ -814,7 +817,7 @@ setInterval(renderDashClock, 30000);
 const floatingNav = document.getElementById('floatingNav');
 const navHomeBtn = document.getElementById('navHomeBtn');
 const navScanBtn = document.getElementById('navScanBtn');
-const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenItemCode, screenSalesInvoice, screenBizProfile, screenEditProfile, screenWishlist, screenNotifications, screenSubscription, screenPasswordManager, screenEarnInvite, screenContactUs, screenFaqs, screenEmpList, screenEmpAdd, screenEmpCredentials, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
+const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenItemCode, screenGoldRates, screenGoldRateSettings, screenGoldKaratSettings, screenSalesInvoice, screenBizProfile, screenEditProfile, screenWishlist, screenNotifications, screenSubscription, screenPasswordManager, screenEarnInvite, screenContactUs, screenFaqs, screenEmpList, screenEmpAdd, screenEmpCredentials, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
 let currentScreen = screenSplash;
 
 function updateNavForScreen(screen) {
@@ -1291,7 +1294,9 @@ document.getElementById('itemCodeBackBtn').addEventListener('click', () => {
   goBackward(screenItemCode, screenMasterRates);
 });
 
-const ITC_DELETE_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ITC_SAVE_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ITC_EDIT_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ITC_DELETE_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const itcList = document.getElementById('itcList');
 
 function renumberItcRows() {
@@ -1299,22 +1304,27 @@ function renumberItcRows() {
     row.querySelector('.itc-num').textContent = (i + 1) + '.';
   });
 }
-const ITC_EDIT_ICON = '<svg class="itc-icon-edit" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const ITC_SAVE_ICON = '<svg class="itc-icon-save" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 function wireItcRow(row) {
-  row.querySelector('.itc-icon-btn-danger').addEventListener('click', () => {
+  const saveBtn = row.querySelector('.itc-icon-btn-save');
+  const editBtn = row.querySelector('.itc-icon-btn-edit');
+  const deleteBtn = row.querySelector('.itc-icon-btn-danger');
+  const inputs = [...row.querySelectorAll('input')];
+
+  function setEditing(editing) {
+    inputs.forEach((input) => { input.readOnly = !editing; });
+    row.classList.toggle('editing', editing);
+    editBtn.disabled = editing;
+    saveBtn.disabled = !editing;
+    if (editing) inputs[0].focus();
+  }
+
+  editBtn.addEventListener('click', () => setEditing(true));
+  saveBtn.addEventListener('click', () => setEditing(false));
+  deleteBtn.addEventListener('click', () => {
     if (itcList.querySelectorAll('.itc-row').length <= 1) return;
     row.remove();
     renumberItcRows();
-  });
-  const editBtn = row.querySelector('.itc-edit-toggle-btn');
-  editBtn.addEventListener('click', () => {
-    const inputs = [...row.querySelectorAll('input')];
-    const nowEditing = editBtn.classList.toggle('editing');
-    inputs.forEach((input) => { input.readOnly = !nowEditing; });
-    editBtn.setAttribute('aria-label', nowEditing ? 'Save' : 'Edit');
-    if (nowEditing) inputs[0].focus();
   });
 }
 wireItcRow(itcList.querySelector('.itc-row'));
@@ -1323,26 +1333,153 @@ document.getElementById('itcAddBtn').addEventListener('click', () => {
   const row = document.createElement('div');
   row.className = 'itc-row';
   row.innerHTML = `
-    <div class="itc-row-body">
+    <div class="itc-row-main">
       <span class="itc-num"></span>
-      <div class="itc-row-fields">
-        <label class="itc-field"><span>Item Name</span><input type="text" readonly></label>
-        <label class="itc-field"><span>Item Code</span><input type="text" readonly></label>
+      <div class="itc-row-fields-wrap">
+        <div class="itc-row-fields">
+          <label class="itc-field"><span>Item Name</span><input type="text" readonly></label>
+          <label class="itc-field"><span>Item Code</span><input type="text" readonly></label>
+        </div>
+        <div class="itc-row-fields">
+          <label class="itc-field"><span>Wastage</span><input type="text" readonly></label>
+          <label class="itc-field"><span>Labour</span><input type="text" readonly></label>
+        </div>
       </div>
-      <button class="itc-icon-btn itc-icon-btn-danger" aria-label="Delete">${ITC_DELETE_ICON}</button>
-    </div>
-    <div class="itc-row-body itc-row-body-second">
-      <span class="itc-num" aria-hidden="true"></span>
-      <div class="itc-row-fields">
-        <label class="itc-field"><span>Wastage</span><input type="text" readonly></label>
-        <label class="itc-field"><span>Labour</span><input type="text" readonly></label>
+      <div class="itc-actions">
+        <button class="itc-icon-btn itc-icon-btn-save" aria-label="Save" disabled>${ITC_SAVE_ICON}</button>
+        <button class="itc-icon-btn itc-icon-btn-edit" aria-label="Edit">${ITC_EDIT_ICON}</button>
+        <button class="itc-icon-btn itc-icon-btn-danger" aria-label="Delete">${ITC_DELETE_ICON}</button>
       </div>
-      <button class="itc-icon-btn itc-edit-toggle-btn" aria-label="Edit">${ITC_EDIT_ICON}${ITC_SAVE_ICON}</button>
     </div>
   `;
   itcList.appendChild(row);
   wireItcRow(row);
   renumberItcRows();
+});
+
+// -- Masters -> Gold --
+document.getElementById('mstGoldRow').addEventListener('click', () => {
+  goForward(screenMasterRates, screenGoldRates);
+});
+document.getElementById('goldRatesBackBtn').addEventListener('click', () => {
+  goBackward(screenGoldRates, screenMasterRates);
+});
+
+document.getElementById('mstGoldRateSettingsRow').addEventListener('click', () => {
+  renderGoldRateSettings();
+  goForward(screenGoldRates, screenGoldRateSettings);
+});
+document.getElementById('goldRateSettingsBackBtn').addEventListener('click', () => {
+  goBackward(screenGoldRateSettings, screenGoldRates);
+});
+
+document.getElementById('mstGoldKaratSettingsRow').addEventListener('click', () => {
+  goForward(screenGoldRates, screenGoldKaratSettings);
+});
+document.getElementById('goldKaratSettingsBackBtn').addEventListener('click', () => {
+  goBackward(screenGoldKaratSettings, screenGoldRates);
+});
+
+// Gold Rate Settings: Final MCX = current MCX +/- its own change;
+// Retail / RTGS Rate 1 / RTGS Rate 2 all cascade from that Final MCX +/- their own change.
+// RTGS Rate 2 additionally lets you layer a manual tax % on top (RTGS Rate 1 is the "tax included" version).
+// "Change By" defaults to the primary bullion source's live badla (same one shown on Home).
+const grsMcxCurrent = document.getElementById('grsMcxCurrent');
+const grsMcxChangeInput = document.getElementById('grsMcxChangeInput');
+const grsMcxFinal = document.getElementById('grsMcxFinal');
+const grsCashSub = document.getElementById('grsCashSub');
+const grsCashChangeInput = document.getElementById('grsCashChangeInput');
+const grsCashFinal = document.getElementById('grsCashFinal');
+const grsRtgs1Sub = document.getElementById('grsRtgs1Sub');
+const grsRtgs1ChangeInput = document.getElementById('grsRtgs1ChangeInput');
+const grsRtgs1Final = document.getElementById('grsRtgs1Final');
+const grsRtgs2Sub = document.getElementById('grsRtgs2Sub');
+const grsRtgs2ChangeInput = document.getElementById('grsRtgs2ChangeInput');
+const grsRtgs2TaxInput = document.getElementById('grsRtgs2TaxInput');
+const grsRtgs2Final = document.getElementById('grsRtgs2Final');
+let grsMcxBase = 0;
+
+function grsSetSign(key, negative) {
+  document.querySelectorAll(`.grs-sign-toggle[data-target="${key}"] .grs-sign-btn`).forEach((b) => {
+    b.classList.toggle('active', negative === (b.dataset.sign === '-'));
+  });
+}
+function grsSignedAmount(key, input) {
+  const activeBtn = document.querySelector(`.grs-sign-toggle[data-target="${key}"] .grs-sign-btn.active`);
+  const sign = activeBtn && activeBtn.dataset.sign === '-' ? -1 : 1;
+  const amt = parseInt(input.value.replace(/[^0-9]/g, ''), 10) || 0;
+  return sign * amt;
+}
+function grsFmtSigned(n) {
+  return (n >= 0 ? '+' : '-') + Math.abs(n).toLocaleString('en-IN');
+}
+function grsRecompute() {
+  const finalMcx = grsMcxBase + grsSignedAmount('mcx', grsMcxChangeInput);
+  const finalCash = finalMcx + grsSignedAmount('cash', grsCashChangeInput);
+  const finalRtgs1 = finalMcx + grsSignedAmount('rtgs1', grsRtgs1ChangeInput);
+  const rtgs2PreTax = finalMcx + grsSignedAmount('rtgs2', grsRtgs2ChangeInput);
+  const taxPct = parseFloat(grsRtgs2TaxInput.value) || 0;
+  const finalRtgs2 = Math.round(rtgs2PreTax * (1 + taxPct / 100));
+
+  grsMcxFinal.textContent = '₹ ' + finalMcx.toLocaleString('en-IN');
+  grsCashFinal.textContent = '₹ ' + finalCash.toLocaleString('en-IN');
+  grsRtgs1Final.textContent = '₹ ' + finalRtgs1.toLocaleString('en-IN');
+  grsRtgs2Final.textContent = '₹ ' + finalRtgs2.toLocaleString('en-IN');
+}
+document.querySelectorAll('.grs-sign-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    btn.closest('.grs-sign-toggle').querySelectorAll('.grs-sign-btn').forEach((b) => b.classList.toggle('active', b === btn));
+    grsRecompute();
+  });
+});
+[grsMcxChangeInput, grsCashChangeInput, grsRtgs1ChangeInput, grsRtgs2ChangeInput, grsRtgs2TaxInput].forEach((input) => {
+  input.addEventListener('input', grsRecompute);
+});
+
+function renderGoldRateSettings() {
+  const sources = rateSources || [];
+  const primary = sources.find((s) => selectedRateSources.has(s.source)) || sources[0];
+  grsMcxBase = (primary && mcxSell(primary)) || 0;
+  grsMcxCurrent.textContent = '₹ ' + grsMcxBase.toLocaleString('en-IN');
+  grsMcxChangeInput.value = '';
+  grsSetSign('mcx', false);
+
+  const cashBadla = primary && !Number.isNaN(Number(primary.diff1)) ? Number(primary.diff1) : 0;
+  grsCashSub.textContent = primary ? `Includes ${primary.name} bhaw ${grsFmtSigned(cashBadla)}` : 'Includes bhaw';
+  grsCashChangeInput.value = Math.abs(cashBadla) || '';
+  grsSetSign('cash', cashBadla < 0);
+
+  const rtgsBadla = primary && !Number.isNaN(Number(primary.diff2)) ? Number(primary.diff2) : 0;
+  const rtgsSubText = primary ? `Includes ${primary.name} bhaw ${grsFmtSigned(rtgsBadla)}` : 'Includes bhaw';
+  grsRtgs1Sub.textContent = rtgsSubText;
+  grsRtgs1ChangeInput.value = Math.abs(rtgsBadla) || '';
+  grsSetSign('rtgs1', rtgsBadla < 0);
+
+  grsRtgs2Sub.textContent = rtgsSubText;
+  grsRtgs2ChangeInput.value = Math.abs(rtgsBadla) || '';
+  grsRtgs2TaxInput.value = '';
+  grsSetSign('rtgs2', rtgsBadla < 0);
+
+  grsRecompute();
+}
+
+// Gold Karat Settings: purity % locked until its own pencil is tapped; eye toggles dashboard visibility
+document.querySelectorAll('#gksCard .gks-row').forEach((row) => {
+  const input = row.querySelector('.gks-purity input');
+  const editBtn = row.querySelector('.gks-edit-btn');
+  const eyeBtn = row.querySelector('.gks-eye-btn');
+
+  editBtn.addEventListener('click', () => {
+    const nowEditing = editBtn.classList.toggle('editing');
+    input.readOnly = !nowEditing;
+    editBtn.setAttribute('aria-label', nowEditing ? 'Save purity' : 'Edit purity');
+    if (nowEditing) { input.focus(); input.select(); }
+  });
+
+  eyeBtn.addEventListener('click', () => {
+    const showing = eyeBtn.classList.toggle('showing');
+    eyeBtn.setAttribute('aria-label', showing ? 'Hide on dashboard' : 'Show on dashboard');
+  });
 });
 
 // -- Masters -> Sales Invoice --
