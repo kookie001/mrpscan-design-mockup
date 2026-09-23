@@ -530,8 +530,11 @@ document.getElementById('forgotMpinDoneBtn').addEventListener('click', () => bac
 
 // ---- Dashboard <-> Scanner flow (Home -> Capture -> Processing -> Review -> Final) ----
 const screenSettings = document.getElementById('screenSettings');
+const screenDashSettingsMenu = document.getElementById('screenDashSettingsMenu');
 const screenDashSettings = document.getElementById('screenDashSettings');
+const screenGoldRateView = document.getElementById('screenGoldRateView');
 const screenMasterRates = document.getElementById('screenMasterRates');
+const screenWastageMaster = document.getElementById('screenWastageMaster');
 const screenItemCode = document.getElementById('screenItemCode');
 const screenGoldRates = document.getElementById('screenGoldRates');
 const screenGoldRateSettings = document.getElementById('screenGoldRateSettings');
@@ -635,7 +638,10 @@ function startProcessing() {
     procStage.textContent = stage.label;
     if (value >= 100) {
       clearInterval(procInterval);
-      setTimeout(() => goForward(screenScanProcessing, screenScanReview), 400);
+      setTimeout(() => {
+        populateWastageCodeOptions();
+        goForward(screenScanProcessing, screenScanReview);
+      }, 400);
     }
   }, 45);
 }
@@ -817,7 +823,7 @@ setInterval(renderDashClock, 30000);
 const floatingNav = document.getElementById('floatingNav');
 const navHomeBtn = document.getElementById('navHomeBtn');
 const navScanBtn = document.getElementById('navScanBtn');
-const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettings, screenMasterRates, screenItemCode, screenGoldRates, screenGoldRateSettings, screenGoldKaratSettings, screenSalesInvoice, screenBizProfile, screenEditProfile, screenWishlist, screenNotifications, screenSubscription, screenPasswordManager, screenEarnInvite, screenContactUs, screenFaqs, screenEmpList, screenEmpAdd, screenEmpCredentials, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
+const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettingsMenu, screenDashSettings, screenGoldRateView, screenMasterRates, screenWastageMaster, screenItemCode, screenGoldRates, screenGoldRateSettings, screenGoldKaratSettings, screenSalesInvoice, screenBizProfile, screenEditProfile, screenWishlist, screenNotifications, screenSubscription, screenPasswordManager, screenEarnInvite, screenContactUs, screenFaqs, screenEmpList, screenEmpAdd, screenEmpCredentials, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
 let currentScreen = screenSplash;
 
 function updateNavForScreen(screen) {
@@ -860,7 +866,19 @@ document.getElementById('setLogoutBtn').addEventListener('click', () => {
   goBackward(screenSettings, screenLogin);
 });
 document.getElementById('setMenuDashboard').addEventListener('click', () => {
-  goForward(screenSettings, screenDashSettings);
+  goForward(screenSettings, screenDashSettingsMenu);
+});
+document.getElementById('dashSetMenuBackBtn').addEventListener('click', () => {
+  goBackward(screenDashSettingsMenu, screenSettings);
+});
+document.getElementById('mstChooseBullionRow').addEventListener('click', () => {
+  goForward(screenDashSettingsMenu, screenDashSettings);
+});
+document.getElementById('mstChooseGoldRateViewRow').addEventListener('click', () => {
+  goForward(screenDashSettingsMenu, screenGoldRateView);
+});
+document.getElementById('goldRateViewBackBtn').addEventListener('click', () => {
+  goBackward(screenGoldRateView, screenDashSettingsMenu);
 });
 document.getElementById('setMenuSubscription').addEventListener('click', () => {
   goForward(screenSettings, screenSubscription);
@@ -1166,7 +1184,7 @@ document.getElementById('pwMgrUpdateBtn').addEventListener('click', () => {
   }, 1000);
 });
 document.getElementById('dashSetBackBtn').addEventListener('click', () => {
-  goBackward(screenDashSettings, screenSettings);
+  goBackward(screenDashSettings, screenDashSettingsMenu);
 });
 
 // -- Live rate cards: JMD Patil / Mega Bullion / Shri Sai / Shri Ganesh, from the gold-rate-tracker API --
@@ -1182,6 +1200,8 @@ const homeRateSources = document.getElementById('homeRateSources');
 const HOME_MCX_FALLBACK = homeMcxValue.textContent;
 let rateSources = null; // null = still loading, [] = failed
 const selectedRateSources = new Set(['jmd_patil']);
+const customBullionSources = []; // added via "+ Add Bullion"; merged in on every render so the 30s refresh doesn't wipe them
+let customBullionCounter = 0;
 
 function escHtml(v) {
   return String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1238,19 +1258,19 @@ function fmtRateFromBadla(src, badla) {
   const mcx = mcxSell(src);
   const b = badla === null || badla === undefined || badla === '' || badla === '-' ? NaN : Number(badla);
   if (mcx === null || Number.isNaN(b)) return '<span class="rc-na">—</span>';
-  return '₹ ' + (mcx + b).toLocaleString('en-IN');
+  return (mcx + b).toLocaleString('en-IN');
 }
 
 function renderRateCards() {
-  const sources = rateSources || [];
+  const sources = [...(rateSources || []), ...customBullionSources];
   dsRateCards.innerHTML = sources.map((s) => rateCardHtml(s, true)).join('');
   const chosen = sources.filter((s) => selectedRateSources.has(s.source));
   const mcx = (chosen.length ? chosen : sources).map(mcxSell).find((n) => n !== null);
-  homeMcxValue.textContent = mcx ? '₹ ' + mcx.toLocaleString('en-IN') : HOME_MCX_FALLBACK;
+  homeMcxValue.textContent = mcx ? mcx.toLocaleString('en-IN') : HOME_MCX_FALLBACK;
   homeRateSources.innerHTML = chosen.map((s) => `<div class="dash-src">
     <div class="dash-src-badla">
-      <div class="dash-badge"><b>${fmtRateFromBadla(s, s.diff1)}</b><small>Cash</small></div>
-      <div class="dash-badge"><b>${fmtRateFromBadla(s, s.diff2)}</b><small>RTGS</small></div>
+      <div class="dash-badge"><b>${fmtRateFromBadla(s, s.diff1)}</b><small>Retail Rate</small></div>
+      <div class="dash-badge"><b>${fmtRateFromBadla(s, s.diff2)}</b><small>RTGS Retail Rate</small></div>
     </div>
     <span class="dash-src-by">rate by ${escHtml(s.name)}</span>
   </div>`).join('');
@@ -1273,6 +1293,25 @@ dsRateCards.addEventListener('change', (e) => {
   if (!box) return;
   if (box.checked) selectedRateSources.add(box.dataset.source);
   else selectedRateSources.delete(box.dataset.source);
+  renderRateCards();
+});
+
+document.getElementById('dsAddBullionBtn').addEventListener('click', () => {
+  customBullionCounter += 1;
+  const source = 'custom_' + customBullionCounter;
+  customBullionSources.push({
+    source,
+    name: 'New Bullion ' + customBullionCounter,
+    timestamp: new Date().toISOString(),
+    rows: [
+      { label: 'Gold Future MCX', buy: null, sell: null },
+      { label: '99.50 Gold Cash', buy: null, sell: null },
+      { label: '99.50 Gold RTGS', buy: null, sell: null },
+    ],
+    diff1: null,
+    diff2: null,
+  });
+  selectedRateSources.add(source);
   renderRateCards();
 });
 
@@ -1357,6 +1396,81 @@ document.getElementById('itcAddBtn').addEventListener('click', () => {
   renumberItcRows();
 });
 
+// -- Masters -> Wastage (starts editable; Save locks it + flips the button to Edit; Edit unlocks it again) --
+document.getElementById('mstWastageRow').addEventListener('click', () => {
+  goForward(screenMasterRates, screenWastageMaster);
+});
+document.getElementById('wastageMasterBackBtn').addEventListener('click', () => {
+  goBackward(screenWastageMaster, screenMasterRates);
+});
+
+const wstList = document.getElementById('wstList');
+const WST_SAVE_ICON = '<svg class="wst-icon-save" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const WST_EDIT_ICON = '<svg class="wst-icon-edit" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function renumberWstRows() {
+  [...wstList.querySelectorAll('.itc-row')].forEach((row, i) => {
+    row.querySelector('.itc-num').textContent = (i + 1) + '.';
+  });
+}
+
+// Scanner Review's Wastage Code dropdown -> populated from the codes saved in Masters -> Wastage
+function populateWastageCodeOptions() {
+  const select = document.getElementById('wastageCodeSelect');
+  if (!select) return;
+  const currentValue = select.value || 'WS-08';
+  const codes = [...wstList.querySelectorAll('.itc-row')]
+    .map((row) => row.querySelector('.itc-field input').value.trim())
+    .filter((code) => code);
+  if (currentValue && !codes.includes(currentValue)) codes.unshift(currentValue);
+  select.innerHTML = codes.map((code) => `<option value="${escHtml(code)}"${code === currentValue ? ' selected' : ''}>${escHtml(code)}</option>`).join('');
+}
+
+function wireWstRow(row) {
+  const toggleBtn = row.querySelector('.wst-toggle-btn');
+  const deleteBtn = row.querySelector('.itc-icon-btn-danger');
+  const inputs = [...row.querySelectorAll('input')];
+
+  toggleBtn.addEventListener('click', () => {
+    const nowLocked = !toggleBtn.classList.contains('locked');
+    toggleBtn.classList.toggle('locked', nowLocked);
+    inputs.forEach((input) => { input.readOnly = nowLocked; });
+    toggleBtn.setAttribute('aria-label', nowLocked ? 'Edit' : 'Save');
+    if (!nowLocked) inputs[0].focus();
+  });
+
+  deleteBtn.addEventListener('click', () => {
+    if (wstList.querySelectorAll('.itc-row').length <= 1) return;
+    row.remove();
+    renumberWstRows();
+  });
+}
+wireWstRow(wstList.querySelector('.itc-row'));
+
+document.getElementById('wstAddBtn').addEventListener('click', () => {
+  const row = document.createElement('div');
+  row.className = 'itc-row';
+  row.innerHTML = `
+    <div class="itc-row-main">
+      <span class="itc-num"></span>
+      <div class="itc-row-fields-wrap">
+        <div class="itc-row-fields">
+          <label class="itc-field"><span>Wastage Code</span><input type="text"></label>
+          <label class="itc-field"><span>Wastage %</span><input type="text"></label>
+        </div>
+      </div>
+      <div class="wst-actions">
+        <button class="itc-icon-btn wst-toggle-btn" aria-label="Save">${WST_SAVE_ICON}${WST_EDIT_ICON}</button>
+        <button class="itc-icon-btn itc-icon-btn-danger" aria-label="Delete">${ITC_DELETE_ICON}</button>
+      </div>
+    </div>
+  `;
+  wstList.appendChild(row);
+  wireWstRow(row);
+  renumberWstRows();
+  row.querySelector('input').focus();
+});
+
 // -- Masters -> Gold --
 document.getElementById('mstGoldRow').addEventListener('click', () => {
   goForward(screenMasterRates, screenGoldRates);
@@ -1394,7 +1508,6 @@ const grsRtgs1Sub = document.getElementById('grsRtgs1Sub');
 const grsRtgs1ChangeInput = document.getElementById('grsRtgs1ChangeInput');
 const grsRtgs1Final = document.getElementById('grsRtgs1Final');
 const grsRtgs2Sub = document.getElementById('grsRtgs2Sub');
-const grsRtgs2ChangeInput = document.getElementById('grsRtgs2ChangeInput');
 const grsRtgs2TaxInput = document.getElementById('grsRtgs2TaxInput');
 const grsRtgs2Final = document.getElementById('grsRtgs2Final');
 let grsMcxBase = 0;
@@ -1417,9 +1530,9 @@ function grsRecompute() {
   const finalMcx = grsMcxBase + grsSignedAmount('mcx', grsMcxChangeInput);
   const finalCash = finalMcx + grsSignedAmount('cash', grsCashChangeInput);
   const finalRtgs1 = finalMcx + grsSignedAmount('rtgs1', grsRtgs1ChangeInput);
-  const rtgs2PreTax = finalMcx + grsSignedAmount('rtgs2', grsRtgs2ChangeInput);
+  // RTGS Rate 2 = RTGS Rate 1 minus its tax (RTGS 1 already includes tax; this strips it back out)
   const taxPct = parseFloat(grsRtgs2TaxInput.value) || 0;
-  const finalRtgs2 = Math.round(rtgs2PreTax * (1 + taxPct / 100));
+  const finalRtgs2 = Math.round(finalRtgs1 * (1 - taxPct / 100));
 
   grsMcxFinal.textContent = '₹ ' + finalMcx.toLocaleString('en-IN');
   grsCashFinal.textContent = '₹ ' + finalCash.toLocaleString('en-IN');
@@ -1432,7 +1545,7 @@ document.querySelectorAll('.grs-sign-btn').forEach((btn) => {
     grsRecompute();
   });
 });
-[grsMcxChangeInput, grsCashChangeInput, grsRtgs1ChangeInput, grsRtgs2ChangeInput, grsRtgs2TaxInput].forEach((input) => {
+[grsMcxChangeInput, grsCashChangeInput, grsRtgs1ChangeInput, grsRtgs2TaxInput].forEach((input) => {
   input.addEventListener('input', grsRecompute);
 });
 
@@ -1456,9 +1569,7 @@ function renderGoldRateSettings() {
   grsSetSign('rtgs1', rtgsBadla < 0);
 
   grsRtgs2Sub.textContent = rtgsSubText;
-  grsRtgs2ChangeInput.value = Math.abs(rtgsBadla) || '';
   grsRtgs2TaxInput.value = '';
-  grsSetSign('rtgs2', rtgsBadla < 0);
 
   grsRecompute();
 }
@@ -1920,7 +2031,7 @@ function checkWishlistEmpty() {
 }
 
 wishlistList.querySelectorAll('.wl-card').forEach((card) => {
-  card.addEventListener('click', () => goForward(screenWishlist, screenScanReview));
+  card.addEventListener('click', () => { populateWastageCodeOptions(); goForward(screenWishlist, screenScanReview); });
   card.querySelector('.wl-delete-btn').addEventListener('click', (e) => {
     e.stopPropagation();
     if (confirm('Are you sure you want to remove this item from your wishlist?')) {
