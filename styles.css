@@ -2400,6 +2400,19 @@ body {
   margin-top: -4px;
 }
 
+.auth-switch {
+  text-align: center;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin: 2px 0 0;
+}
+.auth-switch a {
+  color: var(--gold-deep);
+  font-weight: 700;
+  text-decoration: none;
+}
+
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
   border-radius: 999px; font-weight: 700; font-size: 0.98rem;

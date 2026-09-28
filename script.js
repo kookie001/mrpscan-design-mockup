@@ -123,6 +123,7 @@ document.getElementById('loginForm').addEventListener('submit', (e) => {
   screenHome.classList.remove('exit-right');
   screenHome.classList.add('active', 'enter-right');
   updateNavForScreen(screenHome);
+  resetLoginScreen();
 });
 
 // ---- signup form refs + per-field validation ----
@@ -525,8 +526,72 @@ document.getElementById('goForgotMpin').addEventListener('click', (e) => {
   screenForgotMpin.classList.add('active', 'enter-right');
 });
 
+// Returning from Forgot MPIN deliberately does NOT reset the login screen — phone/OTP
+// were already verified to get there, so the user resumes right at the MPIN step.
 document.getElementById('backFromForgotMpin').addEventListener('click', () => backToScreenFrom(screenForgotMpin, screenLogin));
 document.getElementById('forgotMpinDoneBtn').addEventListener('click', () => backToScreenFrom(screenForgotMpin, screenLogin));
+
+// ---- Login: phone -> OTP -> MPIN (single scroll, same pattern as Create Account: sections
+// reveal downward and the page scrolls to the new section, nothing collapses away) ----
+const loginPhone = document.getElementById('loginPhone');
+const loginPhoneField = loginPhone.closest('.field');
+const sendCodeLogin = document.getElementById('sendCodeLogin');
+const loginPhoneCollapse = document.getElementById('loginPhoneCollapse');
+const loginMpinCollapse = document.getElementById('loginMpinCollapse');
+
+const loginOtp = createOtpController({
+  collapseId: 'otpCollapseLogin',
+  digitsContainerId: 'otpDigitsLogin',
+  timerTextId: 'otpTimerTextLogin',
+  timerValId: 'otpTimerValLogin',
+  resendLinkId: 'resendOtpLogin',
+  onComplete: () => {
+    loginMpinCollapse.classList.add('open');
+    setTimeout(() => {
+      loginMpinCollapse.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => document.querySelector('#loginMpinDigits .mpin-digit').focus(), 400);
+    }, 300);
+  },
+});
+
+sendCodeLogin.addEventListener('click', () => {
+  if (!loginPhone.value.trim()) {
+    setInvalid(loginPhoneField, true);
+    shakeField(loginPhoneField);
+    loginPhone.focus();
+    return;
+  }
+  setInvalid(loginPhoneField, false);
+  loginPhone.readOnly = true;
+  sendCodeLogin.disabled = true;
+  sendCodeLogin.textContent = 'Sent';
+  loginOtp.send();
+  setTimeout(() => {
+    loginOtp.digits[0].focus();
+    document.getElementById('otpBoxLogin').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 380);
+});
+loginPhone.addEventListener('input', () => setInvalid(loginPhoneField, false));
+
+function resetLoginScreen() {
+  loginOtp.reset();
+  loginPhoneCollapse.classList.add('open');
+  loginMpinCollapse.classList.remove('open');
+  loginPhone.value = '';
+  loginPhone.readOnly = false;
+  sendCodeLogin.disabled = false;
+  sendCodeLogin.textContent = 'Send code';
+  setInvalid(loginPhoneField, false);
+  clearMpinDigits('loginMpinDigits');
+  loginMpinField.classList.remove('invalid');
+  loginErrorMsg.classList.remove('show');
+}
+
+document.getElementById('goLoginFromSignup').addEventListener('click', (e) => {
+  e.preventDefault();
+  resetLoginScreen();
+  goForward(screenSignup, screenLogin);
+});
 
 // ---- Dashboard <-> Scanner flow (Home -> Capture -> Processing -> Review -> Final) ----
 const screenSettings = document.getElementById('screenSettings');
@@ -864,6 +929,7 @@ document.getElementById('setBackBtn').addEventListener('click', () => {
 });
 document.getElementById('setLogoutBtn').addEventListener('click', () => {
   goBackward(screenSettings, screenLogin);
+  resetLoginScreen();
 });
 document.getElementById('setMenuDashboard').addEventListener('click', () => {
   goForward(screenSettings, screenDashSettingsMenu);
