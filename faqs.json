@@ -54,6 +54,103 @@
       ]
     },
     {
+      "id": "pricing-payment",
+      "title": {
+        "en": "Pricing & Payment",
+        "hi": "कीमत और भुगतान"
+      },
+      "items": [
+        {
+          "id": "pricing-payment-1",
+          "question": {
+            "en": "How much does MRPscan cost?",
+            "hi": "MRPscan की कीमत कितनी है?"
+          },
+          "answer": {
+            "en": "₹12,000 + GST, paid one time for each GST-registered business. You get lifetime access with 1000 free credits, and all your users are included. Home screen → ☰ Menu → Settings → Credits & Subscription → Purchase Now.",
+            "hi": "हर GST-registered business के लिए एक बार ₹12,000 + GST। इसमें lifetime access और 1000 free credits मिलते हैं, और आपके सारे users शामिल हैं। Home screen → ☰ Menu → Settings → Credits & Subscription → Purchase Now।"
+          }
+        },
+        {
+          "id": "pricing-payment-2",
+          "question": {
+            "en": "Do I have to pay extra when I add employees?",
+            "hi": "Employee add करने पर क्या मुझे अलग से पैसे देने होंगे?"
+          },
+          "answer": {
+            "en": "No. The cost is paid once by the company for its GST license. Any employees you add under that license cost nothing extra.",
+            "hi": "नहीं। Company को अपने GST license के लिए कीमत सिर्फ एक बार देनी होती है। उस license के तहत आप जो भी employees add करें, उनके लिए कोई अलग charge नहीं है।"
+          }
+        },
+        {
+          "id": "pricing-payment-3",
+          "question": {
+            "en": "How do I make the payment?",
+            "hi": "Payment कैसे करूं?"
+          },
+          "answer": {
+            "en": "Payment is made online through Razorpay. Home screen → ☰ Menu → Settings → Credits & Subscription → Purchase Now → complete the payment on Razorpay.",
+            "hi": "Payment Razorpay के जरिए online होती है। Home screen → ☰ Menu → Settings → Credits & Subscription → Purchase Now → Razorpay पर payment पूरी करें।"
+          }
+        },
+        {
+          "id": "pricing-payment-7",
+          "question": {
+            "en": "Which payment methods can I use, and what if my payment fails?",
+            "hi": "मैं कौन-से payment तरीके इस्तेमाल कर सकता हूं, और payment fail हो जाए तो क्या करूं?"
+          },
+          "answer": {
+            "en": "Razorpay supports UPI, cards and net banking, so you can pay whichever way suits you. If a payment fails, wait for some time and try again: Home screen → ☰ Menu → Settings → Credits & Subscription → Purchase Now.",
+            "hi": "Razorpay पर UPI, card और net banking, सब चलते हैं, तो जो तरीका आपको ठीक लगे उससे pay करें। Payment fail हो जाए तो थोड़ी देर रुककर दोबारा try करें: Home screen → ☰ Menu → Settings → Credits & Subscription → Purchase Now।"
+          }
+        },
+        {
+          "id": "pricing-payment-8",
+          "question": {
+            "en": "Will I get a GST invoice for my purchase?",
+            "hi": "क्या मुझे अपनी purchase का GST invoice मिलेगा?"
+          },
+          "answer": {
+            "en": "Yes. Home screen → ☰ Menu → Settings → Credits & Subscription → Purchase Now → enter your email when asked, then pay. After the payment, your GST invoice is sent to that email, so make sure the email you enter is correct.",
+            "hi": "हां। Home screen → ☰ Menu → Settings → Credits & Subscription → Purchase Now → पूछे जाने पर अपना email डालें, फिर payment करें। Payment होने के बाद आपका GST invoice उसी email पर आ जाएगा, इसलिए सही email ही डालें।"
+          }
+        },
+        {
+          "id": "pricing-payment-4",
+          "question": {
+            "en": "Is this a yearly or recurring charge?",
+            "hi": "क्या यह हर साल या बार-बार लगने वाला charge है?"
+          },
+          "answer": {
+            "en": "No. It is a one-time payment with no recurring charges, and your access is activated instantly after payment.",
+            "hi": "नहीं। यह एक बार का payment है, कोई recurring charge नहीं है, और payment के तुरंत बाद आपका access activate हो जाता है।"
+          }
+        },
+        {
+          "id": "pricing-payment-5",
+          "question": {
+            "en": "Can I try the app before paying?",
+            "hi": "क्या मैं payment से पहले app try कर सकता हूं?"
+          },
+          "answer": {
+            "en": "Yes. You get a 10-day free trial with 10 free credits for your GST. During the trial you pay per scan, and you can recharge credits whenever they run low.",
+            "hi": "हां। आपको अपने GST के लिए 10 दिन का free trial और 10 free credits मिलते हैं। Trial में आप हर scan के हिसाब से pay करते हैं, और credits कम होने पर कभी भी recharge कर सकते हैं।"
+          }
+        },
+        {
+          "id": "pricing-payment-6",
+          "question": {
+            "en": "How do I recharge my credits?",
+            "hi": "मैं अपने credits कैसे recharge करूं?"
+          },
+          "answer": {
+            "en": "Home screen → ☰ Menu → Settings → Credits & Subscription → Recharge Credits → enter the credit amount (minimum ₹50) and pay.",
+            "hi": "Home screen → ☰ Menu → Settings → Credits & Subscription → Recharge Credits → credit amount डालें (कम से कम ₹50) और payment करें।"
+          }
+        }
+      ]
+    },
+    {
       "id": "gold",
       "title": {
         "en": "Gold",
