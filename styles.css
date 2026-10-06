@@ -343,7 +343,7 @@ body {
 }
 
 /* ---- AUTH SCREENS ---- */
-.screen.login, .screen.signup, .screen.home, .screen.forgot-mpin, .screen.forgot-pw, .screen.profile-verify {
+.screen.login, .screen.signup, .screen.home, .screen.forgot-mpin, .screen.profile-verify {
   background: var(--bg);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -1290,7 +1290,7 @@ body {
 .mst-row svg { flex-shrink: 0; color: var(--text-dim); }
 
 /* ==================== EMPLOYEE MANAGER ==================== */
-.screen.emp-list, .screen.emp-add, .screen.emp-credentials, .screen.emp-permissions, .screen.emp-password, .screen.emp-detail {
+.screen.emp-list, .screen.emp-add, .screen.emp-credentials, .screen.emp-permissions, .screen.emp-mpin, .screen.mpin-manager, .screen.emp-detail {
   background: var(--bg); overflow: hidden; display: flex; flex-direction: column;
 }
 
@@ -1344,6 +1344,7 @@ body {
 }
 .emp-card-perm-btn:active { transform: scale(0.94); }
 
+.screen.emp-credentials .emp-form-card { margin-top: 14px; margin-bottom: 14px; }
 .emp-cred-note { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 16px; }
 .emp-cred-share-btn {
   width: 100%; height: 50px; border-radius: 999px;
@@ -1943,9 +1944,6 @@ body {
 }
 .itc-add-btn:active { transform: scale(0.97); }
 
-/* password manager: a standalone error line outside a .field, shown via .show */
-#pwMgrError { display: none; }
-#pwMgrError.show { display: block; }
 
 /* ==================== EARN & INVITE ==================== */
 .screen.earn-invite, .screen.contact-us, .screen.faqs { background: var(--bg); overflow: hidden; display: flex; flex-direction: column; }

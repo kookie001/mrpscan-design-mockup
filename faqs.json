@@ -1,6 +1,59 @@
 {
   "faqs": [
     {
+      "id": "login-mpin",
+      "title": {
+        "en": "Login & MPIN",
+        "hi": "लॉगिन और MPIN"
+      },
+      "items": [
+        {
+          "id": "login-mpin-1",
+          "question": {
+            "en": "How do I log in to the app?",
+            "hi": "मैं app में login कैसे करूं?"
+          },
+          "answer": {
+            "en": "Enter your registered phone number → verify the 6-digit OTP → enter your 4-digit MPIN. No username or password is needed.",
+            "hi": "अपना registered phone number डालें → 6-digit OTP से verify करें → अपना 4-digit MPIN डालें। Username या password की जरूरत नहीं है।"
+          }
+        },
+        {
+          "id": "login-mpin-2",
+          "question": {
+            "en": "I forgot my MPIN. What should I do?",
+            "hi": "मैं अपना MPIN भूल गया, क्या करूं?"
+          },
+          "answer": {
+            "en": "On the login screen tap Forgot MPIN? → enter your phone number → verify the OTP. Your existing MPIN will be shown. Tap Back to Log In and enter it. You won’t be asked for your phone number again.",
+            "hi": "Login screen पर Forgot MPIN? दबाएं → phone number डालें → OTP verify करें। आपका existing MPIN screen पर दिख जाएगा। Back to Log In दबाकर उसे डालें। Phone number दोबारा नहीं पूछा जाएगा।"
+          }
+        },
+        {
+          "id": "login-mpin-3",
+          "question": {
+            "en": "I didn’t receive the OTP. What now?",
+            "hi": "मुझे OTP नहीं आया, अब क्या करूं?"
+          },
+          "answer": {
+            "en": "Wait for the 30-second timer to finish, then tap Resend code. Also check that the phone number is correct and your network is working.",
+            "hi": "30 second का timer खत्म होने दें, फिर Resend code दबाएं। साथ ही phone number सही है और network चल रहा है, यह भी जांच लें।"
+          }
+        },
+        {
+          "id": "login-mpin-4",
+          "question": {
+            "en": "Can I change my phone number or GST number?",
+            "hi": "क्या मैं अपना phone number या GST number बदल सकता हूं?"
+          },
+          "answer": {
+            "en": "Yes. Home screen → ☰ Menu → Settings → tap your business name at the top (Profile) → Edit Profile → Change Phone number or Change GST no. For your security you first re-enter your MPIN. Then the new number is verified by OTP, or the GST number is verified and your business details update.",
+            "hi": "हां। Home screen → ☰ Menu → Settings → ऊपर अपने business name पर tap करें (Profile) → Edit Profile → Change Phone number या Change GST no. सुरक्षा के लिए पहले MPIN दोबारा डालना होता है। फिर नया number OTP से verify होता है, या GST number verify होकर business details update हो जाती हैं।"
+          }
+        }
+      ]
+    },
+    {
       "id": "gold",
       "title": {
         "en": "Gold",
@@ -14,8 +67,8 @@
             "hi": "क्या मैं अपना पसंदीदा Bullion source चुन सकता हूं?"
           },
           "answer": {
-            "en": "Yes. Settings → Dashboard Settings → Choose Bullion Source → select the one you want to show your rates.",
-            "hi": "हां। Settings → Dashboard Settings → Choose Bullion Source → जो source अपनी rates के लिए चाहिए, उसे select करें।"
+            "en": "Yes. Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion → tick the bullion whose rates you want to show on your Home screen.",
+            "hi": "हां। Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion → जिस bullion की rates Home screen पर दिखानी हैं, उस पर tick करें।"
           }
         },
         {
@@ -25,8 +78,8 @@
             "hi": "क्या मैं अपना पसंदीदा Bullion source जोड़ सकता हूं?"
           },
           "answer": {
-            "en": "Yes. Settings → Dashboard Settings → Choose Bullion Source → add your preferred source. We’ll get the required information and update you once it’s done.",
-            "hi": "हां। Settings → Dashboard Settings → Choose Bullion Source → अपना पसंदीदा source add करें। जरूरी जानकारी लेकर हमारी टीम आपको अपडेट कर देगी।"
+            "en": "Yes. Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion → tap + Add Bullion. We’ll get the required information and update you once it’s done.",
+            "hi": "हां। Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion → + Add Bullion दबाएं। जरूरी जानकारी लेकर हमारी टीम आपको अपडेट कर देगी।"
           }
         },
         {
@@ -36,19 +89,19 @@
             "hi": "मैं अपने dashboard पर कौन-सी rates दिखानी हैं, यह कैसे चुनूं?"
           },
           "answer": {
-            "en": "Settings → Dashboard Settings → select the Cash and RTGS rates you want for 24K, 22K, 20K, 18K, 14K and 9K gold. They’ll show up on your dashboard.",
-            "hi": "Settings → Dashboard Settings → 24K, 22K, 20K, 18K, 14K और 9K सोने की जो Cash और RTGS rates चाहिए, उन्हें select करें। वो आपके dashboard पर दिखने लगेंगी।"
+            "en": "Home screen → ☰ Menu → Settings → Dashboard Settings → Choose Gold Rate View → tick the MCX, RTGS and Cash rates you want for 24K, 22K, 20K, 18K, 14K and 9K gold. Only the ticked rates will show on your Home dashboard.",
+            "hi": "Home screen → ☰ Menu → Settings → Dashboard Settings → Choose Gold Rate View → 24K, 22K, 20K, 18K, 14K और 9K सोने की जो MCX, RTGS और Cash rates चाहिए, उन पर tick करें। सिर्फ tick की हुई rates ही आपके Home dashboard पर दिखेंगी।"
           }
         },
         {
           "id": "gold-4",
           "question": {
-            "en": "Can I change the MCX, Cash and RTGS rates that are shown by default?",
-            "hi": "क्या मैं default दिखने वाली MCX, Cash और RTGS rates बदल सकता हूं?"
+            "en": "Can I change the MCX, Retail and RTGS rates that are shown by default?",
+            "hi": "क्या मैं default दिखने वाली MCX, Retail और RTGS rates बदल सकता हूं?"
           },
           "answer": {
-            "en": "Yes. Settings → Dashboard Settings → Masters → Gold → Rates → add or subtract the amount you want. The updated rate will be shown on your dashboard from then on.",
-            "hi": "हां। Settings → Dashboard Settings → Masters → Gold → Rates → जितना amount चाहिए उतना add या minus करें। यह नई rate तभी से आपके dashboard पर दिखेगी।"
+            "en": "Yes. Home screen → ☰ Menu → Settings → Masters → Gold → Gold Rate Settings → in each rate card choose + or − under Change By and enter the amount. The Final rate updates right there and is shown on your dashboard from then on.",
+            "hi": "हां। Home screen → ☰ Menu → Settings → Masters → Gold → Gold Rate Settings → हर rate card में Change By के नीचे + या − चुनकर amount डालें। Final rate वहीं तुरंत update हो जाती है और तब से आपके dashboard पर दिखती है।"
           }
         },
         {
@@ -58,8 +111,8 @@
             "hi": "क्या मैं सोने की purity percentage बदल सकता हूं?"
           },
           "answer": {
-            "en": "Yes, for 22K, 18K, 14K and 9K gold. Settings → Dashboard Settings → Masters → Gold → edit the purity percentage for each karat. This percentage will be used every time you calculate MRP.",
-            "hi": "हां, 22K, 18K, 14K और 9K सोने के लिए। Settings → Dashboard Settings → Masters → Gold → हर karat की purity percentage edit करें। यह percentage हर बार MRP calculate करते समय इस्तेमाल होगी।"
+            "en": "Yes, for 22K, 18K, 14K and 9K gold. Home screen → ☰ Menu → Settings → Masters → Gold → Gold Karat Settings → edit the purity percentage for each karat. This percentage will be used every time you calculate MRP.",
+            "hi": "हां, 22K, 18K, 14K और 9K सोने के लिए। Home screen → ☰ Menu → Settings → Masters → Gold → Gold Karat Settings → हर karat की purity percentage edit करें। यह percentage हर बार MRP calculate करते समय इस्तेमाल होगी।"
           }
         },
         {
@@ -71,6 +124,50 @@
           "answer": {
             "en": "After scanning the tag, go to the Gold section → tap RTGS or Cash rate. The MRP will be calculated using that rate automatically.",
             "hi": "Tag scan करने के बाद, Gold section में जाकर RTGS या Cash rate पर tap करें। MRP उसी rate से automatically calculate हो जाएगी।"
+          }
+        },
+        {
+          "id": "gold-7",
+          "question": {
+            "en": "What is the difference between Retail Rate and RTGS Retail Rate?",
+            "hi": "Retail Rate और RTGS Retail Rate में क्या फर्क है?"
+          },
+          "answer": {
+            "en": "Both start from the live MCX rate. Retail Rate is MCX plus or minus the amount you set. RTGS Retail Rate is the RTGS-based rate you choose in Gold Rate Settings.",
+            "hi": "दोनों live MCX rate से शुरू होते हैं। Retail Rate में MCX के ऊपर आपका जोड़ा या घटाया हुआ amount लगता है। RTGS Retail Rate वो RTGS-based rate है जो आप Gold Rate Settings में चुनते हैं।"
+          }
+        },
+        {
+          "id": "gold-8",
+          "question": {
+            "en": "What are RTGS Rate 1 and RTGS Rate 2, and which one is used?",
+            "hi": "RTGS Rate 1 और RTGS Rate 2 क्या हैं, और कौन-सा use होगा?"
+          },
+          "answer": {
+            "en": "Home screen → ☰ Menu → Settings → Masters → Gold → Gold Rate Settings. RTGS Rate 1 includes tax (3%). RTGS Rate 2 is RTGS Rate 1 minus the tax % you enter, so it is the rate without tax. Tick the radio button next to the one you want. Only one can be selected at a time.",
+            "hi": "Home screen → ☰ Menu → Settings → Masters → Gold → Gold Rate Settings। RTGS Rate 1 में tax (3%) शामिल है। RTGS Rate 2, RTGS Rate 1 में से आपके डाले हुए tax % घटाकर बनता है, यानी बिना tax वाला rate। जो चाहिए उसके सामने का radio button select करें। एक समय पर एक ही select होता है।"
+          }
+        },
+        {
+          "id": "gold-9",
+          "question": {
+            "en": "How do I show more than one Bullion rate on my Home screen?",
+            "hi": "मैं Home screen पर एक से ज्यादा Bullion rate कैसे दिखाऊं?"
+          },
+          "answer": {
+            "en": "Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion. Tick the bullions you want and they show on Home. If yours isn’t listed, tap + Add Bullion and we’ll set it up. Rates refresh automatically every 30 seconds.",
+            "hi": "Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion। जो bullion चाहिए उन पर tick करें, वे Home पर दिखेंगे। आपका bullion list में न हो तो + Add Bullion दबाएं, हम उसे जोड़ देंगे। Rates हर 30 second में अपने आप refresh होते हैं।"
+          }
+        },
+        {
+          "id": "gold-10",
+          "question": {
+            "en": "Which karat rates can I show on my Home screen?",
+            "hi": "मैं Home screen पर कौन-से karat की rates दिखा सकता हूं?"
+          },
+          "answer": {
+            "en": "Home screen → ☰ Menu → Settings → Dashboard Settings → Choose Gold Rate View → tick the rates you want for 24K, 22K, 20K, 18K, 14K and 9K. To change the purity % of a karat, use Masters → Gold → Gold Karat Settings instead.",
+            "hi": "Home screen → ☰ Menu → Settings → Dashboard Settings → Choose Gold Rate View → 24K, 22K, 20K, 18K, 14K और 9K में से जो rates चाहिए उन पर tick करें। किसी karat की purity % बदलनी हो तो Masters → Gold → Gold Karat Settings में जाएं।"
           }
         }
       ]
@@ -89,8 +186,8 @@
             "hi": "किसी particular shape, sieve, color या clarity के लिए predefined diamond rates कैसे add करूं?"
           },
           "answer": {
-            "en": "Settings → Masters → Diamond → Add Diamond Rates → fill in the required columns to add rates.",
-            "hi": "Settings → Masters → Diamond → Add Diamond Rates → जरूरी columns भरकर rates add करें।"
+            "en": "Home screen → ☰ Menu → Settings → Masters → Diamond → Add Diamond Rates → fill in the required columns to add rates.",
+            "hi": "Home screen → ☰ Menu → Settings → Masters → Diamond → Add Diamond Rates → जरूरी columns भरकर rates add करें।"
           }
         },
         {
@@ -100,8 +197,8 @@
             "hi": "अगर मेरे tag पर diamond packet code लिखा है, तो क्या मैं उसे add कर सकता हूं?"
           },
           "answer": {
-            "en": "Yes. Settings → Masters → Diamond → Add Diamond Rates → enter the packet code and its rate in the Packet Code column. This rate will be applied automatically whenever the scanner detects this packet code.",
-            "hi": "हां। Settings → Masters → Diamond → Add Diamond Rates → Packet Code column में packet code और उसकी rate डालें। जब भी scanner यह packet code scan करेगा, यह rate automatically लग जाएगी।"
+            "en": "Yes. Home screen → ☰ Menu → Settings → Masters → Diamond → Add Diamond Rates → enter the packet code and its rate in the Packet Code column. This rate will be applied automatically whenever the scanner detects this packet code.",
+            "hi": "हां। Home screen → ☰ Menu → Settings → Masters → Diamond → Add Diamond Rates → Packet Code column में packet code और उसकी rate डालें। जब भी scanner यह packet code scan करेगा, यह rate automatically लग जाएगी।"
           }
         },
         {
@@ -153,8 +250,8 @@
             "hi": "Predefined colorstone rates कैसे add करूं?"
           },
           "answer": {
-            "en": "Settings → Masters → Colorstone → add your predefined rates there.",
-            "hi": "Settings → Masters → Colorstone → अपनी predefined rates यहां add करें।"
+            "en": "Home screen → ☰ Menu → Settings → Masters → Colorstone → add your predefined rates there.",
+            "hi": "Home screen → ☰ Menu → Settings → Masters → Colorstone → अपनी predefined rates यहां add करें।"
           }
         },
         {
@@ -206,8 +303,50 @@
             "hi": "क्या मैं अपने tags के लिए labour charges predefine कर सकता हूं?"
           },
           "answer": {
-            "en": "Yes. Settings → Masters → Labour Charges → add your desired labour rate and select Gross Weight or Net Weight. This will be saved in your Masters and used every time you calculate MRP.",
-            "hi": "हां। Settings → Masters → Labour Charges → अपनी मनचाही labour rate डालें और Gross Weight या Net Weight चुनें। यह Masters में save हो जाएगा और हर बार MRP calculate करते समय इस्तेमाल होगा।"
+            "en": "Yes. Home screen → ☰ Menu → Settings → Masters → Labour Charges → add your desired labour rate and select Gross Weight or Net Weight. This will be saved in your Masters and used every time you calculate MRP.",
+            "hi": "हां। Home screen → ☰ Menu → Settings → Masters → Labour Charges → अपनी मनचाही labour rate डालें और Gross Weight या Net Weight चुनें। यह Masters में save हो जाएगा और हर बार MRP calculate करते समय इस्तेमाल होगा।"
+          }
+        }
+      ]
+    },
+    {
+      "id": "wastage",
+      "title": {
+        "en": "Wastage",
+        "hi": "वेस्टेज"
+      },
+      "items": [
+        {
+          "id": "wastage-1",
+          "question": {
+            "en": "How do I add wastage codes?",
+            "hi": "Wastage code कैसे add करूं?"
+          },
+          "answer": {
+            "en": "Home screen → ☰ Menu → Settings → Masters → Wastage → add a Wastage Code (for example WS-08) and its Wastage %, then tap Save. It is saved in your Masters.",
+            "hi": "Home screen → ☰ Menu → Settings → Masters → Wastage → Wastage Code (जैसे WS-08) और उसका Wastage % डालें, फिर Save दबाएं। यह आपके Masters में save हो जाएगा।"
+          }
+        },
+        {
+          "id": "wastage-2",
+          "question": {
+            "en": "How do I edit or delete a saved wastage code?",
+            "hi": "Save किया हुआ wastage code कैसे edit या delete करूं?"
+          },
+          "answer": {
+            "en": "After you tap Save, the button turns into Edit. Tap Edit, make your changes, then Save again. To remove a code, tap the bin icon.",
+            "hi": "Save दबाने के बाद वह button Edit बन जाता है। Edit दबाएं, बदलाव करें, फिर दोबारा Save करें। Code हटाने के लिए bin icon दबाएं।"
+          }
+        },
+        {
+          "id": "wastage-3",
+          "question": {
+            "en": "How do I use a wastage code while calculating MRP?",
+            "hi": "MRP calculate करते समय wastage code कैसे use करूं?"
+          },
+          "answer": {
+            "en": "After scanning a tag, on the Scan Review screen pick your code from the Wastage Code dropdown. It lists the codes you saved in Masters → Wastage. The Wastage and Labour amount fields below can also be edited.",
+            "hi": "Tag scan करने के बाद Scan Review screen पर Wastage Code dropdown से अपना code चुनें। इसमें वही codes दिखते हैं जो आपने Masters → Wastage में save किए हैं। नीचे Wastage और Labour के amount भी edit किए जा सकते हैं।"
           }
         }
       ]
@@ -226,8 +365,8 @@
             "hi": "Item code कैसे add करूं?"
           },
           "answer": {
-            "en": "Settings → Masters → Item Code → add your item name and item code. Whenever the scanner scans a matching tag, it will automatically fetch the item name and code and show them on the calculation page.",
-            "hi": "Settings → Masters → Item Code → अपना item name और item code add करें। जब भी scanner matching tag scan करेगा, item name और code automatically calculation page पर दिख जाएंगे।"
+            "en": "Home screen → ☰ Menu → Settings → Masters → Item Code → add your item name and item code. Whenever the scanner scans a matching tag, it will automatically fetch the item name and code and show them on the calculation page.",
+            "hi": "Home screen → ☰ Menu → Settings → Masters → Item Code → अपना item name और item code add करें। जब भी scanner matching tag scan करेगा, item name और code automatically calculation page पर दिख जाएंगे।"
           }
         }
       ]
@@ -284,21 +423,32 @@
       ]
     },
     {
-      "id": "password-manager",
+      "id": "mpin-manager",
       "title": {
-        "en": "Password Manager",
-        "hi": "पासवर्ड मैनेजर"
+        "en": "MPIN Manager",
+        "hi": "MPIN मैनेजर"
       },
       "items": [
         {
-          "id": "password-manager-1",
+          "id": "mpin-manager-1",
           "question": {
-            "en": "Can I change my password?",
-            "hi": "क्या मैं अपना password बदल सकता हूं?"
+            "en": "Can I change my MPIN?",
+            "hi": "क्या मैं अपना MPIN बदल सकता हूं?"
           },
           "answer": {
-            "en": "Yes, you can always change or update your password. Settings → Password Manager → create your new password there.",
-            "hi": "हां, आप हमेशा अपना password बदल या update कर सकते हैं। Settings → Password Manager → अपना नया password बनाएं।"
+            "en": "Yes, anytime. Home screen → ☰ Menu → Settings → MPIN Manager → enter your current MPIN, then your new 4-digit MPIN and confirm it → Update MPIN. Use the new MPIN the next time you log in.",
+            "hi": "हां, कभी भी। Home screen → ☰ Menu → Settings → MPIN Manager → अपना current MPIN डालें, फिर नया 4-digit MPIN डालकर confirm करें → Update MPIN। अगली बार login पर यही नया MPIN इस्तेमाल करें।"
+          }
+        },
+        {
+          "id": "mpin-manager-2",
+          "question": {
+            "en": "I don’t remember my current MPIN while changing it. What now?",
+            "hi": "MPIN बदलते समय मुझे अपना current MPIN याद नहीं है, अब क्या करूं?"
+          },
+          "answer": {
+            "en": "In MPIN Manager tap Forgot MPIN? under the Current MPIN box → enter your phone number → verify the OTP. Your existing MPIN will be shown. Tap Back to MPIN Manager and continue.",
+            "hi": "MPIN Manager में Current MPIN box के नीचे Forgot MPIN? दबाएं → phone number डालें → OTP verify करें। आपका existing MPIN दिख जाएगा। Back to MPIN Manager दबाकर आगे बढ़ें।"
           }
         }
       ]
@@ -317,8 +467,19 @@
             "hi": "मैं अपने app में employee कैसे add करूं?"
           },
           "answer": {
-            "en": "Settings → Employee Manager → Add New Employee → fill in their details → Continue. A unique username and password will be generated for them — share it directly from there, and it becomes their login.",
-            "hi": "Settings → Employee Manager → Add New Employee → उनकी details भरें → Continue। उनके लिए एक unique username और password बन जाएगा — इसे वहीं से share कर दें, यही उनका login बन जाएगा।"
+            "en": "Home screen → ☰ Menu → Settings → Employee Manager → + Add New Employee → fill in their name, phone number and designation → Continue. A 4-digit login MPIN is generated for them — share it directly from the Credentials screen. They sign in with their phone number, an OTP and this MPIN.",
+            "hi": "Home screen → ☰ Menu → Settings → Employee Manager → + Add New Employee → उनका नाम, phone number और designation भरें → Continue। उनके लिए 4-digit login MPIN बन जाएगा — इसे Credentials screen से ही share कर दें। वे अपने phone number, OTP और इस MPIN से sign in करेंगे।"
+          }
+        },
+        {
+          "id": "employee-management-10",
+          "question": {
+            "en": "How can I change my employee’s MPIN?",
+            "hi": "मैं अपने employee का MPIN कैसे बदलूं?"
+          },
+          "answer": {
+            "en": "Home screen → ☰ Menu → Settings → Employee Manager → tap the employee’s card → in the MPIN Manager card tap the pencil icon → enter the new 4-digit MPIN twice → Update MPIN. Share the new MPIN with your employee.",
+            "hi": "Home screen → ☰ Menu → Settings → Employee Manager → employee के card पर tap करें → MPIN Manager card में pencil icon दबाएं → नया 4-digit MPIN दो बार डालें → Update MPIN। नया MPIN अपने employee को बता दें।"
           }
         },
         {
@@ -339,8 +500,8 @@
             "hi": "मैं अपने employee को दिखने वाली gold rate tiles कैसे control करूं?"
           },
           "answer": {
-            "en": "Settings → Employee Manager → select the employee → Set Permission → Dashboard Matrices → select the gold rates you want them to see. Only the rates you select will show up in their app.",
-            "hi": "Settings → Employee Manager → employee चुनें → Set Permission → Dashboard Matrices → जो gold rates उन्हें दिखानी हैं वो select करें। सिर्फ selected rates ही उनके app में दिखेंगी।"
+            "en": "Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → Dashboard Matrices → select the gold rates you want them to see. Only the rates you select will show up in their app.",
+            "hi": "Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Dashboard Matrices → जो gold rates उन्हें दिखानी हैं वो select करें। सिर्फ selected rates ही उनके app में दिखेंगी।"
           }
         },
         {
@@ -350,8 +511,8 @@
             "hi": "मैं कैसे पक्का करूं कि मेरा employee gold rates ना बदल सके?"
           },
           "answer": {
-            "en": "Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Gold unchecked. If it’s unchecked, they won’t be able to edit gold rates.",
-            "hi": "Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Gold को unchecked रहने दें। Unchecked रहने पर वो gold rates edit नहीं कर पाएंगे।"
+            "en": "Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Gold unchecked. If it’s unchecked, they won’t be able to edit gold rates.",
+            "hi": "Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Gold को unchecked रहने दें। Unchecked रहने पर वो gold rates edit नहीं कर पाएंगे।"
           }
         },
         {
@@ -361,8 +522,8 @@
             "hi": "मैं कैसे पक्का करूं कि मेरा employee diamond rates ना बदल सके?"
           },
           "answer": {
-            "en": "Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Diamond unchecked. If it’s checked, they can edit diamond rates — if not, they can’t.",
-            "hi": "Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Diamond को unchecked रहने दें। Checked होने पर वो diamond rates edit कर सकते हैं — नहीं तो नहीं।"
+            "en": "Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Diamond unchecked. If it’s checked, they can edit diamond rates — if not, they can’t.",
+            "hi": "Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Diamond को unchecked रहने दें। Checked होने पर वो diamond rates edit कर सकते हैं — नहीं तो नहीं।"
           }
         },
         {
@@ -372,8 +533,8 @@
             "hi": "मैं कैसे पक्का करूं कि मेरा employee labour rates ना बदल सके?"
           },
           "answer": {
-            "en": "Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Labour Charges unchecked to stop them from editing labour rates while calculating MRP.",
-            "hi": "Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Labour Charges को unchecked रखें ताकि वो MRP calculate करते समय labour rates edit ना कर सकें।"
+            "en": "Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Labour Charges unchecked to stop them from editing labour rates while calculating MRP.",
+            "hi": "Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Labour Charges को unchecked रखें ताकि वो MRP calculate करते समय labour rates edit ना कर सकें।"
           }
         },
         {
@@ -383,8 +544,8 @@
             "hi": "मैं कैसे पक्का करूं कि मेरा employee सिर्फ RTGS rate, सिर्फ Cash rate, या दोनों देख सके?"
           },
           "answer": {
-            "en": "Settings → Employee Manager → select the employee → Set Permission → Gold Rate Options While Calculating → choose RTGS Rate Only, Cash Rate Only, or Both. This controls what’s shown in their app.",
-            "hi": "Settings → Employee Manager → employee चुनें → Set Permission → Gold Rate Options While Calculating → RTGS Rate Only, Cash Rate Only, या Both में से चुनें। इससे तय होगा कि उनके app में क्या दिखेगा।"
+            "en": "Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → Gold Rate Options While Calculating → choose RTGS Rate Only, Cash Rate Only, or Both. This controls what’s shown in their app.",
+            "hi": "Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Gold Rate Options While Calculating → RTGS Rate Only, Cash Rate Only, या Both में से चुनें। इससे तय होगा कि उनके app में क्या दिखेगा।"
           }
         },
         {
@@ -394,8 +555,8 @@
             "hi": "मैं कैसे पक्का करूं कि मेरा employee MRP calculate करते समय purity percentage edit ना कर सके?"
           },
           "answer": {
-            "en": "Settings → Employee Manager → select the employee → Set Permission → leave Edit Purity (%) unchecked to stop them from changing the purity percentage while calculating MRP.",
-            "hi": "Settings → Employee Manager → employee चुनें → Set Permission → Edit Purity (%) को unchecked रखें ताकि वो MRP calculate करते समय purity percentage ना बदल सकें।"
+            "en": "Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → leave Edit Purity (%) unchecked to stop them from changing the purity percentage while calculating MRP.",
+            "hi": "Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Edit Purity (%) को unchecked रखें ताकि वो MRP calculate करते समय purity percentage ना बदल सकें।"
           }
         },
         {
@@ -405,8 +566,8 @@
             "hi": "अगर मेरा employee कंपनी छोड़ दे तो क्या करूं?"
           },
           "answer": {
-            "en": "Settings → Employee Manager → tap the employee’s card → turn off Active Account. All app features will be disabled for that employee’s number.",
-            "hi": "Settings → Employee Manager → employee के card पर tap करें → Active Account को off कर दें। उस employee के number पर app के सारे features disable हो जाएंगे।"
+            "en": "Home screen → ☰ Menu → Settings → Employee Manager → tap the employee’s card → turn off Active Account. All app features will be disabled for that employee’s number.",
+            "hi": "Home screen → ☰ Menu → Settings → Employee Manager → employee के card पर tap करें → Active Account को off कर दें। उस employee के number पर app के सारे features disable हो जाएंगे।"
           }
         }
       ]

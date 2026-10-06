@@ -48,16 +48,6 @@ function playSplash() {
 
 document.getElementById('replayBtn').addEventListener('click', playSplash);
 
-function wireEyeToggle(buttonId, inputId) {
-  const btn = document.getElementById(buttonId);
-  const input = document.getElementById(inputId);
-  btn.addEventListener('click', () => {
-    const showing = btn.classList.toggle('showing');
-    input.type = showing ? 'text' : 'password';
-    btn.setAttribute('aria-label', showing ? 'Hide password' : 'Show password');
-  });
-}
-
 // ---- Generic MPIN digit-box helpers (4-digit auto-advance + group show/hide toggle) ----
 function wireMpinDigits(containerId, onComplete) {
   const digits = [...document.querySelectorAll(`#${containerId} .mpin-digit`)];
@@ -173,7 +163,7 @@ function validateSignupFields() {
 }
 
 // ---- reusable OTP controller: 6-digit auto-advance + auto-verify + resend timer ----
-// Used for the signup phone OTP, and reused as-is for Forgot User ID / Forgot Password below.
+// Used for the signup phone OTP, and reused as-is for login, Forgot MPIN and Edit Profile.
 function createOtpController({ collapseId, digitsContainerId, timerTextId, timerValId, resendLinkId, onComplete }) {
   const collapse = document.getElementById(collapseId);
   const digits = [...document.querySelectorAll(`#${digitsContainerId} .otp-digit`)];
@@ -382,92 +372,6 @@ document.getElementById('createMpinSubmitBtn').addEventListener('click', () => {
   }, 1500);
 });
 
-// ---- Forgot Password ----
-const screenForgotPassword = document.getElementById('screenForgotPassword');
-const forgotPwUserId = document.getElementById('forgotPwUserId');
-const forgotPwUserIdField = forgotPwUserId.closest('.field');
-const sendCodeForgotPw = document.getElementById('sendCodeForgotPw');
-const newPasswordCollapse = document.getElementById('newPasswordCollapse');
-const newPassword1 = document.getElementById('newPassword1');
-const newPassword2 = document.getElementById('newPassword2');
-const resetSuccessToast = document.getElementById('resetSuccessToast');
-
-wireEyeToggle('toggleNewPassword1', 'newPassword1');
-wireEyeToggle('toggleNewPassword2', 'newPassword2');
-
-const forgotPwOtp = createOtpController({
-  collapseId: 'otpCollapseForgotPw',
-  digitsContainerId: 'otpDigitsForgotPw',
-  timerTextId: 'otpTimerTextForgotPw',
-  timerValId: 'otpTimerValForgotPw',
-  resendLinkId: 'resendOtpForgotPw',
-  onComplete: () => {
-    newPasswordCollapse.classList.add('open');
-    setTimeout(() => {
-      newPassword1.focus();
-      newPasswordCollapse.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 200);
-  },
-});
-
-sendCodeForgotPw.addEventListener('click', () => {
-  if (!forgotPwUserId.value.trim()) {
-    setInvalid(forgotPwUserIdField, true);
-    shakeField(forgotPwUserIdField);
-    forgotPwUserId.focus();
-    return;
-  }
-  setInvalid(forgotPwUserIdField, false);
-  forgotPwUserId.readOnly = true;
-  sendCodeForgotPw.disabled = true;
-  sendCodeForgotPw.textContent = 'Sent';
-  forgotPwOtp.send();
-  setTimeout(() => {
-    forgotPwOtp.digits[0].focus();
-    document.getElementById('otpBoxForgotPw').scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 380);
-});
-forgotPwUserId.addEventListener('input', () => setInvalid(forgotPwUserIdField, false));
-
-[newPassword1, newPassword2].forEach((input) => {
-  input.addEventListener('input', () => setInvalid(input.closest('.field'), false));
-});
-
-document.getElementById('resetPasswordBtn').addEventListener('click', () => {
-  const pw1Field = newPassword1.closest('.field');
-  const pw2Field = newPassword2.closest('.field');
-  const pw1Valid = newPassword1.value.trim().length >= 6;
-  const pw2Valid = pw1Valid && newPassword2.value === newPassword1.value;
-
-  setInvalid(pw1Field, !pw1Valid);
-  setInvalid(pw2Field, !pw2Valid);
-
-  if (!pw1Valid) { pw1Field.scrollIntoView({ behavior: 'smooth', block: 'center' }); shakeField(pw1Field); return; }
-  if (!pw2Valid) { pw2Field.scrollIntoView({ behavior: 'smooth', block: 'center' }); shakeField(pw2Field); return; }
-
-  resetSuccessToast.classList.add('show');
-  setTimeout(() => backToScreenFrom(screenForgotPassword, forgotPwReturnScreen), 1600);
-});
-
-function resetForgotPasswordScreen() {
-  forgotPwOtp.reset();
-  newPasswordCollapse.classList.remove('open');
-  resetSuccessToast.classList.remove('show');
-  forgotPwUserId.value = '';
-  forgotPwUserId.readOnly = false;
-  sendCodeForgotPw.disabled = false;
-  sendCodeForgotPw.textContent = 'Send code';
-  newPassword1.value = '';
-  newPassword2.value = '';
-  setInvalid(forgotPwUserIdField, false);
-  setInvalid(newPassword1.closest('.field'), false);
-  setInvalid(newPassword2.closest('.field'), false);
-}
-
-let forgotPwReturnScreen = screenLogin;
-
-document.getElementById('backFromForgotPw').addEventListener('click', () => backToScreenFrom(screenForgotPassword, forgotPwReturnScreen));
-
 // ---- Forgot MPIN (reached from Login only) — recovers and displays the existing MPIN ----
 const screenForgotMpin = document.getElementById('screenForgotMpin');
 const forgotMpinPhone = document.getElementById('forgotMpinPhone');
@@ -518,18 +422,26 @@ function resetForgotMpinScreen() {
   setInvalid(forgotMpinPhoneField, false);
 }
 
-document.getElementById('goForgotMpin').addEventListener('click', (e) => {
-  e.preventDefault();
+let forgotMpinReturn = { screen: screenLogin, label: 'Back to Log In' };
+
+function openForgotMpinFrom(fromScreen, label) {
+  forgotMpinReturn = { screen: fromScreen, label };
+  document.getElementById('forgotMpinDoneBtn').textContent = label;
   resetForgotMpinScreen();
-  screenLogin.classList.remove('active');
+  fromScreen.classList.remove('active');
   screenForgotMpin.classList.remove('exit-right');
   screenForgotMpin.classList.add('active', 'enter-right');
+}
+
+document.getElementById('goForgotMpin').addEventListener('click', (e) => {
+  e.preventDefault();
+  openForgotMpinFrom(screenLogin, 'Back to Log In');
 });
 
 // Returning from Forgot MPIN deliberately does NOT reset the login screen — phone/OTP
 // were already verified to get there, so the user resumes right at the MPIN step.
-document.getElementById('backFromForgotMpin').addEventListener('click', () => backToScreenFrom(screenForgotMpin, screenLogin));
-document.getElementById('forgotMpinDoneBtn').addEventListener('click', () => backToScreenFrom(screenForgotMpin, screenLogin));
+document.getElementById('backFromForgotMpin').addEventListener('click', () => backToScreenFrom(screenForgotMpin, forgotMpinReturn.screen));
+document.getElementById('forgotMpinDoneBtn').addEventListener('click', () => backToScreenFrom(screenForgotMpin, forgotMpinReturn.screen));
 
 // ---- Login: phone -> OTP -> MPIN (single scroll, same pattern as Create Account: sections
 // reveal downward and the page scrolls to the new section, nothing collapses away) ----
@@ -611,7 +523,7 @@ const screenEditProfile = document.getElementById('screenEditProfile');
 const screenWishlist = document.getElementById('screenWishlist');
 const screenNotifications = document.getElementById('screenNotifications');
 const screenSubscription = document.getElementById('screenSubscription');
-const screenPasswordManager = document.getElementById('screenPasswordManager');
+const screenMpinManager = document.getElementById('screenMpinManager');
 const screenEarnInvite = document.getElementById('screenEarnInvite');
 const screenContactUs = document.getElementById('screenContactUs');
 const screenFaqs = document.getElementById('screenFaqs');
@@ -619,7 +531,7 @@ const screenEmpList = document.getElementById('screenEmpList');
 const screenEmpAdd = document.getElementById('screenEmpAdd');
 const screenEmpCredentials = document.getElementById('screenEmpCredentials');
 const screenEmpPermissions = document.getElementById('screenEmpPermissions');
-const screenEmpPassword = document.getElementById('screenEmpPassword');
+const screenEmpMpin = document.getElementById('screenEmpMpin');
 const screenEmpDetail = document.getElementById('screenEmpDetail');
 const screenScanCapture = document.getElementById('screenScanCapture');
 const screenScanProcessing = document.getElementById('screenScanProcessing');
@@ -888,7 +800,7 @@ setInterval(renderDashClock, 30000);
 const floatingNav = document.getElementById('floatingNav');
 const navHomeBtn = document.getElementById('navHomeBtn');
 const navScanBtn = document.getElementById('navScanBtn');
-const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettingsMenu, screenDashSettings, screenGoldRateView, screenMasterRates, screenWastageMaster, screenItemCode, screenGoldRates, screenGoldRateSettings, screenGoldKaratSettings, screenSalesInvoice, screenBizProfile, screenEditProfile, screenWishlist, screenNotifications, screenSubscription, screenPasswordManager, screenEarnInvite, screenContactUs, screenFaqs, screenEmpList, screenEmpAdd, screenEmpCredentials, screenEmpPermissions, screenEmpPassword, screenEmpDetail];
+const NAV_VISIBLE_SCREENS = [screenHome, screenScanReview, screenInvoiceGen, screenInvoicePreview, screenSettings, screenDashSettingsMenu, screenDashSettings, screenGoldRateView, screenMasterRates, screenWastageMaster, screenItemCode, screenGoldRates, screenGoldRateSettings, screenGoldKaratSettings, screenSalesInvoice, screenBizProfile, screenEditProfile, screenWishlist, screenNotifications, screenSubscription, screenMpinManager, screenEarnInvite, screenContactUs, screenFaqs, screenEmpList, screenEmpAdd, screenEmpCredentials, screenEmpPermissions, screenEmpMpin, screenEmpDetail];
 let currentScreen = screenSplash;
 
 function updateNavForScreen(screen) {
@@ -949,8 +861,8 @@ document.getElementById('goldRateViewBackBtn').addEventListener('click', () => {
 document.getElementById('setMenuSubscription').addEventListener('click', () => {
   goForward(screenSettings, screenSubscription);
 });
-document.getElementById('setMenuPassword').addEventListener('click', () => {
-  goForward(screenSettings, screenPasswordManager);
+document.getElementById('setMenuMpin').addEventListener('click', () => {
+  goForward(screenSettings, screenMpinManager);
 });
 
 // -- Earn & Invite --
@@ -1022,21 +934,34 @@ document.getElementById('contactWhatsappBtn').addEventListener('click', () => {
 // -- FAQs -- (transcribed from voice notes, grouped by section; en/hi text pairs)
 const FAQ_SECTIONS = [
   {
+    section: { en: 'Login & MPIN', hi: 'लॉगिन और MPIN' },
+    items: [
+      { q: { en: 'How do I log in to the app?', hi: 'मैं app में login कैसे करूं?' }, a: { en: 'Enter your registered phone number → verify the 6-digit OTP → enter your 4-digit MPIN. No username or password is needed.', hi: 'अपना registered phone number डालें → 6-digit OTP से verify करें → अपना 4-digit MPIN डालें। Username या password की जरूरत नहीं है।' } },
+      { q: { en: 'I forgot my MPIN. What should I do?', hi: 'मैं अपना MPIN भूल गया, क्या करूं?' }, a: { en: 'On the login screen tap Forgot MPIN? → enter your phone number → verify the OTP. Your existing MPIN will be shown. Tap Back to Log In and enter it. You won’t be asked for your phone number again.', hi: 'Login screen पर Forgot MPIN? दबाएं → phone number डालें → OTP verify करें। आपका existing MPIN screen पर दिख जाएगा। Back to Log In दबाकर उसे डालें। Phone number दोबारा नहीं पूछा जाएगा।' } },
+      { q: { en: 'I didn’t receive the OTP. What now?', hi: 'मुझे OTP नहीं आया, अब क्या करूं?' }, a: { en: 'Wait for the 30-second timer to finish, then tap Resend code. Also check that the phone number is correct and your network is working.', hi: '30 second का timer खत्म होने दें, फिर Resend code दबाएं। साथ ही phone number सही है और network चल रहा है, यह भी जांच लें।' } },
+      { q: { en: 'Can I change my phone number or GST number?', hi: 'क्या मैं अपना phone number या GST number बदल सकता हूं?' }, a: { en: 'Yes. Home screen → ☰ Menu → Settings → tap your business name at the top (Profile) → Edit Profile → Change Phone number or Change GST no. For your security you first re-enter your MPIN. Then the new number is verified by OTP, or the GST number is verified and your business details update.', hi: 'हां। Home screen → ☰ Menu → Settings → ऊपर अपने business name पर tap करें (Profile) → Edit Profile → Change Phone number या Change GST no. सुरक्षा के लिए पहले MPIN दोबारा डालना होता है। फिर नया number OTP से verify होता है, या GST number verify होकर business details update हो जाती हैं।' } },
+    ],
+  },
+  {
     section: { en: 'Gold', hi: 'सोना' },
     items: [
-      { q: { en: 'Can I choose my preferred Bullion source?', hi: 'क्या मैं अपना पसंदीदा Bullion source चुन सकता हूं?' }, a: { en: 'Yes. Settings → Dashboard Settings → Choose Bullion Source → select the one you want to show your rates.', hi: 'हां। Settings → Dashboard Settings → Choose Bullion Source → जो source अपनी rates के लिए चाहिए, उसे select करें।' } },
-      { q: { en: 'Can I add my preferred Bullion source?', hi: 'क्या मैं अपना पसंदीदा Bullion source जोड़ सकता हूं?' }, a: { en: 'Yes. Settings → Dashboard Settings → Choose Bullion Source → add your preferred source. We’ll get the required information and update you once it’s done.', hi: 'हां। Settings → Dashboard Settings → Choose Bullion Source → अपना पसंदीदा source add करें। जरूरी जानकारी लेकर हमारी टीम आपको अपडेट कर देगी।' } },
-      { q: { en: 'How can I choose which rates are shown on my dashboard?', hi: 'मैं अपने dashboard पर कौन-सी rates दिखानी हैं, यह कैसे चुनूं?' }, a: { en: 'Settings → Dashboard Settings → select the Cash and RTGS rates you want for 24K, 22K, 20K, 18K, 14K and 9K gold. They’ll show up on your dashboard.', hi: 'Settings → Dashboard Settings → 24K, 22K, 20K, 18K, 14K और 9K सोने की जो Cash और RTGS rates चाहिए, उन्हें select करें। वो आपके dashboard पर दिखने लगेंगी।' } },
-      { q: { en: 'Can I change the MCX, Cash and RTGS rates that are shown by default?', hi: 'क्या मैं default दिखने वाली MCX, Cash और RTGS rates बदल सकता हूं?' }, a: { en: 'Yes. Settings → Dashboard Settings → Masters → Gold → Rates → add or subtract the amount you want. The updated rate will be shown on your dashboard from then on.', hi: 'हां। Settings → Dashboard Settings → Masters → Gold → Rates → जितना amount चाहिए उतना add या minus करें। यह नई rate तभी से आपके dashboard पर दिखेगी।' } },
-      { q: { en: 'Can I change the purity percentage of gold?', hi: 'क्या मैं सोने की purity percentage बदल सकता हूं?' }, a: { en: 'Yes, for 22K, 18K, 14K and 9K gold. Settings → Dashboard Settings → Masters → Gold → edit the purity percentage for each karat. This percentage will be used every time you calculate MRP.', hi: 'हां, 22K, 18K, 14K और 9K सोने के लिए। Settings → Dashboard Settings → Masters → Gold → हर karat की purity percentage edit करें। यह percentage हर बार MRP calculate करते समय इस्तेमाल होगी।' } },
+      { q: { en: 'Can I choose my preferred Bullion source?', hi: 'क्या मैं अपना पसंदीदा Bullion source चुन सकता हूं?' }, a: { en: 'Yes. Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion → tick the bullion whose rates you want to show on your Home screen.', hi: 'हां। Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion → जिस bullion की rates Home screen पर दिखानी हैं, उस पर tick करें।' } },
+      { q: { en: 'Can I add my preferred Bullion source?', hi: 'क्या मैं अपना पसंदीदा Bullion source जोड़ सकता हूं?' }, a: { en: 'Yes. Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion → tap + Add Bullion. We’ll get the required information and update you once it’s done.', hi: 'हां। Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion → + Add Bullion दबाएं। जरूरी जानकारी लेकर हमारी टीम आपको अपडेट कर देगी।' } },
+      { q: { en: 'How can I choose which rates are shown on my dashboard?', hi: 'मैं अपने dashboard पर कौन-सी rates दिखानी हैं, यह कैसे चुनूं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Dashboard Settings → Choose Gold Rate View → tick the MCX, RTGS and Cash rates you want for 24K, 22K, 20K, 18K, 14K and 9K gold. Only the ticked rates will show on your Home dashboard.', hi: 'Home screen → ☰ Menu → Settings → Dashboard Settings → Choose Gold Rate View → 24K, 22K, 20K, 18K, 14K और 9K सोने की जो MCX, RTGS और Cash rates चाहिए, उन पर tick करें। सिर्फ tick की हुई rates ही आपके Home dashboard पर दिखेंगी।' } },
+      { q: { en: 'Can I change the MCX, Retail and RTGS rates that are shown by default?', hi: 'क्या मैं default दिखने वाली MCX, Retail और RTGS rates बदल सकता हूं?' }, a: { en: 'Yes. Home screen → ☰ Menu → Settings → Masters → Gold → Gold Rate Settings → in each rate card choose + or − under Change By and enter the amount. The Final rate updates right there and is shown on your dashboard from then on.', hi: 'हां। Home screen → ☰ Menu → Settings → Masters → Gold → Gold Rate Settings → हर rate card में Change By के नीचे + या − चुनकर amount डालें। Final rate वहीं तुरंत update हो जाती है और तब से आपके dashboard पर दिखती है।' } },
+      { q: { en: 'Can I change the purity percentage of gold?', hi: 'क्या मैं सोने की purity percentage बदल सकता हूं?' }, a: { en: 'Yes, for 22K, 18K, 14K and 9K gold. Home screen → ☰ Menu → Settings → Masters → Gold → Gold Karat Settings → edit the purity percentage for each karat. This percentage will be used every time you calculate MRP.', hi: 'हां, 22K, 18K, 14K और 9K सोने के लिए। Home screen → ☰ Menu → Settings → Masters → Gold → Gold Karat Settings → हर karat की purity percentage edit करें। यह percentage हर बार MRP calculate करते समय इस्तेमाल होगी।' } },
       { q: { en: 'How can I choose RTGS or Cash rate while calculating MRP?', hi: 'MRP calculate करते समय RTGS या Cash rate कैसे चुनूं?' }, a: { en: 'After scanning the tag, go to the Gold section → tap RTGS or Cash rate. The MRP will be calculated using that rate automatically.', hi: 'Tag scan करने के बाद, Gold section में जाकर RTGS या Cash rate पर tap करें। MRP उसी rate से automatically calculate हो जाएगी।' } },
+      { q: { en: 'What is the difference between Retail Rate and RTGS Retail Rate?', hi: 'Retail Rate और RTGS Retail Rate में क्या फर्क है?' }, a: { en: 'Both start from the live MCX rate. Retail Rate is MCX plus or minus the amount you set. RTGS Retail Rate is the RTGS-based rate you choose in Gold Rate Settings.', hi: 'दोनों live MCX rate से शुरू होते हैं। Retail Rate में MCX के ऊपर आपका जोड़ा या घटाया हुआ amount लगता है। RTGS Retail Rate वो RTGS-based rate है जो आप Gold Rate Settings में चुनते हैं।' } },
+      { q: { en: 'What are RTGS Rate 1 and RTGS Rate 2, and which one is used?', hi: 'RTGS Rate 1 और RTGS Rate 2 क्या हैं, और कौन-सा use होगा?' }, a: { en: 'Home screen → ☰ Menu → Settings → Masters → Gold → Gold Rate Settings. RTGS Rate 1 includes tax (3%). RTGS Rate 2 is RTGS Rate 1 minus the tax % you enter, so it is the rate without tax. Tick the radio button next to the one you want. Only one can be selected at a time.', hi: 'Home screen → ☰ Menu → Settings → Masters → Gold → Gold Rate Settings। RTGS Rate 1 में tax (3%) शामिल है। RTGS Rate 2, RTGS Rate 1 में से आपके डाले हुए tax % घटाकर बनता है, यानी बिना tax वाला rate। जो चाहिए उसके सामने का radio button select करें। एक समय पर एक ही select होता है।' } },
+      { q: { en: 'How do I show more than one Bullion rate on my Home screen?', hi: 'मैं Home screen पर एक से ज्यादा Bullion rate कैसे दिखाऊं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion. Tick the bullions you want and they show on Home. If yours isn’t listed, tap + Add Bullion and we’ll set it up. Rates refresh automatically every 30 seconds.', hi: 'Home screen → ☰ Menu → Settings → Dashboard Settings → Choose a Bullion। जो bullion चाहिए उन पर tick करें, वे Home पर दिखेंगे। आपका bullion list में न हो तो + Add Bullion दबाएं, हम उसे जोड़ देंगे। Rates हर 30 second में अपने आप refresh होते हैं।' } },
+      { q: { en: 'Which karat rates can I show on my Home screen?', hi: 'मैं Home screen पर कौन-से karat की rates दिखा सकता हूं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Dashboard Settings → Choose Gold Rate View → tick the rates you want for 24K, 22K, 20K, 18K, 14K and 9K. To change the purity % of a karat, use Masters → Gold → Gold Karat Settings instead.', hi: 'Home screen → ☰ Menu → Settings → Dashboard Settings → Choose Gold Rate View → 24K, 22K, 20K, 18K, 14K और 9K में से जो rates चाहिए उन पर tick करें। किसी karat की purity % बदलनी हो तो Masters → Gold → Gold Karat Settings में जाएं।' } },
     ],
   },
   {
     section: { en: 'Diamond', hi: 'हीरा' },
     items: [
-      { q: { en: 'How can I add predefined diamond rates for a particular shape, sieve, color or clarity?', hi: 'किसी particular shape, sieve, color या clarity के लिए predefined diamond rates कैसे add करूं?' }, a: { en: 'Settings → Masters → Diamond → Add Diamond Rates → fill in the required columns to add rates.', hi: 'Settings → Masters → Diamond → Add Diamond Rates → जरूरी columns भरकर rates add करें।' } },
-      { q: { en: 'If I have a diamond packet code written on my tag, can I add it?', hi: 'अगर मेरे tag पर diamond packet code लिखा है, तो क्या मैं उसे add कर सकता हूं?' }, a: { en: 'Yes. Settings → Masters → Diamond → Add Diamond Rates → enter the packet code and its rate in the Packet Code column. This rate will be applied automatically whenever the scanner detects this packet code.', hi: 'हां। Settings → Masters → Diamond → Add Diamond Rates → Packet Code column में packet code और उसकी rate डालें। जब भी scanner यह packet code scan करेगा, यह rate automatically लग जाएगी।' } },
+      { q: { en: 'How can I add predefined diamond rates for a particular shape, sieve, color or clarity?', hi: 'किसी particular shape, sieve, color या clarity के लिए predefined diamond rates कैसे add करूं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Masters → Diamond → Add Diamond Rates → fill in the required columns to add rates.', hi: 'Home screen → ☰ Menu → Settings → Masters → Diamond → Add Diamond Rates → जरूरी columns भरकर rates add करें।' } },
+      { q: { en: 'If I have a diamond packet code written on my tag, can I add it?', hi: 'अगर मेरे tag पर diamond packet code लिखा है, तो क्या मैं उसे add कर सकता हूं?' }, a: { en: 'Yes. Home screen → ☰ Menu → Settings → Masters → Diamond → Add Diamond Rates → enter the packet code and its rate in the Packet Code column. This rate will be applied automatically whenever the scanner detects this packet code.', hi: 'हां। Home screen → ☰ Menu → Settings → Masters → Diamond → Add Diamond Rates → Packet Code column में packet code और उसकी rate डालें। जब भी scanner यह packet code scan करेगा, यह rate automatically लग जाएगी।' } },
       { q: { en: 'What if I have two diamond packet codes on a single piece of jewellery?', hi: 'अगर एक ही जूलरी पर दो diamond packet codes हों तो क्या होगा?' }, a: { en: 'The scanner will automatically detect both diamonds. While calculating MRP, it will show both weights and rates separately.', hi: 'Scanner दोनों diamonds को automatically detect कर लेगा। MRP calculate करते समय दोनों का weight और rate अलग-अलग दिखेगा।' } },
       { q: { en: 'What if I have a predefined rate in my diamond masters, but I want to edit it while calculating MRP for a customer?', hi: 'अगर मेरे diamond masters में predefined rate है, पर मैं customer के हिसाब से MRP calculate करते समय rate बदलना चाहूं तो?' }, a: { en: 'You can always edit the rate while calculating MRP. The scanner fetches the predefined rate from Masters first, but you can change it at that time.', hi: 'MRP calculate करते समय आप हमेशा rate edit कर सकते हैं। Scanner पहले Masters से predefined rate उठाएगा, पर आप उस समय उसे बदल सकते हैं।' } },
     ],
@@ -1045,7 +970,7 @@ const FAQ_SECTIONS = [
     section: { en: 'Colorstone', hi: 'कलरस्टोन' },
     items: [
       { q: { en: 'What if I have a colorstone on my tag?', hi: 'अगर मेरे tag पर colorstone है तो क्या होगा?' }, a: { en: 'The scanner will automatically detect the colorstone and its weight on scanning. If the rate is written on the tag, it will fetch that — otherwise, the rate will be taken from the backend.', hi: 'Scan करते ही scanner colorstone और उसका weight automatically detect कर लेगा। अगर rate tag पर लिखी है तो वो ले लेगा — नहीं तो rate backend से आएगी।' } },
-      { q: { en: 'How do I add predefined colorstone rates?', hi: 'Predefined colorstone rates कैसे add करूं?' }, a: { en: 'Settings → Masters → Colorstone → add your predefined rates there.', hi: 'Settings → Masters → Colorstone → अपनी predefined rates यहां add करें।' } },
+      { q: { en: 'How do I add predefined colorstone rates?', hi: 'Predefined colorstone rates कैसे add करूं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Masters → Colorstone → add your predefined rates there.', hi: 'Home screen → ☰ Menu → Settings → Masters → Colorstone → अपनी predefined rates यहां add करें।' } },
       { q: { en: 'How can I edit colorstone rates while calculating MRP?', hi: 'MRP calculate करते समय colorstone rate कैसे edit करूं?' }, a: { en: 'Just change the colorstone rate while calculating MRP — it updates automatically.', hi: 'बस MRP calculate करते समय colorstone rate बदल दें — यह automatically update हो जाएगी।' } },
       { q: { en: 'What if I don’t put a colorstone rate on my tag, and it’s also not in my Masters column?', hi: 'अगर मैं tag पर colorstone rate नहीं डालता, और वो मेरे Masters column में भी नहीं है, तो क्या होगा?' }, a: { en: 'The colorstone will still be detected by the scanner, but the rate column will be empty. Just enter your desired rate, and the MRP will be calculated automatically.', hi: 'Scanner फिर भी colorstone detect कर लेगा, पर rate column खाली रहेगा। बस अपनी मनचाही rate डाल दें, MRP automatically calculate हो जाएगी।' } },
     ],
@@ -1054,13 +979,21 @@ const FAQ_SECTIONS = [
     section: { en: 'Labour Charge', hi: 'लेबर चार्ज' },
     items: [
       { q: { en: 'What if there is no labour charge written on my tag?', hi: 'अगर मेरे tag पर labour charge नहीं लिखा है तो क्या होगा?' }, a: { en: 'After scanning the tag, the labour charge field will show blank. Just enter your labour rate and select Gross Weight or Net Weight — the labour charge will be calculated automatically.', hi: 'Tag scan करने के बाद labour charge field खाली दिखेगा। बस अपनी labour rate डालें और Gross Weight या Net Weight चुनें — labour charge automatically calculate हो जाएगा।' } },
-      { q: { en: 'Can I predefine labour charges for my tags?', hi: 'क्या मैं अपने tags के लिए labour charges predefine कर सकता हूं?' }, a: { en: 'Yes. Settings → Masters → Labour Charges → add your desired labour rate and select Gross Weight or Net Weight. This will be saved in your Masters and used every time you calculate MRP.', hi: 'हां। Settings → Masters → Labour Charges → अपनी मनचाही labour rate डालें और Gross Weight या Net Weight चुनें। यह Masters में save हो जाएगा और हर बार MRP calculate करते समय इस्तेमाल होगा।' } },
+      { q: { en: 'Can I predefine labour charges for my tags?', hi: 'क्या मैं अपने tags के लिए labour charges predefine कर सकता हूं?' }, a: { en: 'Yes. Home screen → ☰ Menu → Settings → Masters → Labour Charges → add your desired labour rate and select Gross Weight or Net Weight. This will be saved in your Masters and used every time you calculate MRP.', hi: 'हां। Home screen → ☰ Menu → Settings → Masters → Labour Charges → अपनी मनचाही labour rate डालें और Gross Weight या Net Weight चुनें। यह Masters में save हो जाएगा और हर बार MRP calculate करते समय इस्तेमाल होगा।' } },
+    ],
+  },
+  {
+    section: { en: 'Wastage', hi: 'वेस्टेज' },
+    items: [
+      { q: { en: 'How do I add wastage codes?', hi: 'Wastage code कैसे add करूं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Masters → Wastage → add a Wastage Code (for example WS-08) and its Wastage %, then tap Save. It is saved in your Masters.', hi: 'Home screen → ☰ Menu → Settings → Masters → Wastage → Wastage Code (जैसे WS-08) और उसका Wastage % डालें, फिर Save दबाएं। यह आपके Masters में save हो जाएगा।' } },
+      { q: { en: 'How do I edit or delete a saved wastage code?', hi: 'Save किया हुआ wastage code कैसे edit या delete करूं?' }, a: { en: 'After you tap Save, the button turns into Edit. Tap Edit, make your changes, then Save again. To remove a code, tap the bin icon.', hi: 'Save दबाने के बाद वह button Edit बन जाता है। Edit दबाएं, बदलाव करें, फिर दोबारा Save करें। Code हटाने के लिए bin icon दबाएं।' } },
+      { q: { en: 'How do I use a wastage code while calculating MRP?', hi: 'MRP calculate करते समय wastage code कैसे use करूं?' }, a: { en: 'After scanning a tag, on the Scan Review screen pick your code from the Wastage Code dropdown. It lists the codes you saved in Masters → Wastage. The Wastage and Labour amount fields below can also be edited.', hi: 'Tag scan करने के बाद Scan Review screen पर Wastage Code dropdown से अपना code चुनें। इसमें वही codes दिखते हैं जो आपने Masters → Wastage में save किए हैं। नीचे Wastage और Labour के amount भी edit किए जा सकते हैं।' } },
     ],
   },
   {
     section: { en: 'Item Code', hi: 'आइटम कोड' },
     items: [
-      { q: { en: 'How do I add an item code?', hi: 'Item code कैसे add करूं?' }, a: { en: 'Settings → Masters → Item Code → add your item name and item code. Whenever the scanner scans a matching tag, it will automatically fetch the item name and code and show them on the calculation page.', hi: 'Settings → Masters → Item Code → अपना item name और item code add करें। जब भी scanner matching tag scan करेगा, item name और code automatically calculation page पर दिख जाएंगे।' } },
+      { q: { en: 'How do I add an item code?', hi: 'Item code कैसे add करूं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Masters → Item Code → add your item name and item code. Whenever the scanner scans a matching tag, it will automatically fetch the item name and code and show them on the calculation page.', hi: 'Home screen → ☰ Menu → Settings → Masters → Item Code → अपना item name और item code add करें। जब भी scanner matching tag scan करेगा, item name और code automatically calculation page पर दिख जाएंगे।' } },
     ],
   },
   {
@@ -1077,23 +1010,25 @@ const FAQ_SECTIONS = [
     ],
   },
   {
-    section: { en: 'Password Manager', hi: 'पासवर्ड मैनेजर' },
+    section: { en: 'MPIN Manager', hi: 'MPIN मैनेजर' },
     items: [
-      { q: { en: 'Can I change my password?', hi: 'क्या मैं अपना password बदल सकता हूं?' }, a: { en: 'Yes, you can always change or update your password. Settings → Password Manager → create your new password there.', hi: 'हां, आप हमेशा अपना password बदल या update कर सकते हैं। Settings → Password Manager → अपना नया password बनाएं।' } },
+      { q: { en: 'Can I change my MPIN?', hi: 'क्या मैं अपना MPIN बदल सकता हूं?' }, a: { en: 'Yes, anytime. Home screen → ☰ Menu → Settings → MPIN Manager → enter your current MPIN, then your new 4-digit MPIN and confirm it → Update MPIN. Use the new MPIN the next time you log in.', hi: 'हां, कभी भी। Home screen → ☰ Menu → Settings → MPIN Manager → अपना current MPIN डालें, फिर नया 4-digit MPIN डालकर confirm करें → Update MPIN। अगली बार login पर यही नया MPIN इस्तेमाल करें।' } },
+      { q: { en: 'I don’t remember my current MPIN while changing it. What now?', hi: 'MPIN बदलते समय मुझे अपना current MPIN याद नहीं है, अब क्या करूं?' }, a: { en: 'In MPIN Manager tap Forgot MPIN? under the Current MPIN box → enter your phone number → verify the OTP. Your existing MPIN will be shown. Tap Back to MPIN Manager and continue.', hi: 'MPIN Manager में Current MPIN box के नीचे Forgot MPIN? दबाएं → phone number डालें → OTP verify करें। आपका existing MPIN दिख जाएगा। Back to MPIN Manager दबाकर आगे बढ़ें।' } },
     ],
   },
   {
     section: { en: 'Employee Management', hi: 'एम्प्लॉई मैनेजमेंट' },
     items: [
-      { q: { en: 'How can I add an employee to my app?', hi: 'मैं अपने app में employee कैसे add करूं?' }, a: { en: 'Settings → Employee Manager → Add New Employee → fill in their details → Continue. A unique username and password will be generated for them — share it directly from there, and it becomes their login.', hi: 'Settings → Employee Manager → Add New Employee → उनकी details भरें → Continue। उनके लिए एक unique username और password बन जाएगा — इसे वहीं से share कर दें, यही उनका login बन जाएगा।' } },
+      { q: { en: 'How can I add an employee to my app?', hi: 'मैं अपने app में employee कैसे add करूं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Employee Manager → + Add New Employee → fill in their name, phone number and designation → Continue. A 4-digit login MPIN is generated for them — share it directly from the Credentials screen. They sign in with their phone number, an OTP and this MPIN.', hi: 'Home screen → ☰ Menu → Settings → Employee Manager → + Add New Employee → उनका नाम, phone number और designation भरें → Continue। उनके लिए 4-digit login MPIN बन जाएगा — इसे Credentials screen से ही share कर दें। वे अपने phone number, OTP और इस MPIN से sign in करेंगे।' } },
+      { q: { en: 'How can I change my employee’s MPIN?', hi: 'मैं अपने employee का MPIN कैसे बदलूं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Employee Manager → tap the employee’s card → in the MPIN Manager card tap the pencil icon → enter the new 4-digit MPIN twice → Update MPIN. Share the new MPIN with your employee.', hi: 'Home screen → ☰ Menu → Settings → Employee Manager → employee के card पर tap करें → MPIN Manager card में pencil icon दबाएं → नया 4-digit MPIN दो बार डालें → Update MPIN। नया MPIN अपने employee को बता दें।' } },
       { q: { en: 'Can my employee use two different IDs on this app?', hi: 'क्या मेरा employee इस app पर दो अलग-अलग IDs इस्तेमाल कर सकता है?' }, a: { en: 'No — only one login is allowed per employee, tied to one mobile number under your GST license.', hi: 'नहीं — हर employee का सिर्फ एक ही login होगा, जो आपके GST license के तहत एक mobile number से जुड़ा होगा।' } },
-      { q: { en: 'How can I control which gold rate tiles are shown to my employee?', hi: 'मैं अपने employee को दिखने वाली gold rate tiles कैसे control करूं?' }, a: { en: 'Settings → Employee Manager → select the employee → Set Permission → Dashboard Matrices → select the gold rates you want them to see. Only the rates you select will show up in their app.', hi: 'Settings → Employee Manager → employee चुनें → Set Permission → Dashboard Matrices → जो gold rates उन्हें दिखानी हैं वो select करें। सिर्फ selected rates ही उनके app में दिखेंगी।' } },
-      { q: { en: 'How can I make sure my employee cannot change the gold rates?', hi: 'मैं कैसे पक्का करूं कि मेरा employee gold rates ना बदल सके?' }, a: { en: 'Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Gold unchecked. If it’s unchecked, they won’t be able to edit gold rates.', hi: 'Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Gold को unchecked रहने दें। Unchecked रहने पर वो gold rates edit नहीं कर पाएंगे।' } },
-      { q: { en: 'How can I make sure my employee cannot change the diamond rates?', hi: 'मैं कैसे पक्का करूं कि मेरा employee diamond rates ना बदल सके?' }, a: { en: 'Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Diamond unchecked. If it’s checked, they can edit diamond rates — if not, they can’t.', hi: 'Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Diamond को unchecked रहने दें। Checked होने पर वो diamond rates edit कर सकते हैं — नहीं तो नहीं।' } },
-      { q: { en: 'How can I make sure my employee cannot change the labour rates?', hi: 'मैं कैसे पक्का करूं कि मेरा employee labour rates ना बदल सके?' }, a: { en: 'Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Labour Charges unchecked to stop them from editing labour rates while calculating MRP.', hi: 'Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Labour Charges को unchecked रखें ताकि वो MRP calculate करते समय labour rates edit ना कर सकें।' } },
-      { q: { en: 'How can I make sure my employee sees only RTGS rate, only Cash rate, or both?', hi: 'मैं कैसे पक्का करूं कि मेरा employee सिर्फ RTGS rate, सिर्फ Cash rate, या दोनों देख सके?' }, a: { en: 'Settings → Employee Manager → select the employee → Set Permission → Gold Rate Options While Calculating → choose RTGS Rate Only, Cash Rate Only, or Both. This controls what’s shown in their app.', hi: 'Settings → Employee Manager → employee चुनें → Set Permission → Gold Rate Options While Calculating → RTGS Rate Only, Cash Rate Only, या Both में से चुनें। इससे तय होगा कि उनके app में क्या दिखेगा।' } },
-      { q: { en: 'How can I make sure my employee cannot edit the purity percentage while calculating MRP?', hi: 'मैं कैसे पक्का करूं कि मेरा employee MRP calculate करते समय purity percentage edit ना कर सके?' }, a: { en: 'Settings → Employee Manager → select the employee → Set Permission → leave Edit Purity (%) unchecked to stop them from changing the purity percentage while calculating MRP.', hi: 'Settings → Employee Manager → employee चुनें → Set Permission → Edit Purity (%) को unchecked रखें ताकि वो MRP calculate करते समय purity percentage ना बदल सकें।' } },
-      { q: { en: 'What if my employee leaves my company?', hi: 'अगर मेरा employee कंपनी छोड़ दे तो क्या करूं?' }, a: { en: 'Settings → Employee Manager → tap the employee’s card → turn off Active Account. All app features will be disabled for that employee’s number.', hi: 'Settings → Employee Manager → employee के card पर tap करें → Active Account को off कर दें। उस employee के number पर app के सारे features disable हो जाएंगे।' } },
+      { q: { en: 'How can I control which gold rate tiles are shown to my employee?', hi: 'मैं अपने employee को दिखने वाली gold rate tiles कैसे control करूं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → Dashboard Matrices → select the gold rates you want them to see. Only the rates you select will show up in their app.', hi: 'Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Dashboard Matrices → जो gold rates उन्हें दिखानी हैं वो select करें। सिर्फ selected rates ही उनके app में दिखेंगी।' } },
+      { q: { en: 'How can I make sure my employee cannot change the gold rates?', hi: 'मैं कैसे पक्का करूं कि मेरा employee gold rates ना बदल सके?' }, a: { en: 'Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Gold unchecked. If it’s unchecked, they won’t be able to edit gold rates.', hi: 'Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Gold को unchecked रहने दें। Unchecked रहने पर वो gold rates edit नहीं कर पाएंगे।' } },
+      { q: { en: 'How can I make sure my employee cannot change the diamond rates?', hi: 'मैं कैसे पक्का करूं कि मेरा employee diamond rates ना बदल सके?' }, a: { en: 'Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Diamond unchecked. If it’s checked, they can edit diamond rates — if not, they can’t.', hi: 'Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Diamond को unchecked रहने दें। Checked होने पर वो diamond rates edit कर सकते हैं — नहीं तो नहीं।' } },
+      { q: { en: 'How can I make sure my employee cannot change the labour rates?', hi: 'मैं कैसे पक्का करूं कि मेरा employee labour rates ना बदल सके?' }, a: { en: 'Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → Give Rate Edit Access → leave Labour Charges unchecked to stop them from editing labour rates while calculating MRP.', hi: 'Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Give Rate Edit Access → Labour Charges को unchecked रखें ताकि वो MRP calculate करते समय labour rates edit ना कर सकें।' } },
+      { q: { en: 'How can I make sure my employee sees only RTGS rate, only Cash rate, or both?', hi: 'मैं कैसे पक्का करूं कि मेरा employee सिर्फ RTGS rate, सिर्फ Cash rate, या दोनों देख सके?' }, a: { en: 'Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → Gold Rate Options While Calculating → choose RTGS Rate Only, Cash Rate Only, or Both. This controls what’s shown in their app.', hi: 'Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Gold Rate Options While Calculating → RTGS Rate Only, Cash Rate Only, या Both में से चुनें। इससे तय होगा कि उनके app में क्या दिखेगा।' } },
+      { q: { en: 'How can I make sure my employee cannot edit the purity percentage while calculating MRP?', hi: 'मैं कैसे पक्का करूं कि मेरा employee MRP calculate करते समय purity percentage edit ना कर सके?' }, a: { en: 'Home screen → ☰ Menu → Settings → Employee Manager → select the employee → Set Permission → leave Edit Purity (%) unchecked to stop them from changing the purity percentage while calculating MRP.', hi: 'Home screen → ☰ Menu → Settings → Employee Manager → employee चुनें → Set Permission → Edit Purity (%) को unchecked रखें ताकि वो MRP calculate करते समय purity percentage ना बदल सकें।' } },
+      { q: { en: 'What if my employee leaves my company?', hi: 'अगर मेरा employee कंपनी छोड़ दे तो क्या करूं?' }, a: { en: 'Home screen → ☰ Menu → Settings → Employee Manager → tap the employee’s card → turn off Active Account. All app features will be disabled for that employee’s number.', hi: 'Home screen → ☰ Menu → Settings → Employee Manager → employee के card पर tap करें → Active Account को off कर दें। उस employee के number पर app के सारे features disable हो जाएंगे।' } },
     ],
   },
 ];
@@ -1208,45 +1143,43 @@ setMenuFaqsBtn.addEventListener('click', () => {
 document.getElementById('faqsBackBtn').addEventListener('click', () => {
   goBackward(screenFaqs, screenSettings);
 });
-document.getElementById('pwMgrBackBtn').addEventListener('click', () => {
-  goBackward(screenPasswordManager, screenSettings);
+document.getElementById('mpinMgrBackBtn').addEventListener('click', () => {
+  goBackward(screenMpinManager, screenSettings);
 });
-document.getElementById('pwMgrForgotLink').addEventListener('click', (e) => {
+document.getElementById('mpinMgrForgotLink').addEventListener('click', (e) => {
   e.preventDefault();
-  forgotPwReturnScreen = screenPasswordManager;
-  resetForgotPasswordScreen();
-  screenPasswordManager.classList.remove('active');
-  screenForgotPassword.classList.remove('exit-right');
-  screenForgotPassword.classList.add('active', 'enter-right');
+  openForgotMpinFrom(screenMpinManager, 'Back to MPIN Manager');
 });
-wireEyeToggle('togglePwMgrCurrent', 'pwMgrCurrent');
-wireEyeToggle('togglePwMgrNew', 'pwMgrNew');
-wireEyeToggle('togglePwMgrConfirm', 'pwMgrConfirm');
-document.getElementById('pwMgrUpdateBtn').addEventListener('click', () => {
-  const newPw = document.getElementById('pwMgrNew');
-  const confirmPw = document.getElementById('pwMgrConfirm');
-  const newField = newPw.closest('.field');
-  const confirmField = confirmPw.closest('.field');
-  const errorEl = document.getElementById('pwMgrError');
+['Current', 'New', 'Confirm'].forEach((k) => {
+  wireMpinDigits('mpinMgr' + k + 'Digits');
+  wireMpinEyeToggle('toggleMpinMgr' + k, 'mpinMgr' + k + 'Digits');
+  document.querySelectorAll('#mpinMgr' + k + 'Digits .mpin-digit').forEach((input) => {
+    input.addEventListener('input', () => input.closest('.field').classList.remove('invalid'));
+  });
+});
+function mpinFieldFail(containerId) {
+  const field = document.getElementById(containerId).closest('.field');
+  field.classList.add('invalid');
+  field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const wrap = field.querySelector('.mpin-row');
+  wrap.classList.remove('shake');
+  void wrap.offsetWidth;
+  wrap.classList.add('shake');
+}
+document.getElementById('mpinMgrUpdateBtn').addEventListener('click', () => {
+  const current = getMpinValue('mpinMgrCurrentDigits');
+  const next = getMpinValue('mpinMgrNewDigits');
+  const confirm = getMpinValue('mpinMgrConfirmDigits');
+  if (current !== TEST_MPIN) { mpinFieldFail('mpinMgrCurrentDigits'); return; }
+  if (next.length !== 4) { mpinFieldFail('mpinMgrNewDigits'); return; }
+  if (confirm !== next) { mpinFieldFail('mpinMgrConfirmDigits'); return; }
 
-  const newValid = newPw.value.trim().length >= 6;
-  const confirmValid = newValid && confirmPw.value === newPw.value;
-
-  setInvalid(newField, !newValid);
-  setInvalid(confirmField, !confirmValid);
-  errorEl.classList.toggle('show', newValid && !confirmValid);
-
-  if (!newValid) { newField.scrollIntoView({ behavior: 'smooth', block: 'center' }); shakeField(newField); return; }
-  if (!confirmValid) { confirmField.scrollIntoView({ behavior: 'smooth', block: 'center' }); shakeField(confirmField); return; }
-
-  const btn = document.getElementById('pwMgrUpdateBtn');
-  btn.textContent = 'Password Updated ✓';
+  const btn = document.getElementById('mpinMgrUpdateBtn');
+  btn.textContent = 'MPIN Updated ✓';
   setTimeout(() => {
-    btn.textContent = 'Update Password';
-    document.getElementById('pwMgrCurrent').value = '';
-    newPw.value = '';
-    confirmPw.value = '';
-    goBackward(screenPasswordManager, screenSettings);
+    btn.textContent = 'Update MPIN';
+    ['Current', 'New', 'Confirm'].forEach((k) => clearMpinDigits('mpinMgr' + k + 'Digits'));
+    goBackward(screenMpinManager, screenSettings);
   }, 1000);
 });
 document.getElementById('dashSetBackBtn').addEventListener('click', () => {
@@ -1745,24 +1678,39 @@ document.getElementById('empAddContinueBtn').addEventListener('click', () => {
   }
   const name = document.getElementById('empName').value.trim() || 'New Employee';
   const designation = document.getElementById('empDesignation').value.trim() || 'Employee';
-  const firstName = (name.split(' ')[0] || 'user').toLowerCase().replace(/[^a-z]/g, '') || 'user';
-  const username = firstName + Math.floor(100 + Math.random() * 900);
-  const password = 'Mrp@' + Math.floor(1000 + Math.random() * 9000);
+  const phoneDigits = document.getElementById('empPhone').value.replace(/\D/g, '');
   pendingEmp = { name, designation };
-  document.getElementById('empCredUsername').textContent = username;
-  document.getElementById('empCredPassword').textContent = password;
+  document.getElementById('empCredPhone').textContent = phoneDigits ? '+91 ' + phoneDigits : '—';
+  clearMpinDigits('empCredMpinNewDigits');
+  clearMpinDigits('empCredMpinConfirmDigits');
+  document.querySelectorAll('#screenEmpCredentials .field').forEach((f) => f.classList.remove('invalid'));
   goForward(screenEmpAdd, screenEmpCredentials);
 });
 
 document.getElementById('empCredBackBtn').addEventListener('click', () => {
   goBackward(screenEmpCredentials, screenEmpAdd);
 });
+wireMpinDigits('empCredMpinNewDigits');
+wireMpinDigits('empCredMpinConfirmDigits');
+wireMpinEyeToggle('toggleEmpCredMpinNew', 'empCredMpinNewDigits');
+wireMpinEyeToggle('toggleEmpCredMpinConfirm', 'empCredMpinConfirmDigits');
+document.querySelectorAll('#screenEmpCredentials .mpin-digit').forEach((input) => {
+  input.addEventListener('input', () => input.closest('.field').classList.remove('invalid'));
+});
+function validEmpCredMpin() {
+  const next = getMpinValue('empCredMpinNewDigits');
+  if (next.length !== 4) { mpinFieldFail('empCredMpinNewDigits'); return null; }
+  if (getMpinValue('empCredMpinConfirmDigits') !== next) { mpinFieldFail('empCredMpinConfirmDigits'); return null; }
+  return next;
+}
 document.getElementById('empCredShareBtn').addEventListener('click', () => {
-  const u = document.getElementById('empCredUsername').textContent;
-  const p = document.getElementById('empCredPassword').textContent;
-  openShareSheet('Your MRPscan login — Username: ' + u + ', Password: ' + p);
+  const mpin = validEmpCredMpin();
+  if (!mpin) return;
+  const phone = document.getElementById('empCredPhone').textContent;
+  openShareSheet('Your MRPscan login — Phone: ' + phone + ', MPIN: ' + mpin + '. Sign in with your phone number, OTP and this MPIN.');
 });
 document.getElementById('empCredContinueBtn').addEventListener('click', () => {
+  if (!validEmpCredMpin()) return;
   if (pendingEmp) {
     const card = document.createElement('div');
     card.className = 'emp-card';
@@ -1796,14 +1744,28 @@ function wirePermDropdown(key) {
 }
 ['permGoldMatrix', 'permRateEdit', 'permRateOpt'].forEach(wirePermDropdown);
 
-document.getElementById('empPasswordBackBtn').addEventListener('click', () => {
-  goBackward(screenEmpPassword, screenEmpDetail);
+function resetEmpMpinScreen() {
+  clearMpinDigits('empMpinNewDigits');
+  clearMpinDigits('empMpinConfirmDigits');
+  document.querySelectorAll('#screenEmpMpin .field').forEach((f) => f.classList.remove('invalid'));
+}
+document.getElementById('empMpinBackBtn').addEventListener('click', () => {
+  goBackward(screenEmpMpin, screenEmpDetail);
 });
-document.getElementById('empPasswordSubmitBtn').addEventListener('click', () => {
-  goBackward(screenEmpPassword, screenEmpDetail);
+wireMpinDigits('empMpinNewDigits');
+wireMpinDigits('empMpinConfirmDigits');
+wireMpinEyeToggle('toggleEmpMpinNew', 'empMpinNewDigits');
+wireMpinEyeToggle('toggleEmpMpinConfirm', 'empMpinConfirmDigits');
+document.querySelectorAll('#screenEmpMpin .mpin-digit').forEach((input) => {
+  input.addEventListener('input', () => input.closest('.field').classList.remove('invalid'));
 });
-wireEyeToggle('toggleEmpPassword1', 'empPassword1');
-wireEyeToggle('toggleEmpPassword2', 'empPassword2');
+document.getElementById('empMpinSubmitBtn').addEventListener('click', () => {
+  const next = getMpinValue('empMpinNewDigits');
+  if (next.length !== 4) { mpinFieldFail('empMpinNewDigits'); return; }
+  if (getMpinValue('empMpinConfirmDigits') !== next) { mpinFieldFail('empMpinConfirmDigits'); return; }
+  document.getElementById('empDetailMpin').textContent = next;
+  goBackward(screenEmpMpin, screenEmpDetail);
+});
 
 document.getElementById('empDetailBackBtn').addEventListener('click', () => {
   goBackward(screenEmpDetail, screenEmpList);
@@ -1813,8 +1775,9 @@ document.getElementById('empEditBtn').addEventListener('click', () => {
   document.getElementById('empAddTitle').textContent = 'Edit Employee';
   goForward(screenEmpDetail, screenEmpAdd);
 });
-document.getElementById('empPasswordEditBtn').addEventListener('click', () => {
-  goForward(screenEmpDetail, screenEmpPassword);
+document.getElementById('empMpinEditBtn').addEventListener('click', () => {
+  resetEmpMpinScreen();
+  goForward(screenEmpDetail, screenEmpMpin);
 });
 document.getElementById('empPermEditBtn').addEventListener('click', () => {
   permReturnScreen = screenEmpDetail;

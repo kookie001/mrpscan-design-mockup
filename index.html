@@ -6,7 +6,7 @@
 <title>MRPscan — App Onboarding Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=95">
+<link rel="stylesheet" href="styles.css?v=98">
 </head>
 <body>
 
@@ -197,82 +197,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- FORGOT PASSWORD SCREEN -->
-      <section class="screen forgot-pw" id="screenForgotPassword">
-        <div class="auth-scroll">
-          <button class="back-btn" id="backFromForgotPw" aria-label="Back">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-
-          <h1 class="auth-title reveal" style="--d:0">Forgot Password?</h1>
-          <p class="auth-sub reveal" style="--d:1">Enter your User ID — we'll text a code to your registered phone.</p>
-
-          <div class="auth-form" id="forgotPwForm">
-            <label class="field reveal" style="--d:2">
-              <span>User ID</span>
-              <div class="input-wrap has-verify">
-                <input type="text" id="forgotPwUserId" placeholder="Enter your User ID" autocomplete="username">
-                <button type="button" class="verify-btn" id="sendCodeForgotPw">Send code</button>
-              </div>
-              <small class="field-error">Please enter your User ID</small>
-            </label>
-
-            <div class="otp-collapse" id="otpCollapseForgotPw">
-              <div class="otp-inner">
-                <div class="otp-box" id="otpBoxForgotPw">
-                  <span class="otp-label">Enter the 6-digit code sent to your phone</span>
-                  <div class="otp-digits" id="otpDigitsForgotPw">
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit">
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit">
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit">
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit">
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit">
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit">
-                  </div>
-                  <div class="otp-meta">
-                    <span id="otpTimerTextForgotPw">Resend code in <b id="otpTimerValForgotPw">0:30</b></span>
-                    <a href="#" id="resendOtpForgotPw" class="resend-link">Resend code</a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="reveal-collapse" id="newPasswordCollapse">
-              <div class="reveal-inner">
-                <label class="field" style="margin-bottom:16px;">
-                  <span>New Password</span>
-                  <div class="input-wrap">
-                    <input type="password" id="newPassword1" placeholder="••••••••" autocomplete="new-password">
-                    <button type="button" class="eye-btn" id="toggleNewPassword1" aria-label="Show password">
-                      <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-                      <svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                  </div>
-                  <small class="field-error">Password must be at least 6 characters</small>
-                </label>
-                <label class="field" style="margin-bottom:16px;">
-                  <span>Confirm New Password</span>
-                  <div class="input-wrap">
-                    <input type="password" id="newPassword2" placeholder="••••••••" autocomplete="new-password">
-                    <button type="button" class="eye-btn" id="toggleNewPassword2" aria-label="Show password">
-                      <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-                      <svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                  </div>
-                  <small class="field-error">Passwords don't match</small>
-                </label>
-                <button type="button" class="btn btn-primary btn-lg" id="resetPasswordBtn">Reset Password</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="success-toast" id="resetSuccessToast">
-          <span class="success-check">✓</span>
-          <p>Password reset successfully.</p>
         </div>
       </section>
 
@@ -1223,7 +1147,7 @@
         </div>
       </section>
 
-      <!-- EMPLOYEE MANAGER: CREDENTIALS (auto-generated after Add) -->
+      <!-- EMPLOYEE MANAGER: CREDENTIALS (admin creates + confirms the employee MPIN after Add) -->
       <section class="screen emp-credentials" id="screenEmpCredentials">
         <div class="set-scroll">
           <div class="set-header">
@@ -1233,12 +1157,47 @@
             <span class="set-header-title">Employee Credentials</span>
           </div>
 
-          <p class="emp-cred-note">A unique login has been created for this employee — share it with them to get started.</p>
+          <p class="emp-cred-note">Create a 4-digit login MPIN for this employee. They sign in with their phone number, an OTP and this MPIN — share it with them once it is set.</p>
 
           <div class="bp-card">
             <div class="bp-card-head">Login Details</div>
-            <div class="bp-row"><span>Username</span><b id="empCredUsername">—</b></div>
-            <div class="bp-row bp-row-last"><span>Password</span><b id="empCredPassword">—</b></div>
+            <div class="bp-row bp-row-last"><span>Phone No.</span><b id="empCredPhone">—</b></div>
+          </div>
+
+          <div class="emp-form-card">
+            <div class="bp-card-head">Set MPIN</div>
+            <div class="emp-form-body">
+              <label class="field">
+                <span>Create MPIN</span>
+                <div class="mpin-row">
+                  <div class="mpin-digits" id="empCredMpinNewDigits">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                  </div>
+                  <button type="button" class="eye-btn mpin-eye-btn" id="toggleEmpCredMpinNew" aria-label="Show MPIN">
+                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg><svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div>
+                <small class="field-error">Enter a 4-digit MPIN</small>
+              </label>
+              <label class="field">
+                <span>Confirm MPIN</span>
+                <div class="mpin-row">
+                  <div class="mpin-digits" id="empCredMpinConfirmDigits">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                  </div>
+                  <button type="button" class="eye-btn mpin-eye-btn" id="toggleEmpCredMpinConfirm" aria-label="Show MPIN">
+                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg><svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                </div>
+                <small class="field-error">MPINs don't match</small>
+              </label>
+            </div>
           </div>
 
           <button type="button" class="emp-cred-share-btn" id="empCredShareBtn">
@@ -1322,43 +1281,53 @@
         </div>
       </section>
 
-      <!-- EMPLOYEE MANAGER: UPDATE PASSWORD (from Detail screen only) -->
-      <section class="screen emp-password" id="screenEmpPassword">
+      <!-- EMPLOYEE MANAGER: UPDATE MPIN (from Detail screen only) -->
+      <section class="screen emp-mpin" id="screenEmpMpin">
         <div class="set-scroll">
           <div class="set-header">
-            <button class="rev-back-btn" id="empPasswordBackBtn" aria-label="Back">
+            <button class="rev-back-btn" id="empMpinBackBtn" aria-label="Back">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
-            <span class="set-header-title">Update Password</span>
+            <span class="set-header-title">Update MPIN</span>
           </div>
 
           <div class="emp-form-card">
-            <div class="bp-card-head">Update Password for Employee</div>
+            <div class="bp-card-head">Update MPIN for Employee</div>
             <div class="emp-form-body">
               <label class="field">
-                <span>New Password</span>
-                <div class="input-wrap">
-                  <input type="password" id="empPassword1" placeholder="PASSWORD">
-                  <button type="button" class="eye-btn" id="toggleEmpPassword1" aria-label="Show password">
-                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-                    <svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>New MPIN</span>
+                <div class="mpin-row">
+                  <div class="mpin-digits" id="empMpinNewDigits">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                  </div>
+                  <button type="button" class="eye-btn mpin-eye-btn" id="toggleEmpMpinNew" aria-label="Show MPIN">
+                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg><svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   </button>
                 </div>
+                <small class="field-error">Enter a 4-digit MPIN</small>
               </label>
               <label class="field">
-                <span>Confirm Password</span>
-                <div class="input-wrap">
-                  <input type="password" id="empPassword2" placeholder="••••••••">
-                  <button type="button" class="eye-btn" id="toggleEmpPassword2" aria-label="Show password">
-                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-                    <svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Confirm MPIN</span>
+                <div class="mpin-row">
+                  <div class="mpin-digits" id="empMpinConfirmDigits">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                  </div>
+                  <button type="button" class="eye-btn mpin-eye-btn" id="toggleEmpMpinConfirm" aria-label="Show MPIN">
+                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg><svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   </button>
                 </div>
+                <small class="field-error">MPINs don't match</small>
               </label>
             </div>
           </div>
 
-          <button type="button" class="btn btn-primary btn-lg" id="empPasswordSubmitBtn">Update Password</button>
+          <button type="button" class="btn btn-primary btn-lg" id="empMpinSubmitBtn">Update MPIN</button>
         </div>
       </section>
 
@@ -1394,12 +1363,12 @@
           </div>
 
           <div class="bp-card">
-            <div class="bp-card-head">Password Manager</div>
+            <div class="bp-card-head">MPIN Manager</div>
             <div class="bp-row bp-row-last">
-              <span>Employee Password</span>
+              <span>Employee MPIN</span>
               <div class="bp-row-action">
-                <b>Pass@1234</b>
-                <button class="bp-edit-btn" id="empPasswordEditBtn" aria-label="Edit password">
+                <b id="empDetailMpin">4821</b>
+                <button class="bp-edit-btn" id="empMpinEditBtn" aria-label="Edit MPIN">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
               </div>
@@ -1587,57 +1556,69 @@
         </div>
       </section>
 
-      <!-- PASSWORD MANAGER (from Settings menu) -->
-      <section class="screen password-manager" id="screenPasswordManager">
+      <!-- MPIN MANAGER (from Settings menu) -->
+      <section class="screen mpin-manager" id="screenMpinManager">
         <div class="set-scroll">
           <div class="set-header">
-            <button class="rev-back-btn" id="pwMgrBackBtn" aria-label="Back">
+            <button class="rev-back-btn" id="mpinMgrBackBtn" aria-label="Back">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
-            <span class="set-header-title">Password Manager</span>
+            <span class="set-header-title">MPIN Manager</span>
           </div>
 
           <div class="emp-form-card">
-            <div class="bp-card-head">Change Password</div>
+            <div class="bp-card-head">Change MPIN</div>
             <div class="emp-form-body">
               <label class="field">
-                <span>Current Password</span>
-                <div class="input-wrap">
-                  <input type="password" id="pwMgrCurrent" placeholder="••••••••">
-                  <button type="button" class="eye-btn" id="togglePwMgrCurrent" aria-label="Show password">
-                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-                    <svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Current MPIN</span>
+                <div class="mpin-row">
+                  <div class="mpin-digits" id="mpinMgrCurrentDigits">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                  </div>
+                  <button type="button" class="eye-btn mpin-eye-btn" id="toggleMpinMgrCurrent" aria-label="Show MPIN">
+                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg><svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   </button>
                 </div>
+                <small class="field-error">Incorrect MPIN.</small>
               </label>
-              <a href="#" class="forgot" id="pwMgrForgotLink">Forgot Password?</a>
-
+              <a href="#" class="forgot" id="mpinMgrForgotLink">Forgot MPIN?</a>
               <label class="field">
-                <span>New Password</span>
-                <div class="input-wrap">
-                  <input type="password" id="pwMgrNew" placeholder="••••••••">
-                  <button type="button" class="eye-btn" id="togglePwMgrNew" aria-label="Show password">
-                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-                    <svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>New MPIN</span>
+                <div class="mpin-row">
+                  <div class="mpin-digits" id="mpinMgrNewDigits">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                  </div>
+                  <button type="button" class="eye-btn mpin-eye-btn" id="toggleMpinMgrNew" aria-label="Show MPIN">
+                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg><svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   </button>
                 </div>
+                <small class="field-error">Enter a 4-digit MPIN</small>
               </label>
-
               <label class="field">
-                <span>Confirm New Password</span>
-                <div class="input-wrap">
-                  <input type="password" id="pwMgrConfirm" placeholder="••••••••">
-                  <button type="button" class="eye-btn" id="togglePwMgrConfirm" aria-label="Show password">
-                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
-                    <svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Confirm New MPIN</span>
+                <div class="mpin-row">
+                  <div class="mpin-digits" id="mpinMgrConfirmDigits">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit mpin-digit">
+                  </div>
+                  <button type="button" class="eye-btn mpin-eye-btn" id="toggleMpinMgrConfirm" aria-label="Show MPIN">
+                    <svg class="eye-icon icon-eye" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg><svg class="eye-icon icon-eye-off" viewBox="0 0 24 24" fill="none"><path d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M9.36 5.35A11.2 11.2 0 0 1 12 5c7 0 11 7 11 7a13.4 13.4 0 0 1-3.17 3.88M6.6 6.6C3.9 8.3 2 11.06 1 12c0 0 4 7 11 7 1.4 0 2.68-.27 3.83-.72" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                   </button>
                 </div>
+                <small class="field-error">MPINs don't match</small>
               </label>
-              <small class="field-error" id="pwMgrError">New passwords do not match.</small>
             </div>
           </div>
 
-          <button type="button" class="btn btn-primary btn-lg" id="pwMgrUpdateBtn">Update Password</button>
+          <button type="button" class="btn btn-primary btn-lg" id="mpinMgrUpdateBtn">Update MPIN</button>
         </div>
       </section>
 
@@ -1679,9 +1660,9 @@
               <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
-            <div class="set-menu-item" id="setMenuPassword">
+            <div class="set-menu-item" id="setMenuMpin">
               <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" stroke-width="2"/></svg></span>
-              <span class="set-menu-label">Password Manager</span>
+              <span class="set-menu-label">MPIN Manager</span>
               <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
@@ -2142,6 +2123,6 @@
   <button class="replay-btn" id="replayBtn">↻ Replay splash animation</button>
 </div>
 
-<script src="script.js?v=92"></script>
+<script src="script.js?v=96"></script>
 </body>
 </html>
