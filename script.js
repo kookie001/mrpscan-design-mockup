@@ -616,15 +616,14 @@ function startProcessing() {
     if (value >= 100) {
       clearInterval(procInterval);
       setTimeout(() => {
-        populateWastageCodeOptions();
-        goForward(screenScanProcessing, screenScanReview);
+        openNewScan(screenScanProcessing);
       }, 400);
     }
   }, 45);
 }
 
 // -- Review screen --
-document.getElementById('revBackBtn').addEventListener('click', () => goBackward(screenScanReview, screenHome));
+document.getElementById('revBackBtn').addEventListener('click', () => goBackward(screenScanReview, reviewReturnScreen));
 document.getElementById('revRescanBtn').addEventListener('click', () => {
   resetCaptureScreen();
   goBackward(screenScanReview, screenScanCapture);
@@ -645,8 +644,10 @@ revMetalInputs.forEach((input) => {
 
 function validateReviewFields() {
   let firstInvalid = null;
+  const diamondEmpty = ['revDWt', 'revDRate', 'revDPacket', 'revDAmt'].every((id) => !document.getElementById(id).value.trim());
   revMetalInputs.forEach((input) => {
     const fieldEl = input.closest('.metal-field');
+    if (diamondEmpty && input.closest('.diamond-tile')) { fieldEl.classList.remove('invalid'); return; }
     const ok = input.value.trim().length > 0;
     fieldEl.classList.toggle('invalid', !ok);
     if (!ok) {
@@ -661,18 +662,14 @@ function validateReviewFields() {
   return true;
 }
 
+let invoiceSource = 'single';
+let invoiceReturnScreen = screenScanReview;
 document.getElementById('revContinueBtn').addEventListener('click', () => {
   if (!validateReviewFields()) return;
+  invoiceSource = 'single';
+  invoiceReturnScreen = screenScanReview;
   goForward(screenScanReview, screenInvoiceGen);
 });
-
-function wireWishlistToggle(id) {
-  document.getElementById(id).addEventListener('click', function () {
-    this.textContent = '✓ Added to Wishlist';
-    this.disabled = true;
-  });
-}
-wireWishlistToggle('revWishlistBtn');
 
 // -- "+ Add Other Charges" tile: reveal an amount row on click --
 const chargesTile = document.getElementById('chargesTile');
@@ -689,7 +686,7 @@ addChargeBtn.addEventListener('click', () => {
 
 // -- Invoice Generation (customer details) -> Invoice Preview --
 document.getElementById('invGenBackBtn').addEventListener('click', () => {
-  goBackward(screenInvoiceGen, screenScanReview);
+  goBackward(screenInvoiceGen, invoiceReturnScreen);
 });
 function openInvoicePreview(isEInvoice) {
   const name = document.getElementById('invCustName').value.trim() || 'Garg Jewellers';
@@ -714,12 +711,13 @@ function openInvoicePreview(isEInvoice) {
   document.getElementById('invIrnBlock').classList.toggle('show', isEInvoice);
   document.querySelector('#screenInvoicePreview .set-header-title').textContent = isEInvoice ? 'E-Invoice' : 'Invoice Preview';
 
+  buildInvoice();
   setInvZoom(1);
   goForward(screenInvoiceGen, screenInvoicePreview);
 }
 
 document.getElementById('invGenContinueBtn').addEventListener('click', () => openInvoicePreview(false));
-document.getElementById('invGenEInvoiceBtn').addEventListener('click', () => openInvoicePreview(true));
+document.getElementById('invGenEInvoiceBtn').addEventListener('click', () => document.getElementById('eInvPopup').classList.add('show'));
 
 // -- Invoice Preview: back, share, download --
 document.getElementById('invPreviewBackBtn').addEventListener('click', () => {
@@ -1427,10 +1425,10 @@ function renumberWstRows() {
 }
 
 // Scanner Review's Wastage Code dropdown -> populated from the codes saved in Masters -> Wastage
-function populateWastageCodeOptions() {
+function populateWastageCodeOptions(preferred) {
   const select = document.getElementById('wastageCodeSelect');
   if (!select) return;
-  const currentValue = select.value || 'WS-08';
+  const currentValue = preferred || select.value || 'WS-08';
   const codes = [...wstList.querySelectorAll('.itc-row')]
     .map((row) => row.querySelector('.itc-field input').value.trim())
     .filter((code) => code);
@@ -1459,7 +1457,7 @@ function wireWstRow(row) {
 }
 wireWstRow(wstList.querySelector('.itc-row'));
 
-document.getElementById('wstAddBtn').addEventListener('click', () => {
+function createWstRow(code, pct, locked) {
   const row = document.createElement('div');
   row.className = 'itc-row';
   row.innerHTML = `
@@ -1467,8 +1465,8 @@ document.getElementById('wstAddBtn').addEventListener('click', () => {
       <span class="itc-num"></span>
       <div class="itc-row-fields-wrap">
         <div class="itc-row-fields">
-          <label class="itc-field"><span>Wastage Code</span><input type="text"></label>
-          <label class="itc-field"><span>Wastage %</span><input type="text"></label>
+          <label class="itc-field"><span>Wastage Code</span><input type="text" value="${escHtml(code)}"></label>
+          <label class="itc-field"><span>Wastage %</span><input type="text" value="${escHtml(pct)}"></label>
         </div>
       </div>
       <div class="wst-actions">
@@ -1480,7 +1478,12 @@ document.getElementById('wstAddBtn').addEventListener('click', () => {
   wstList.appendChild(row);
   wireWstRow(row);
   renumberWstRows();
-  row.querySelector('input').focus();
+  if (locked) row.querySelector('.wst-toggle-btn').click();
+  return row;
+}
+
+document.getElementById('wstAddBtn').addEventListener('click', () => {
+  createWstRow('', '', false).querySelector('input').focus();
 });
 
 // -- Masters -> Gold --
@@ -2065,31 +2068,431 @@ rechargePurchaseBtn.addEventListener('click', function () {
   }, 700);
 });
 
-const wishlistList = document.getElementById('wishlistList');
-const wishlistEmpty = document.getElementById('wishlistEmpty');
+// ============================================================================
+// History & Cart — dummy data shared by Scanner result, Wishlist, Cart and the
+// "History & Cart" card in Settings. Persisted in localStorage (design phase).
+// ============================================================================
+const HC_KEY = 'mrpscanHistoryCart_v2';
+const screenCart = document.getElementById('screenCart');
+const screenHistoryCart = document.getElementById('screenHistoryCart');
+NAV_VISIBLE_SCREENS.push(screenCart, screenHistoryCart);
 
-function checkWishlistEmpty() {
-  wishlistEmpty.classList.toggle('show', wishlistList.querySelectorAll('.wl-card').length === 0);
+function fmtINR(n) { return Math.round(n).toLocaleString('en-IN'); }
+function numFrom(s) {
+  const m = String(s == null ? '' : s).replace(/,/g, '').match(/-?\d+(\.\d+)?/);
+  return m ? parseFloat(m[0]) : 0;
 }
 
-wishlistList.querySelectorAll('.wl-card').forEach((card) => {
-  card.addEventListener('click', () => { populateWastageCodeOptions(); goForward(screenWishlist, screenScanReview); });
-  card.querySelector('.wl-delete-btn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (confirm('Are you sure you want to remove this item from your wishlist?')) {
-      card.remove();
-      checkWishlistEmpty();
-    }
+const LAB_CODES = { 'LB-01': 350, 'LB-02': 380, 'LB-03': 415, 'LB-04': 450, 'LB-05': 600, 'LB-06': 200 };
+function labCodeFor(rate) {
+  const hit = Object.entries(LAB_CODES).find(([, r]) => r === rate);
+  return hit ? hit[0] : 'LB-03';
+}
+
+function mkTag(id, name, o) {
+  const goldAmt = o.goldAmt != null ? o.goldAmt : Math.round(o.pureWt * o.rate);
+  const labBase = o.labWt === 'Net Wt' ? o.net : o.gross;
+  const labAmt = o.labAmt != null ? o.labAmt : Math.round(o.labRate * labBase);
+  const wsBase = o.wsWt === 'Net Wt' ? o.net : o.gross;
+  const wsAmt = Math.round(o.wsPct * wsBase * o.rate / 100);
+  const dAmt = o.d ? o.d.amt : 0;
+  return {
+    id, name, mrp: goldAmt + dAmt + labAmt + wsAmt, editedTs: 0,
+    f: {
+      revGross: o.gross.toFixed(3) + ' g', revNet: o.net.toFixed(3) + ' g', revKarat: o.karat, revPurity: o.purity,
+      revPureWt: o.pureWt.toFixed(3) + ' g', goldRateType: o.rateType,
+      currentGoldRateInput: '₹ ' + fmtINR(o.rate) + ' /g', revGoldAmt: '₹ ' + fmtINR(goldAmt),
+      revDWt: o.d ? o.d.wt : '', revDRate: o.d ? o.d.rate : '', revDPacket: o.d ? o.d.packet : '', revDAmt: o.d ? '₹ ' + fmtINR(o.d.amt) : '',
+      revLabCode: labCodeFor(o.labRate), revLabRate: String(o.labRate), revLabWt: o.labWt, revLabAmt: '₹ ' + fmtINR(labAmt),
+      wastageCodeSelect: o.wsCode, wsWeightUsed: o.wsWt, revWsPct: o.wsPct.toFixed(1) + '%', revWsAmt: '₹ ' + fmtINR(wsAmt),
+    },
+  };
+}
+
+const SAMPLE_TAGS = [
+  mkTag('TAG-10432', '22K Gold Necklace', { gross: 18.5, net: 16.9, karat: '22k', purity: '91.6%', pureWt: 15.48, rateType: 'RTGS', rate: 3790, goldAmt: 58685, d: { wt: '1.20 ct', rate: '₹ 9,500', packet: 'DP-1180', amt: 11400 }, labRate: 415, labWt: 'Gross Wt', labAmt: 7000, wsCode: 'WS-08', wsPct: 8, wsWt: 'Gross Wt' }),
+  mkTag('PK-1042', 'Diamond Ring', { gross: 6.2, net: 5.4, karat: '18k', purity: '75.0%', pureWt: 4.05, rateType: 'RTGS', rate: 3790, d: { wt: '0.45 ct', rate: '₹ 24,000', packet: 'DP-2210', amt: 10800 }, labRate: 600, labWt: 'Net Wt', wsCode: 'WS-10', wsPct: 10, wsWt: 'Net Wt' }),
+  mkTag('TAG-20871', '18K Gold Bangle', { gross: 11.2, net: 11.05, karat: '18k', purity: '75.0%', pureWt: 8.288, rateType: 'Cash', rate: 3745, labRate: 380, labWt: 'Gross Wt', wsCode: 'WS-05', wsPct: 5, wsWt: 'Gross Wt' }),
+  mkTag('TAG-30145', '22K Gold Chain', { gross: 12.8, net: 12.8, karat: '22k', purity: '91.6%', pureWt: 11.725, rateType: 'RTGS', rate: 3790, labRate: 350, labWt: 'Gross Wt', wsCode: 'WS-08', wsPct: 8, wsWt: 'Net Wt' }),
+  mkTag('TAG-40519', '20K Gold Earrings', { gross: 5.4, net: 5.2, karat: '20k', purity: '83.3%', pureWt: 4.332, rateType: 'Cash', rate: 3745, labRate: 450, labWt: 'Net Wt', wsCode: 'WS-12', wsPct: 12, wsWt: 'Gross Wt' }),
+  mkTag('TAG-50002', '24K Gold Coin', { gross: 5.0, net: 5.0, karat: '24k', purity: '99.9%', pureWt: 4.995, rateType: 'RTGS', rate: 3790, labRate: 200, labWt: 'Gross Wt', wsCode: 'WS-05', wsPct: 5, wsWt: 'Net Wt' }),
+];
+
+let hc = null;
+function hcSave() { try { localStorage.setItem(HC_KEY, JSON.stringify(hc)); } catch (e) { /* storage unavailable */ } }
+function hcSumMrp(ids) { return ids.reduce((sum, id) => sum + (hc.tags[id] ? hc.tags[id].mrp : 0), 0); }
+function hcSeed() {
+  const now = Date.now(), M = 60000, H = 3600000, D = 86400000;
+  const tags = {};
+  SAMPLE_TAGS.forEach((t) => { tags[t.id] = JSON.parse(JSON.stringify(t)); });
+  hc = {
+    tags, nextSample: 3,
+    scans: [
+      { tagId: 'TAG-10432', ts: now - 25 * M }, { tagId: 'PK-1042', ts: now - 3 * H }, { tagId: 'TAG-20871', ts: now - D - 2 * H },
+      { tagId: 'TAG-30145', ts: now - 2 * D - 5 * H }, { tagId: 'TAG-40519', ts: now - 3 * D }, { tagId: 'TAG-50002', ts: now - 5 * D - H },
+      { tagId: 'TAG-10432', ts: now - 6 * D },
+    ],
+    wishlist: [{ tagId: 'TAG-10432', ts: now - 2 * H }, { tagId: 'PK-1042', ts: now - D }, { tagId: 'TAG-20871', ts: now - 3 * D }],
+    wishHistory: [
+      { tagId: 'TAG-10432', ts: now - 2 * H }, { tagId: 'PK-1042', ts: now - D }, { tagId: 'TAG-20871', ts: now - 3 * D },
+      { tagId: 'TAG-30145', ts: now - 4 * D }, { tagId: 'TAG-40519', ts: now - 8 * D },
+    ],
+    checkouts: [],
+  };
+  [['CO-1', now - D - H, ['TAG-10432', 'PK-1042']], ['CO-2', now - 4 * D, ['TAG-20871', 'TAG-30145', 'TAG-40519']]].forEach(([id, ts, items]) => {
+    hc.checkouts.push({ id, ts, items, total: hcSumMrp(items) });
   });
+}
+function hcLoad() {
+  try {
+    const raw = localStorage.getItem(HC_KEY);
+    if (raw) { hc = JSON.parse(raw); return; }
+  } catch (e) { /* fall through to seed */ }
+  hcSeed();
+  hcSave();
+}
+
+function fmtWhen(ts) {
+  const d = new Date(ts), now = new Date();
+  const time = d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+  const day = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diff = Math.round((day(now) - day(d)) / 86400000);
+  if (diff <= 0) return 'Today, ' + time;
+  if (diff === 1) return 'Yesterday, ' + time;
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) + ', ' + time;
+}
+function fmtAgo(ts) {
+  const mins = Math.max(1, Math.round((Date.now() - ts) / 60000));
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  const days = Math.round(hrs / 24);
+  return days === 1 ? 'Yesterday' : days + ' days ago';
+}
+
+// ---- Scanner result: load / save a tag ----
+const REV_FIELD_IDS = ['revGross', 'revNet', 'revKarat', 'revPurity', 'revPureWt', 'goldRateType', 'currentGoldRateInput', 'revGoldAmt',
+  'revDWt', 'revDRate', 'revDPacket', 'revDAmt', 'revLabCode', 'revLabRate', 'revLabWt', 'revLabAmt', 'wastageCodeSelect', 'wsWeightUsed', 'revWsPct', 'revWsAmt'];
+let currentTagId = null;
+let reviewReturnScreen = screenHome;
+let hcLoading = false;
+
+function wastagePctFromMaster(code) {
+  for (const row of wstList.querySelectorAll('.itc-row')) {
+    const inputs = row.querySelectorAll('input');
+    if (inputs[0].value.trim() === code && inputs[1].value.trim() !== '') return numFrom(inputs[1].value);
+  }
+  return null;
+}
+function recomputeWastage() {
+  const pct = numFrom(document.getElementById('revWsPct').value);
+  const useNet = document.getElementById('wsWeightUsed').value === 'Net Wt';
+  const weight = numFrom(document.getElementById(useNet ? 'revNet' : 'revGross').value);
+  const rate = numFrom(document.getElementById('currentGoldRateInput').value);
+  document.getElementById('revWsAmt').value = '₹ ' + fmtINR(pct * weight * rate / 100);
+}
+
+function recomputeLabour() {
+  const rate = numFrom(document.getElementById('revLabRate').value);
+  const useNet = document.getElementById('revLabWt').value === 'Net Wt';
+  const weight = numFrom(document.getElementById(useNet ? 'revNet' : 'revGross').value);
+  document.getElementById('revLabAmt').value = '₹ ' + fmtINR(rate * weight);
+}
+
+function updateWishBtn() {
+  const btn = document.getElementById('revWishlistBtn');
+  const inList = !!currentTagId && hc.wishlist.some((w) => w.tagId === currentTagId);
+  btn.textContent = inList ? '✓ Added to Wishlist' : '♡ Add to Wishlist';
+  btn.disabled = inList;
+}
+
+function loadTagIntoReview(tag, returnScreen) {
+  hcLoading = true;
+  currentTagId = tag.id;
+  if (returnScreen) reviewReturnScreen = returnScreen;
+  populateWastageCodeOptions(tag.f.wastageCodeSelect);
+  REV_FIELD_IDS.forEach((id) => {
+    if (id === 'wastageCodeSelect') return;
+    const el = document.getElementById(id);
+    if (el && tag.f[id] !== undefined) el.value = tag.f[id];
+  });
+  document.getElementById('revItemName').textContent = tag.name;
+  document.getElementById('revItemNumber').textContent = tag.id;
+  document.getElementById('revMrpAmount').textContent = fmtINR(tag.mrp);
+  document.querySelectorAll('#screenScanReview .invalid').forEach((el) => el.classList.remove('invalid'));
+  hcLoading = false;
+  updateWishBtn();
+}
+
+function saveCurrentTag(markEdited) {
+  if (!currentTagId || !hc.tags[currentTagId]) return;
+  const tag = hc.tags[currentTagId];
+  REV_FIELD_IDS.forEach((id) => { tag.f[id] = document.getElementById(id).value; });
+  if (markEdited) tag.editedTs = Date.now();
+  hcSave();
+}
+
+REV_FIELD_IDS.forEach((id) => {
+  const el = document.getElementById(id);
+  const handler = () => {
+    if (hcLoading) return;
+    if (id === 'wastageCodeSelect') {
+      const pct = wastagePctFromMaster(el.value);
+      if (pct !== null) document.getElementById('revWsPct').value = pct.toFixed(1) + '%';
+    }
+    if (id === 'revLabCode') document.getElementById('revLabRate').value = String(LAB_CODES[el.value]);
+    if (['revLabCode', 'revLabRate', 'revLabWt', 'revGross', 'revNet'].includes(id)) recomputeLabour();
+    if (['wastageCodeSelect', 'revWsPct', 'wsWeightUsed', 'revGross', 'revNet', 'currentGoldRateInput'].includes(id)) recomputeWastage();
+    saveCurrentTag(true);
+    hcRenderLists();
+  };
+  el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', handler);
 });
 
-document.getElementById('wishlistClearLink').addEventListener('click', (e) => {
-  e.preventDefault();
-  if (!wishlistList.querySelector('.wl-card')) return;
-  if (confirm('Are you sure you want to remove all items from your wishlist?')) {
-    wishlistList.innerHTML = '';
-    checkWishlistEmpty();
+function openNewScan(fromScreen) {
+  const base = SAMPLE_TAGS[hc.nextSample % SAMPLE_TAGS.length];
+  hc.nextSample += 1;
+  if (!hc.tags[base.id]) hc.tags[base.id] = JSON.parse(JSON.stringify(base));
+  hc.scans.unshift({ tagId: base.id, ts: Date.now() });
+  hcSave();
+  loadTagIntoReview(hc.tags[base.id], screenHome);
+  hcRenderAll();
+  goForward(fromScreen, screenScanReview);
+}
+function openSavedTag(tagId, fromScreen) {
+  const tag = hc.tags[tagId];
+  if (!tag) return;
+  loadTagIntoReview(tag, fromScreen);
+  goForward(fromScreen, screenScanReview);
+}
+
+document.getElementById('revWishlistBtn').addEventListener('click', () => {
+  if (!currentTagId) return;
+  saveCurrentTag(false);
+  const now = Date.now();
+  if (!hc.wishlist.some((w) => w.tagId === currentTagId)) hc.wishlist.unshift({ tagId: currentTagId, ts: now });
+  hc.wishHistory = hc.wishHistory.filter((w) => w.tagId !== currentTagId);
+  hc.wishHistory.unshift({ tagId: currentTagId, ts: now });
+  hcSave();
+  hcRenderAll();
+});
+
+// ---- Home wishlist (separate from Wishlist history): check-select, bin, add to cart ----
+const wishlistList = document.getElementById('wishlistList');
+const wishlistEmpty = document.getElementById('wishlistEmpty');
+const wlActions = document.getElementById('wlActions');
+const wlSelected = new Set();
+const CHECK_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function updateWlActions() {
+  wlActions.classList.toggle('has-sel', wlSelected.size >= 1);
+  wlActions.classList.toggle('multi', wlSelected.size >= 1);
+}
+function renderWishlist() {
+  const valid = new Set(hc.wishlist.map((w) => w.tagId));
+  [...wlSelected].forEach((id) => { if (!valid.has(id)) wlSelected.delete(id); });
+  wishlistList.innerHTML = hc.wishlist.map((w) => {
+    const tag = hc.tags[w.tagId];
+    if (!tag) return '';
+    return `<div class="wl-card${wlSelected.has(w.tagId) ? ' selected' : ''}" data-id="${escHtml(w.tagId)}">
+      <button type="button" class="wl-check" aria-label="Select">${CHECK_SVG}</button>
+      <div class="wl-card-body"><span class="wl-card-title">${escHtml(tag.name)}</span><span class="wl-card-time">${fmtAgo(w.ts)}</span></div>
+      <div class="wl-price-pill"><b>₹ ${fmtINR(tag.mrp)}</b></div>
+    </div>`;
+  }).join('');
+  wishlistEmpty.classList.toggle('show', hc.wishlist.length === 0);
+  updateWlActions();
+}
+wishlistList.addEventListener('click', (e) => {
+  const card = e.target.closest('.wl-card');
+  if (!card) return;
+  const id = card.dataset.id;
+  if (e.target.closest('.wl-check')) {
+    if (wlSelected.has(id)) wlSelected.delete(id); else wlSelected.add(id);
+    card.classList.toggle('selected', wlSelected.has(id));
+    updateWlActions();
+    return;
+  }
+  openSavedTag(id, screenWishlist);
+});
+document.getElementById('wlBinBtn').addEventListener('click', () => {
+  const n = wlSelected.size;
+  if (!n) return;
+  if (!confirm(n === 1 ? 'Remove this item from your wishlist?' : 'Remove ' + n + ' items from your wishlist?')) return;
+  hc.wishlist = hc.wishlist.filter((w) => !wlSelected.has(w.tagId));
+  wlSelected.clear();
+  hcSave();
+  hcRenderAll();
+});
+document.getElementById('wlCartBtn').addEventListener('click', () => {
+  if (wlSelected.size < 1) return;
+  const items = hc.wishlist.map((w) => w.tagId).filter((id) => wlSelected.has(id));
+  const entry = { id: 'CO-' + Date.now(), ts: Date.now(), items, total: hcSumMrp(items) };
+  hc.checkouts.unshift(entry);
+  wlSelected.clear();
+  hcSave();
+  hcRenderAll();
+  openCart(entry, screenWishlist);
+});
+document.getElementById('dashWishlistBtn').addEventListener('click', () => { wlSelected.clear(); renderWishlist(); });
+
+// ---- Add to cart page ----
+let currentCart = null;
+let cartReturnScreen = screenWishlist;
+const cartList = document.getElementById('cartList');
+const CART_CHEV = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function renderCart() {
+  if (!currentCart) return;
+  cartList.innerHTML = currentCart.items.map((id, i) => {
+    const tag = hc.tags[id];
+    if (!tag) return '';
+    return `<div class="cart-row" data-id="${escHtml(id)}">
+      <span class="cart-num">${i + 1}.</span>
+      <div class="cart-name"><b>${escHtml(tag.name)}</b><small>${escHtml(tag.id)}</small></div>
+      <span class="cart-mrp">₹ ${fmtINR(tag.mrp)}</span>
+      <span class="cart-chev">${CART_CHEV}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('cartGrandTotal').textContent = '₹ ' + fmtINR(hcSumMrp(currentCart.items));
+  document.getElementById('cartCardHead').textContent = 'Selected tags · ' + currentCart.items.length;
+}
+function openCart(entry, fromScreen) {
+  currentCart = entry;
+  cartReturnScreen = fromScreen;
+  renderCart();
+  goForward(fromScreen, screenCart);
+}
+cartList.addEventListener('click', (e) => {
+  const row = e.target.closest('.cart-row');
+  if (row) openSavedTag(row.dataset.id, screenCart);
+});
+document.getElementById('cartBackBtn').addEventListener('click', () => goBackward(screenCart, cartReturnScreen));
+function startCartInvoice() {
+  invoiceSource = 'cart';
+  invoiceReturnScreen = screenCart;
+  goForward(screenCart, screenInvoiceGen);
+}
+document.getElementById('cartGenerateBtn').addEventListener('click', startCartInvoice);
+
+// ---- Invoice rows built from the scanned tag(s) ----
+const ONES = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+const TENS = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+function wordsBelowThousand(n) {
+  let out = '';
+  if (n >= 100) { out += ONES[Math.floor(n / 100)] + ' Hundred '; n %= 100; }
+  if (n >= 20) { out += TENS[Math.floor(n / 10)] + ' ' + ONES[n % 10] + ' '; } else if (n > 0) { out += ONES[n] + ' '; }
+  return out;
+}
+function rupeesInWords(num) {
+  let n = Math.round(num);
+  if (n === 0) return 'Rupees Zero Only';
+  const parts = [];
+  [[10000000, 'Crore'], [100000, 'Lakh'], [1000, 'Thousand']].forEach(([div, label]) => {
+    if (n >= div) { parts.push(wordsBelowThousand(Math.floor(n / div)) + label + ' '); n %= div; }
+  });
+  if (n > 0) parts.push(wordsBelowThousand(n));
+  return 'Rupees ' + parts.join('').trim().replace(/\s+/g, ' ') + ' Only';
+}
+function invoiceLinesForTag(tag) {
+  const f = tag.f;
+  const net = numFrom(f.revNet);
+  const goldAmt = numFrom(f.revGoldAmt);
+  const lines = [{ d: tag.name + ' — Gold', qty: f.revNet, price: net ? goldAmt / net : 0, amt: goldAmt }];
+  if (numFrom(f.revDAmt)) lines.push({ d: tag.name + ' — Diamond', qty: f.revDWt, price: numFrom(f.revDRate), amt: numFrom(f.revDAmt) });
+  lines.push({ d: tag.name + ' — Labour Charge', qty: '—', price: null, amt: numFrom(f.revLabAmt) });
+  const pct = numFrom(f.revWsPct);
+  const wsWeight = numFrom(f.wsWeightUsed === 'Net Wt' ? f.revNet : f.revGross);
+  lines.push({ d: tag.name + ' — Wastage (' + pct.toFixed(1) + '%)', qty: (pct * wsWeight / 100).toFixed(3) + ' g', price: numFrom(f.currentGoldRateInput), amt: numFrom(f.revWsAmt) });
+  return lines;
+}
+function buildInvoiceFromTags(ids) {
+  let n = 0, total = 0;
+  const rows = [];
+  ids.forEach((id) => {
+    const tag = hc.tags[id];
+    if (!tag) return;
+    invoiceLinesForTag(tag).forEach((l) => {
+      n += 1;
+      total += l.amt;
+      const price = l.price ? l.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+      rows.push(`<tr><td>${n}.</td><td>${escHtml(l.d)}</td><td>71131913</td><td>${escHtml(l.qty)}</td><td>${price}</td><td>${fmtINR(l.amt)}</td></tr>`);
+    });
+  });
+  document.querySelector('#screenInvoicePreview .inv-table tbody').innerHTML = rows.join('');
+  const totalRows = document.querySelectorAll('#screenInvoicePreview .inv-totals-row b');
+  totalRows[0].textContent = '₹ ' + fmtINR(total);
+  document.getElementById('invGrandTotal').textContent = '₹ ' + fmtINR(total);
+  document.querySelector('#screenInvoicePreview .inv-words').textContent = rupeesInWords(total);
+}
+function buildInvoice() {
+  if (invoiceSource === 'cart' && currentCart) { buildInvoiceFromTags(currentCart.items); return; }
+  saveCurrentTag(false);
+  if (currentTagId) buildInvoiceFromTags([currentTagId]);
+}
+
+// ---- Settings -> History & Cart ----
+function hcEntryHtml(attrs, title, sub, price) {
+  return `<div class="hc-entry" ${attrs}><div class="hc-entry-main"><span class="hc-entry-title">${title}</span><span class="hc-entry-sub">${sub}</span></div><span class="hc-entry-price">${price}</span></div>`;
+}
+function hcRenderLists() {
+  const empty = '<div class="hc-empty">Nothing here yet.</div>';
+  document.getElementById('hcScansList').innerHTML = hc.scans.slice(0, 30).map((s) => {
+    const tag = hc.tags[s.tagId];
+    return tag ? hcEntryHtml(`data-kind="tag" data-id="${escHtml(tag.id)}"`, escHtml(tag.name), escHtml(tag.id) + ' · ' + fmtWhen(s.ts), '₹ ' + fmtINR(tag.mrp)) : '';
+  }).join('') || empty;
+  document.getElementById('hcWishList').innerHTML = hc.wishHistory.slice(0, 30).map((w) => {
+    const tag = hc.tags[w.tagId];
+    if (!tag) return '';
+    const chip = tag.editedTs ? '<span class="hc-chip">Edited</span>' : '';
+    return hcEntryHtml(`data-kind="tag" data-id="${escHtml(tag.id)}"`, escHtml(tag.name) + chip, 'Added ' + fmtWhen(w.ts), '₹ ' + fmtINR(tag.mrp));
+  }).join('') || empty;
+  document.getElementById('hcCheckoutList').innerHTML = hc.checkouts.slice(0, 30).map((c) => {
+    const n = c.items.length;
+    return hcEntryHtml(`data-kind="cart" data-id="${escHtml(c.id)}"`, 'Cart · ' + n + (n === 1 ? ' item' : ' items'), fmtWhen(c.ts), '₹ ' + fmtINR(hcSumMrp(c.items)));
+  }).join('') || empty;
+}
+function hcRenderAll() {
+  renderWishlist();
+  hcRenderLists();
+  updateWishBtn();
+}
+document.querySelectorAll('#hcCard .hc-head').forEach((head) => {
+  head.addEventListener('click', () => {
+    const open = head.nextElementSibling.classList.toggle('show');
+    head.classList.toggle('open', open);
+  });
+});
+document.getElementById('hcCard').addEventListener('click', (e) => {
+  const entry = e.target.closest('.hc-entry');
+  if (!entry) return;
+  if (entry.dataset.kind === 'cart') {
+    const c = hc.checkouts.find((x) => x.id === entry.dataset.id);
+    if (c) openCart(c, screenHistoryCart);
+  } else {
+    openSavedTag(entry.dataset.id, screenHistoryCart);
   }
 });
+
+document.getElementById('setMenuHistory').addEventListener('click', () => goForward(screenSettings, screenHistoryCart));
+document.getElementById('hcBackBtn').addEventListener('click', () => goBackward(screenHistoryCart, screenSettings));
+
+// ---- E-Invoice needs government set-up: same popup from the cart flow and the scanner-result flow ----
+const eInvPopup = document.getElementById('eInvPopup');
+eInvPopup.addEventListener('click', () => eInvPopup.classList.remove('show'));
+
+// ---- Masters -> Wastage: dummy saved codes so the dropdown has real options ----
+(function seedWastageMaster() {
+  const first = wstList.querySelector('.itc-row');
+  const firstInputs = first.querySelectorAll('input');
+  if (firstInputs[0].value.trim() || wstList.querySelectorAll('.itc-row').length > 1) return;
+  firstInputs[0].value = 'WS-05';
+  firstInputs[1].value = '5';
+  first.querySelector('.wst-toggle-btn').click();
+  [['WS-08', '8'], ['WS-10', '10'], ['WS-12', '12']].forEach(([code, pct]) => createWstRow(code, pct, true));
+}());
+
+hcLoad();
+hcRenderAll();
 
 window.addEventListener('load', playSplash);

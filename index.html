@@ -6,7 +6,7 @@
 <title>MRPscan — App Onboarding Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=98">
+<link rel="stylesheet" href="styles.css?v=103">
 </head>
 <body>
 
@@ -1023,52 +1023,13 @@
           </div>
           <div class="wl-title-row">
             <span class="wl-title">Wishlist</span>
-            <a href="#" class="wl-clear-link" id="wishlistClearLink">Clear Wishlist</a>
-          </div>
-
-          <div class="wl-list" id="wishlistList">
-            <div class="wl-card">
-              <div class="wl-card-top">
-                <span class="wl-card-title">22K Gold Necklace</span>
-                <span class="wl-card-time">2h ago</span>
-              </div>
-              <div class="wl-card-divider"></div>
-              <div class="wl-card-foot">
-                <div class="wl-price-pill"><b>₹ 1,84,500</b><small>RTGS Rate</small></div>
-                <button class="wl-delete-btn" aria-label="Delete">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-              </div>
-            </div>
-
-            <div class="wl-card">
-              <div class="wl-card-top">
-                <span class="wl-card-title">Diamond Ring · PK-1042</span>
-                <span class="wl-card-time">Yesterday</span>
-              </div>
-              <div class="wl-card-divider"></div>
-              <div class="wl-card-foot">
-                <div class="wl-price-pill"><b>₹ 82,694</b><small>RTGS Rate</small></div>
-                <button class="wl-delete-btn" aria-label="Delete">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-              </div>
-            </div>
-
-            <div class="wl-card">
-              <div class="wl-card-top">
-                <span class="wl-card-title">18K Gold Bangle</span>
-                <span class="wl-card-time">3 days ago</span>
-              </div>
-              <div class="wl-card-divider"></div>
-              <div class="wl-card-foot">
-                <div class="wl-price-pill"><b>₹ 55,770</b><small>Cash Rate</small></div>
-                <button class="wl-delete-btn" aria-label="Delete">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-              </div>
+            <div class="wl-actions" id="wlActions">
+              <button type="button" class="wl-bin-btn" id="wlBinBtn" aria-label="Delete selected"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m-8 0 1 13a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2l1-13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button type="button" class="wl-cart-btn" id="wlCartBtn">Add to cart</button>
             </div>
           </div>
+
+          <div class="wl-list" id="wishlistList"></div>
 
           <div class="wl-empty" id="wishlistEmpty">
             <span class="wl-empty-title">Your wishlist is empty</span>
@@ -1666,6 +1627,12 @@
               <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
 
+            <div class="set-menu-item set-menu-icon-gold" id="setMenuHistory">
+              <span class="set-menu-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="set-menu-label">History</span>
+              <svg class="set-menu-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
             <div class="set-menu-item set-menu-icon-red" id="setMenuSubscription">
               <span class="set-menu-icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span>
               <span class="set-menu-label">Credits &amp; Subscription</span>
@@ -1803,10 +1770,10 @@
               <div class="metal-tile gold-tile">
                 <div class="metal-tile-title">Gold</div>
                 <div class="metal-grid">
-                  <label class="metal-field"><span>Gross Weight</span><input value="18.500 g"></label>
-                  <label class="metal-field"><span>Net Weight</span><input value="16.900 g"></label>
+                  <label class="metal-field"><span>Gross Weight</span><input id="revGross" value="18.500 g"></label>
+                  <label class="metal-field"><span>Net Weight</span><input id="revNet" value="16.900 g"></label>
                   <label class="metal-field"><span>Karat</span>
-                    <select>
+                    <select id="revKarat">
                       <option>24k</option>
                       <option selected>22k</option>
                       <option>20k</option>
@@ -1815,8 +1782,8 @@
                       <option>9k</option>
                     </select>
                   </label>
-                  <label class="metal-field"><span>Purity</span><input value="91.6%"></label>
-                  <label class="metal-field"><span>Pure Weight</span><input value="15.480 g"></label>
+                  <label class="metal-field"><span>Purity</span><input id="revPurity" value="91.6%"></label>
+                  <label class="metal-field"><span>Pure Weight</span><input id="revPureWt" value="15.480 g"></label>
                   <label class="metal-field"><span>Gold Rate</span>
                     <select id="goldRateType">
                       <option selected>RTGS</option>
@@ -1824,33 +1791,43 @@
                     </select>
                   </label>
                   <label class="metal-field"><span>Current Gold Rate</span><input value="₹ 3,790 /g" id="currentGoldRateInput"></label>
-                  <label class="metal-field amount-field"><span>Gold Amount</span><input value="₹ 58,685"></label>
+                  <label class="metal-field amount-field"><span>Gold Amount</span><input id="revGoldAmt" value="₹ 58,685"></label>
                 </div>
               </div>
 
               <div class="metal-tile diamond-tile">
                 <div class="metal-tile-title">Diamond</div>
                 <div class="metal-grid">
-                  <label class="metal-field"><span>Weight</span><input></label>
-                  <label class="metal-field"><span>Diamond Rate</span><input></label>
-                  <label class="metal-field"><span>Packet Code</span><input></label>
-                  <label class="metal-field amount-field"><span>Diamond Amount</span><input></label>
+                  <label class="metal-field"><span>Weight</span><input id="revDWt"></label>
+                  <label class="metal-field"><span>Diamond Rate</span><input id="revDRate"></label>
+                  <label class="metal-field"><span>Packet Code</span><input id="revDPacket"></label>
+                  <label class="metal-field amount-field"><span>Diamond Amount</span><input id="revDAmt"></label>
                 </div>
               </div>
 
               <div class="metal-tile labour-tile">
                 <div class="metal-tile-title">Labour Charge</div>
                 <div class="metal-grid">
-                  <label class="metal-field"><span>Labour Rate</span>
-                    <div class="input-icon"><span>₹</span><input value="415"></div>
+                  <label class="metal-field"><span>Labour Code</span>
+                    <select id="revLabCode">
+                      <option>LB-01</option>
+                      <option>LB-02</option>
+                      <option selected>LB-03</option>
+                      <option>LB-04</option>
+                      <option>LB-05</option>
+                      <option>LB-06</option>
+                    </select>
                   </label>
                   <label class="metal-field"><span>Weight Used</span>
-                    <select>
+                    <select id="revLabWt">
                       <option selected>Gross Wt</option>
                       <option>Net Wt</option>
                     </select>
                   </label>
-                  <label class="metal-field amount-field"><span>Labour Amount</span><input value="₹ 7,000"></label>
+                  <label class="metal-field"><span>Labour Rate</span>
+                    <div class="input-icon"><span>₹</span><input id="revLabRate" value="415"></div>
+                  </label>
+                  <label class="metal-field amount-field"><span>Labour Amount</span><input id="revLabAmt" value="₹ 7,000"></label>
                 </div>
               </div>
 
@@ -1862,8 +1839,14 @@
                       <option value="WS-08" selected>WS-08</option>
                     </select>
                   </label>
-                  <label class="metal-field"><span>Wastage %</span><input value="8.0%"></label>
-                  <label class="metal-field amount-field"><span>Wastage Amount</span><input value="₹ 5,609"></label>
+                  <label class="metal-field"><span>Weight Used</span>
+                    <select id="wsWeightUsed">
+                      <option selected>Gross Wt</option>
+                      <option>Net Wt</option>
+                    </select>
+                  </label>
+                  <label class="metal-field"><span>Wastage %</span><input id="revWsPct" value="8.0%"></label>
+                  <label class="metal-field amount-field"><span>Wastage Amount</span><input id="revWsAmt" value="₹ 5,609"></label>
                 </div>
               </div>
 
@@ -1881,6 +1864,54 @@
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -> HISTORY & CART (scan / wishlist / checkout history) -->
+      <section class="screen history-cart" id="screenHistoryCart">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="hcBackBtn" aria-label="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <span class="set-header-title">History</span>
+          </div>
+
+          <div class="hc-card" id="hcCard">
+          <div class="hc-tile">
+            <button type="button" class="hc-head"><span>Tag scan history</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="hc-body"><div class="hc-list" id="hcScansList"></div></div>
+          </div>
+          <div class="hc-tile">
+            <button type="button" class="hc-head"><span>Wishlist history</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="hc-body"><div class="hc-list" id="hcWishList"></div></div>
+          </div>
+          <div class="hc-tile">
+            <button type="button" class="hc-head"><span>Checkout history</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="hc-body"><div class="hc-list" id="hcCheckoutList"></div></div>
+          </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ADD TO CART (tags selected in Wishlist -> grand total -> invoice) -->
+      <section class="screen cart" id="screenCart">
+        <div class="set-scroll">
+          <div class="set-header">
+            <button class="rev-back-btn" id="cartBackBtn" aria-label="Back"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="set-header-titles">
+              <span class="set-header-title">Add to cart</span>
+              <span class="set-header-sub">Check out</span>
+            </div>
+          </div>
+
+          <div class="cart-card">
+            <div class="bp-card-head" id="cartCardHead">Selected tags</div>
+            <div class="cart-list" id="cartList"></div>
+            <div class="cart-total"><span>Grand Total</span><b id="cartGrandTotal">₹ 0</b></div>
+          </div>
+        </div>
+
+        <div class="cart-footer" id="cartFooter">
+          <button type="button" class="rev-outer-btn rev-invoice-outer" id="cartGenerateBtn">Generate Invoice</button>
         </div>
       </section>
 
@@ -2100,6 +2131,15 @@
         <p>Your profile has been updated successfully</p>
       </div>
 
+      <!-- E-INVOICE POPUP (global; tap anywhere to dismiss, no timer) -->
+      <div class="einv-popup-backdrop" id="eInvPopup">
+        <div class="einv-popup-card">
+          <button type="button" class="einv-popup-close" aria-label="Close">&times;</button>
+          <span class="einv-popup-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M8 12.5l2.7 2.7L16 9.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <p>This feature Required Government regulation. Write Email for this feature, Our main team representative will connect with you shortly.</p>
+        </div>
+      </div>
+
       <!-- FLOATING BOTTOM NAV (global — shown on Home / Review / Final) -->
       <div class="floating-nav" id="floatingNav">
         <button class="dash-tab active" id="navHomeBtn">
@@ -2123,6 +2163,6 @@
   <button class="replay-btn" id="replayBtn">↻ Replay splash animation</button>
 </div>
 
-<script src="script.js?v=98"></script>
+<script src="script.js?v=101"></script>
 </body>
 </html>
