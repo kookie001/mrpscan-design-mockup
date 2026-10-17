@@ -859,9 +859,6 @@ document.getElementById('goldRateViewBackBtn').addEventListener('click', () => {
 document.getElementById('setMenuSubscription').addEventListener('click', () => {
   goForward(screenSettings, screenSubscription);
 });
-document.getElementById('setMenuMpin').addEventListener('click', () => {
-  goForward(screenSettings, screenMpinManager);
-});
 
 // -- Earn & Invite --
 document.getElementById('setMenuEarnInvite').addEventListener('click', () => {
